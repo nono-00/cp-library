@@ -1,0 +1,17 @@
+# nono's cpp conpetitive library
+
+## 命名規則メモ
+- ファイル名 `kebab-case`
+- 変数名     `snake_case`
+- 関数名     `snake_case`
+- 型名       `UpperCamelCase`
+- 他にある?  `??????????`
+
+## 他にいろいろ
+- 変数名は分かりやすく
+- 命名は長くなっても構わない
+- `#include <bits/stdc++/h>`はしない
+- `using namespace std;`は基本的にしない
+  - 使うならスコープに入れる
+- `namespace nono`に入れる
+
