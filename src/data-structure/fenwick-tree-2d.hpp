@@ -51,7 +51,7 @@ class FenwickTree2D {
         assert(0 <= lh && lh <= height_);
         assert(0 <= lw && lw <= width_);
         assert(lh <= rh && rh <= height_);
-        assert(lh <= rw && rw <= width_);
+        assert(lw <= rw && rw <= width_);
         return sum(rh, rw) - sum(rh, lw) - sum(lh, rw) + sum(lh, lw);
     }
 
