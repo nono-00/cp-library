@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "math/modint.hpp"
 #include "data-structure/dynamic-segment-tree.hpp"
+#include "math/modint.hpp"
 
 namespace nono {
 
@@ -61,6 +61,6 @@ void solve() {
 int main() {
     std::cin.tie(0)->sync_with_stdio(0);
     int t = 1;
-    // std::cin >> t;
+    //  std::cin >> t;
     while (t--) nono::solve();
 }

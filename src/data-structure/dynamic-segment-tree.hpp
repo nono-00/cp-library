@@ -8,6 +8,14 @@
 
 namespace nono {
 
+//  brief:
+//  - dynamic-segment-tree. 一点更新, 範囲取得
+//  - [-2 ^ 63 - 1, 2 ^ 63 - 1)に値を格納できる
+//
+//  tparam:
+//  - `T`: 配列の要素の型
+//  - `op`: 演算関数. 戻り値 `T`, 引数 `T, T` でなければならない.
+//  - `e`: 単位元を返す関数. 戻り値 `T`, 引数 `void` でなければならない.
 template <class T, auto op, auto e>
 class DynamicSegmentTree {
     static_assert(std::is_convertible_v<decltype(op), std::function<T(T, T)>>
@@ -38,30 +46,54 @@ class DynamicSegmentTree {
     };
 
   public:
+    //  brief:
+    //  - コンストラクタ
+    //
+    //  complexity:
+    //  - O(1)
+    //
+    //  param:
+    //  - `lb`: 格納する領域の下界
+    //  - `ub`: 格納する領域の上界
     DynamicSegmentTree(isize lb = std::numeric_limits<isize>::min(), isize ub = std::numeric_limits<isize>::max())
         : root(nullptr),
           lb_(lb),
-          ub_(ub) {}
+          ub_(ub) {
+        assert(lb_ < ub_);
+    }
 
+    //  complexity:
+    //  - O(log (ub - lb))
     void set(isize pos, T value) {
+        assert(lb_ <= pos && pos < ub_);
         set(root, lb_, ub_, pos, value);
     }
 
+    //  complexity:
+    //  - O(log (ub - lb))
     T get(isize pos) {
+        assert(lb_ <= pos && pos < ub_);
         return get(root, lb_, ub_, pos);
     }
 
+    //  complexity:
+    //  - O(log (ub - lb))
     T prod(isize lb, isize ub) {
+        assert(lb_ <= lb && lb <= ub && ub <= ub_);
         return prod(root, lb_, ub_, lb, ub);
     }
 
-    T prod() {
+    //  complexity:
+    //  - O(1)
+    T all_prod() {
         return root ? root->value : e();
     }
 
   private:
+    //  note:
+    //  - オーバーフロー回避のための関数
     inline isize median(isize lb, isize ub) {
-        assert(ub > lb);
+        assert(lb < ub);
         if ((lb >= 0) ^ (ub >= 0)) {
             return (lb + ub) / 2;
         } else {
@@ -70,10 +102,12 @@ class DynamicSegmentTree {
     }
 
     void set(NodePtr& node, isize lb, isize ub, isize pos, T value) {
+        assert(lb <= pos && pos < ub);
         if (!node) {
             node = std::make_unique<Node>();
         }
         if (ub == lb + 1) {
+            assert(pos == lb);
             node->value = value;
             return;
         }
@@ -88,16 +122,19 @@ class DynamicSegmentTree {
     }
 
     T get(NodePtr& node, isize lb, isize ub, isize pos) {
+        assert(lb <= pos && pos < ub);
         if (!node) {
             node = std::make_unique<Node>();
         }
         if (ub == lb + 1) {
+            assert(pos == lb);
             return node->value;
         }
         isize m = median(lb, ub);
         if (lb <= pos && pos < m) {
             return get(node->left, lb, m, pos);
         } else {
+            assert(m <= pos && pos < ub);
             return get(node->right, m, ub, pos);
         }
     }
