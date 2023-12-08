@@ -19,6 +19,7 @@ void solve() {
         int u, v;
         std::cin >> u >> v;
         edges.emplace_back(u, v);
+        edges.emplace_back(v, u);
     }
     FenwickTree<long long> fen(n);
     HeavyLightDecomposition hld(CSRGraph(n, edges));

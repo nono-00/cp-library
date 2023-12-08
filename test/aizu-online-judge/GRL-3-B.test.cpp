@@ -21,6 +21,7 @@ void solve() {
         std::cin >> u >> v;
         if (u > v) std::swap(u, v);
         edges.emplace_back(u, v, 1, i);
+        edges.emplace_back(v, u, 1, i);
     }
     CSRGraph graph(n, edges);
 

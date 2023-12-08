@@ -18,6 +18,7 @@ void solve() {
         int u, v;
         std::cin >> u >> v;
         edges.emplace_back(u, v, 1, i);
+        edges.emplace_back(v, u, 1, i);
     }
     const CSRGraph graph(n, edges);
     const auto groups = two_edge_connected_components(graph);
