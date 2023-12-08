@@ -9,14 +9,26 @@
 
 namespace nono {
 
-template <class T, auto op, auto e>
+//  brief:
+//  - dynamic-segment-tree-2d. 一点更新, 範囲取得
+//  - 座圧せずに使えるがとても遅い
+//
+//  tparam:
+//  - `T`: 配列の要素の型
+//  - `op`: 演算関数. 戻り値 `T`, 引数 `T, T` でなければならない.
+//  - `e`: 単位元を返す関数. 戻り値 `T`, 引数 `void` でなければならない.
+//  - `S`: 添字の型
+template <class T, auto op, auto e, class S = long long>
 class DynamicSegmentTree2D {
     static_assert(std::is_convertible_v<decltype(op), std::function<T(T, T)>>
                   && std::is_convertible_v<decltype(e), std::function<T()>>);
     struct Node;
     using NodePtr = std::unique_ptr<Node>;
-    using isize = long long;
+    using isize = S;
 
+    //  brief:
+    //  - 一次元の領域を表す構造体
+    //  - あまりにも引数が面倒になったので利用
     struct Bounds {
         isize lower;
         isize upper;
@@ -34,11 +46,11 @@ class DynamicSegmentTree2D {
             return !inside(pos);
         }
 
-        bool intersect(Bounds other) {
+        bool intersect(Bounds other) const {
             return !(contain(other) || (other.upper <= lower) || (upper <= other.lower));
         }
 
-        bool contain(Bounds other) {
+        bool contain(Bounds other) const {
             return lower <= other.lower && other.upper <= upper;
         }
 
@@ -73,28 +85,47 @@ class DynamicSegmentTree2D {
     };
 
   public:
+    //  brief:
+    //  - コンストラクタ
+    //
+    //  complexity:
+    //  - O(1)
+    //
+    //  param:
+    //  - `{h/w}_lb`: 格納する領域の下界
+    //  - `{h/w}_ub`: 格納する領域の上界
     DynamicSegmentTree2D(isize h_lb = std::numeric_limits<isize>::min(), isize h_ub = std::numeric_limits<isize>::max(),
                          isize w_lb = std::numeric_limits<isize>::min(), isize w_ub = std::numeric_limits<isize>::max())
         : root_(nullptr),
           h_(h_lb, h_ub),
           w_(w_lb, w_ub) {}
 
+    //  complexity:
+    //  - O((logN) ^ 2)
     void set(isize pos_h, isize pos_w, T value) {
         assert(h_.inside(pos_h) && w_.inside(pos_w));
         set(root_, h_, pos_h, pos_w, value);
     }
 
+    //  complexity:
+    //  - O((logN) ^ 2)
     T get(isize pos_h, isize pos_w) {
         assert(h_.inside(pos_h) && w_.inside(pos_w));
         return get(root_, h_, pos_h, pos_w);
     }
 
+    //  complexity:
+    //  - O((logN) ^ 2)
     T prod(isize pos_h1, isize pos_w1, isize pos_h2, isize pos_w2) {
         assert(h_.inside(pos_h1) && w_.inside(pos_w1));
         assert(h_.inside(pos_h2) && w_.inside(pos_w2));
         assert(pos_h1 <= pos_h2);
         assert(pos_w1 <= pos_w2);
         return prod(root_, h_, Bounds(pos_h1, pos_h2), Bounds(pos_w1, pos_w2));
+    }
+
+    T all_prod() {
+        return root_ ? root_->segtree.all_prod() : e();
     }
 
   private:

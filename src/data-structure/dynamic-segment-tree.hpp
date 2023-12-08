@@ -10,19 +10,20 @@ namespace nono {
 
 //  brief:
 //  - dynamic-segment-tree. 一点更新, 範囲取得
-//  - [-2 ^ 63 - 1, 2 ^ 63 - 1)に値を格納できる
+//  - 座圧せずに使えるがとても遅い
 //
 //  tparam:
 //  - `T`: 配列の要素の型
 //  - `op`: 演算関数. 戻り値 `T`, 引数 `T, T` でなければならない.
 //  - `e`: 単位元を返す関数. 戻り値 `T`, 引数 `void` でなければならない.
-template <class T, auto op, auto e>
+//  - `S`: 添字の型
+template <class T, auto op, auto e, class S = long long>
 class DynamicSegmentTree {
     static_assert(std::is_convertible_v<decltype(op), std::function<T(T, T)>>
                   && std::is_convertible_v<decltype(e), std::function<T()>>);
     struct Node;
     using NodePtr = std::unique_ptr<Node>;
-    using isize = long long;
+    using isize = S;
 
     struct Node {
         Node(): left(nullptr), right(nullptr) {
