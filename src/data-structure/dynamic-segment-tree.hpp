@@ -2,8 +2,8 @@
 
 #include <cassert>
 #include <functional>
+#include <limits>
 #include <memory>
-#include <numeric>
 #include <type_traits>
 
 namespace nono {
@@ -56,7 +56,7 @@ class DynamicSegmentTree {
     //  - `lb`: 格納する領域の下界
     //  - `ub`: 格納する領域の上界
     DynamicSegmentTree(isize lb = std::numeric_limits<isize>::min(), isize ub = std::numeric_limits<isize>::max())
-        : root(nullptr),
+        : root_(nullptr),
           lb_(lb),
           ub_(ub) {
         assert(lb_ < ub_);
@@ -66,27 +66,27 @@ class DynamicSegmentTree {
     //  - O(log (ub - lb))
     void set(isize pos, T value) {
         assert(lb_ <= pos && pos < ub_);
-        set(root, lb_, ub_, pos, value);
+        set(root_, lb_, ub_, pos, value);
     }
 
     //  complexity:
     //  - O(log (ub - lb))
     T get(isize pos) {
         assert(lb_ <= pos && pos < ub_);
-        return get(root, lb_, ub_, pos);
+        return get(root_, lb_, ub_, pos);
     }
 
     //  complexity:
     //  - O(log (ub - lb))
     T prod(isize lb, isize ub) {
         assert(lb_ <= lb && lb <= ub && ub <= ub_);
-        return prod(root, lb_, ub_, lb, ub);
+        return prod(root_, lb_, ub_, lb, ub);
     }
 
     //  complexity:
     //  - O(1)
     T all_prod() {
-        return root ? root->value : e();
+        return root_ ? root_->value : e();
     }
 
   private:
@@ -124,7 +124,7 @@ class DynamicSegmentTree {
     T get(NodePtr& node, isize lb, isize ub, isize pos) {
         assert(lb <= pos && pos < ub);
         if (!node) {
-            node = std::make_unique<Node>();
+            return e();
         }
         if (ub == lb + 1) {
             assert(pos == lb);
@@ -150,7 +150,7 @@ class DynamicSegmentTree {
         }
     }
 
-    NodePtr root;
+    NodePtr root_;
     isize lb_;
     isize ub_;
 };
