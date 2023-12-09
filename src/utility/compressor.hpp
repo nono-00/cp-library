@@ -21,6 +21,10 @@ class Compressor {
         std::sort(data_.begin(), data_.end());
         data_.erase(std::unique(data_.begin(), data_.end()), data_.end());
     }
+    Compressor(std::vector<T>&& data): data_(data) {
+        std::sort(data_.begin(), data_.end());
+        data_.erase(std::unique(data_.begin(), data_.end()), data_.end());
+    }
 
     //  brief:
     //  - `v` を座標圧縮した結果を取得する

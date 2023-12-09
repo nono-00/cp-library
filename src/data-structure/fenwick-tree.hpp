@@ -35,7 +35,7 @@ class FenwickTree {
     //  - `[0, i)` の和を取得する
     T sum(int i) const {
         assert(0 <= i && i <= size_);
-        T result = {};
+        T result{};
         for (; i > 0; i -= i & -i) {
             result += data_[i];
         }
@@ -45,7 +45,7 @@ class FenwickTree {
     //  brief:
     //  - `[l, r)` の和を取得する
     T sum(int l, int r) const {
-        assert(0 <= l && l < size_);
+        assert(0 <= l && l <= size_);
         assert(l <= r && r <= size_);
         return sum(r) - sum(l);
     }
