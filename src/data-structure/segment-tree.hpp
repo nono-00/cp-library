@@ -101,7 +101,7 @@ class SegmentTree {
     //  note:
     //  - 非可換でも可
     T prod(int l, int r) const {
-        assert(0 <= l && l < input_size_);
+        assert(0 <= l && l <= input_size_);
         assert(l <= r && r <= input_size_);
         T l_result = e();
         T r_result = e();

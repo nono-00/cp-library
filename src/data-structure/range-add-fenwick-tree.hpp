@@ -27,7 +27,7 @@ public:
     //  brief:
     //  - 区間 `[l, r)` の各要素に `v` を加算する
     void add(int l, int r, const T& v) {
-        assert(0 <= l && l < size_);
+        assert(0 <= l && l <= size_);
         assert(l <= r && r <= size_);
         data1_.add(l, -l * v);
         data2_.add(l, v);
@@ -47,7 +47,7 @@ public:
     //  brief:
     //  - 区間 `[l, r)` の要素の総和を取得する 
     T sum(int l, int r) const {
-        assert(0 <= l && l < size_);
+        assert(0 <= l && l <= size_);
         assert(l <= r && r <= size_);
         return sum(r) - sum(l);
     }

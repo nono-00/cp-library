@@ -57,6 +57,11 @@ class Compressor {
         return data_.size();
     }
 
+    bool contains(const T& value) const {
+        auto it = std::ranges::lower_bound(data_, value);
+        return it != data_.end() && *it == value;
+    }
+
   private:
     std::vector<T> data_;
 };
