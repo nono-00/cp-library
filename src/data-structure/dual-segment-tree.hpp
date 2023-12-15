@@ -26,7 +26,7 @@ namespace nono {
 template <class T, auto e, class F, auto mapping, auto composition, auto id>
 class DualSegmentTree {
     static_assert(std::is_convertible_v<decltype(e), std::function<T()>>
-                  && std::is_convertible_v<decltype(mapping), std::function<F(F, T)>>
+                  && std::is_convertible_v<decltype(mapping), std::function<T(F, T)>>
                   && std::is_convertible_v<decltype(composition), std::function<F(F, F)>>
                   && std::is_convertible_v<decltype(id), std::function<F()>>);
 
