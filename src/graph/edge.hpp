@@ -1,5 +1,7 @@
 #pragma once
 
+#include "graph/internal-graph-concepts.hpp"
+
 namespace nono {
 
 //  brief:
@@ -16,12 +18,10 @@ struct Edge {
     T weight;
     int id;
 
-    Edge() = default;
-
-    Edge(int from, int to, const T weight = 1, int id = -1): from(from), to(to), weight(weight), id(id) {}
-    Edge inv() const {
-        return {to, from, weight, id};
-    }
+    Edge() {}
+    Edge(int from, int to, T weight = T(), int id = -1): from(from), to(to), weight(weight), id(id) {}
 };
+
+static_assert(internal::WeightedIndexedEdge<Edge<int>>);
 
 }  //  namespace nono

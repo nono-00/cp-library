@@ -3,6 +3,8 @@
 #include <limits>
 #include <vector>
 
+#include "graph/internal-graph-concepts.hpp"
+
 namespace nono {
 
 //  brief:
@@ -18,9 +20,9 @@ namespace nono {
 //
 //  todo:
 //  - 負閉路に属する頂点の取得
-template <class GraphType>
+template <internal::WeightedGraph GraphType>
 auto bellman_ford(const GraphType& graph, int source) {
-    using T = typename GraphType::WeightType;
+    using T = typename GraphType::EdgeType::WeightType;
     constexpr T INF = std::numeric_limits<T>::max();
 
     int n = graph.size();

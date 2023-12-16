@@ -1,7 +1,10 @@
 #pragma once
 
-#include <vector>
 #include <algorithm>
+#include <limits>
+#include <vector>
+
+#include "graph/internal-graph-concepts.hpp"
 
 namespace nono {
 
@@ -16,7 +19,7 @@ namespace nono {
 //
 //  note:
 //  - 非単純グラフでも動く（はず）
-template <class GraphType>
+template <internal::IndexedGraph GraphType>
 std::vector<int> articulation_points(const GraphType& graph) {
     constexpr int NONE = -1;
 

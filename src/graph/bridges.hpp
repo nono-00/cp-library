@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "graph/internal-graph-concepts.hpp"
+
 namespace nono {
 
 //  brief:
@@ -21,7 +23,7 @@ namespace nono {
 //  - 非単純グラフでも動く（はず）
 //  - edgeにindexを持たせないと壊れる
 //  - 橋: その辺を取り除くとグラフが非連結となるような辺.
-template <class GraphType>
+template <internal::IndexedGraph GraphType>
 auto bridges(const GraphType& graph) {
     using EdgeType = GraphType::EdgeType;
     constexpr int NONE = -1;

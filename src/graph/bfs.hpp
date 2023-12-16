@@ -4,6 +4,8 @@
 #include <queue>
 #include <vector>
 
+#include "graph/internal-graph-concepts.hpp"
+
 namespace nono {
 
 //  brief:
@@ -13,24 +15,23 @@ namespace nono {
 //  - O(V + E)
 //
 //  return:
-//  - 到達不可能な頂点は `INF`
-template <class GraphType>
-auto bfs(const GraphType& graph, int source) {
-    using T = typename GraphType::WeightType;
-    constexpr T INF = std::numeric_limits<T>::max();
+//  - 到達不可能な頂点は `-INF`
+template <internal::Graph GraphType>
+std::vector<int> bfs(const GraphType& graph, int source) {
+    constexpr int INF = std::numeric_limits<int>::min();
 
-    std::vector<T> dist(graph.size(), INF);
-    dist[source] = static_cast<T>(0);
-    std::queue<int> vertex;
-    vertex.push(source);
+    std::vector<int> dist(graph.size(), INF);
+    dist[source] = 0;
+    std::queue<int> que;
+    que.push(source);
 
-    while (!vertex.empty()) {
-        int u = vertex.front();
-        vertex.pop();
+    while (!que.empty()) {
+        int u = que.front();
+        que.pop();
         for (const auto& edge: graph[u]) {
             if (dist[edge.to] == INF) {
-                dist[edge.to] = dist[u] + edge.weight;
-                vertex.push(edge.to);
+                dist[edge.to] = dist[u] + 1;
+                que.push(edge.to);
             }
         }
     }

@@ -1,7 +1,9 @@
 #pragma once
 
-#include <vector>
 #include <algorithm>
+#include <vector>
+
+#include "graph/internal-graph-concepts.hpp"
 
 namespace nono {
 
@@ -19,7 +21,7 @@ namespace nono {
 //
 //  note:
 //  - 非単純グラフでも動く（はず）
-template <class GraphType>
+template <internal::IndexedGraph GraphType>
 std::vector<std::vector<int>> two_edge_connected_components(const GraphType& graph) {
     constexpr int NONE = -1;
 

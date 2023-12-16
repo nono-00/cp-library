@@ -4,38 +4,39 @@
 #include <vector>
 
 #include "graph/edge.hpp"
+#include "graph/internal-graph-concepts.hpp"
 
 namespace nono {
 
-template <class WT = int>
+template <internal::Edge E>
 class Graph {
+    using iterator = std::vector<E>::iterator;
+    using const_iterator = std::vector<E>::const_iterator;
+
   public:
-    using EdgeType = Edge<WT>;
-    using WeightType = WT;
+    using EdgeType = E;
 
     Graph() = default;
-    explicit Graph(int vertex_size): vertex_size_(vertex_size), adj_list_(vertex_size) {}
-    Graph(int vertex_size, const std::vector<EdgeType>& edges, bool directed = false)
-        : vertex_size_(vertex_size),
-          adj_list_(vertex_size) {
+    explicit Graph(int vertex_size): vertex_size_(vertex_size), adj_(vertex_size) {}
+    explicit Graph(const std::vector<std::vector<EdgeType>>& graph): adj_(graph) {}
+    Graph(int vertex_size, const std::vector<EdgeType>& edges): vertex_size_(vertex_size), adj_(vertex_size) {
         for (const auto& e: edges) {
-            adj_list_[e.from].emplace_back(e);
-            if (not directed) adj_list_[e.to].emplace_back(e.inv());
+            adj_[e.from].emplace_back(e);
         }
     }
 
     //  brief:
     //  - 頂点 `i` に隣接する頂点を取得する
-    const std::vector<EdgeType>& operator[](int i) const {
-        assert(0 <= i && i < vertex_size_);
-        return adj_list_[i];
+    const std::vector<EdgeType>& operator[](int pos) const {
+        assert(0 <= pos && pos < vertex_size_);
+        return adj_[pos];
     }
 
     //  brief:
     //  - 頂点 `i` に隣接する頂点を取得する
-    std::vector<EdgeType>& operator[](int i) {
-        assert(0 <= i && i < vertex_size_);
-        return adj_list_[i];
+    std::vector<EdgeType>& operator[](int pos) {
+        assert(0 <= pos && pos < vertex_size_);
+        return adj_[pos];
     }
 
     //  brief:
@@ -44,57 +45,35 @@ class Graph {
         return vertex_size_;
     }
 
-    //  brief:
-    //  - グラフに無向辺を追加する
-    template <class... Args>
-    void add_undirected_edge(int from, int to, Args... args) {
-        assert(0 <= from && from < vertex_size_);
-        assert(0 <= to && to < vertex_size_);
-        adj_list_[from].emplace_back(from, to, args...);
-        adj_list_[to].emplace_back(to, from, args...);
+    iterator begin() {
+        return adj_.begin();
+    }
+
+    const_iterator begin() const {
+        return adj_.begin();
+    }
+
+    iterator end() {
+        return adj_.end();
+    }
+
+    const_iterator end() const {
+        return adj_.end();
     }
 
     //  brief:
-    //  - グラフに有向辺を追加する
-    template <class... Args>
-    void add_directed_edge(int from, int to, Args... args) {
-        assert(0 <= from && from < vertex_size_);
-        assert(0 <= to && to < vertex_size_);
-        adj_list_[from].emplace_back(from, to, args...);
-    }
-
-    //  brief:
-    //  - 頂点 `i` の次数を取得する
-    int degree(int i) const {
-        assert(0 <= i && i < vertex_size_);
-        return adj_list_[i].size();
-    }
-
-    //  brief:
-    //  - 各頂点の入次数を得る
-    std::vector<int> indegree() const {
-        std::vector<int> result(vertex_size_);
-        for (int i = 0; i < vertex_size_; i++) {
-            for (const auto& e: adj_list_[i]) {
-                result[e.to]++;
-            }
-        }
-        return result;
-    }
-
-    //  brief:
-    //  - 各頂点の出次数を得る
-    std::vector<int> outdegree() const {
-        std::vector<int> result(vertex_size_);
-        for (int i = 0; i < vertex_size_; i++) {
-            result[i] = adj_list_[i].size();
-        }
-        return result;
+    //  - グラフに辺を追加する
+    void add_edge(const EdgeType& edge) {
+        assert(0 <= edge.from && edge.from < vertex_size_);
+        assert(0 <= edge.to && edge.to < vertex_size_);
+        adj_[edge.from].emplace_back(edge);
     }
 
   private:
     int vertex_size_;
-    std::vector<std::vector<EdgeType>> adj_list_;
+    std::vector<std::vector<EdgeType>> adj_;
 };
+
+static_assert(internal::Graph<Graph<Edge<int>>>);
 
 }  //  namespace nono

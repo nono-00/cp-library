@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "graph/internal-graph-concepts.hpp"
+
 namespace nono {
 
 namespace internal {
@@ -30,7 +32,7 @@ enum class State {
 //  return:
 //  - サイクルが存在するならば, そのうち一つのサイクルを構成する辺の配列.
 //  - そうでなければ、空の辺の配列.
-template <class GraphType>
+template <internal::IndexedGraph GraphType>
 auto cycle_detection(const GraphType& graph) {
     using internal::State;
     using EdgeType = GraphType::EdgeType;

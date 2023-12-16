@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "graph/internal-graph-concepts.hpp"
+
 namespace nono {
 
 //  brief:
@@ -14,12 +16,17 @@ namespace nono {
 //  - グラフがDAGの場合は、トポロジカルソートされた頂点配列
 //
 //  note:
-//  - トポソ可能ならばグラフはDAGなので, 
+//  - トポソ可能ならばグラフはDAGなので,
 //  - `result.size() == graph.size()`ならばグラフがDAGであると判定できる
-template <class GraphType>
+template <internal::Graph GraphType>
 std::vector<int> topological_sort(const GraphType& graph) {
     int n = graph.size();
-    std::vector<int> indegree = graph.indegree();
+    std::vector<int> indegree(n);
+    for (int i = 0; i < n; i++) {
+        for (const auto& e: graph[i]) {
+            indegree[e.to]++;
+        }
+    }
     std::vector<int> stack;
 
     for (int i = 0; i < n; i++) {

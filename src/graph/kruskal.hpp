@@ -1,14 +1,15 @@
 #pragma once
 
 #include <cassert>
-#include <utility>
+#include <ranges>
 #include <vector>
 
 #include "data-structure/union-find.hpp"
+#include "graph/internal-graph-concepts.hpp"
 
 namespace nono {
 
-template <class EdgeType>
+template <internal::WeightedEdge EdgeType>
 struct MinimumSpanningTree {
     EdgeType::WeightType cost;
     std::vector<EdgeType> edges;
@@ -28,7 +29,7 @@ struct MinimumSpanningTree {
 //
 //  depend:
 //  - `UnionFind`
-template <class EdgeType>
+template <internal::WeightedEdge EdgeType>
 MinimumSpanningTree<EdgeType> kruskal(int vertex_size, const std::vector<EdgeType>& edges) {
     using T = EdgeType::WeightType;
 
@@ -45,7 +46,7 @@ MinimumSpanningTree<EdgeType> kruskal(int vertex_size, const std::vector<EdgeTyp
         }
     }
 
-    assert((int)used_edges.size() == vertex_size - 1);
+    assert(std::ssize(used_edges) == vertex_size - 1);
     return {cost, used_edges};
 }
 

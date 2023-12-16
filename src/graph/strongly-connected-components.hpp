@@ -3,8 +3,9 @@
 #include <algorithm>
 #include <vector>
 
-namespace nono {
+#include "graph/internal-graph-concepts.hpp"
 
+namespace nono {
 
 //  brief:
 //  - 強連結成分分解
@@ -20,10 +21,10 @@ namespace nono {
 //
 //  note:
 //  - Tarjan's algorithmを使用している.
-//  - 
+//  -
 //  - Kosaraju's algorithmも実装した.
 //  - コメントアウトしてあるが使える（はず）
-template <class GraphType>
+template <internal::Graph GraphType>
 std::vector<std::vector<int>> strongly_connected_components(const GraphType& graph) {
     constexpr int NONE = -1;
 

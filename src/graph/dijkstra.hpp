@@ -6,6 +6,8 @@
 #include <utility>
 #include <vector>
 
+#include "graph/internal-graph-concepts.hpp"
+
 namespace nono {
 
 //  brief:
@@ -20,24 +22,24 @@ namespace nono {
 //  return:
 //  - `source` からたどり着くことができるのならば, `source` からの最短経路
 //  - そうでなければ `numeric_limit<T>::max()`
-template <class GraphType>
+template <internal::WeightedGraph GraphType>
 auto dijkstra(const GraphType& graph, int source) {
-    using T = typename GraphType::WeightType;
+    using T = typename GraphType::EdgeType::WeightType;
     constexpr T INF = std::numeric_limits<T>::max();
 
     std::vector<T> dist(graph.size(), INF);
     dist[source] = static_cast<T>(0);
-    std::priority_queue<std::pair<T, int>, std::vector<std::pair<T, int>>, std::greater<std::pair<T, int>>> dist_vertex;
-    dist_vertex.emplace(dist[source], source);
+    std::priority_queue<std::pair<T, int>, std::vector<std::pair<T, int>>, std::greater<std::pair<T, int>>> pque;
+    pque.emplace(dist[source], source);
 
-    while (!dist_vertex.empty()) {
-        auto [d, u] = dist_vertex.top();
-        dist_vertex.pop();
+    while (!pque.empty()) {
+        auto [d, u] = pque.top();
+        pque.pop();
         if (dist[u] < d) continue;
         for (const auto& e: graph[u]) {
             if (dist[e.to] > dist[u] + e.weight) {
                 dist[e.to] = dist[u] + e.weight;
-                dist_vertex.emplace(dist[e.to], e.to);
+                pque.emplace(dist[e.to], e.to);
             }
         }
     }
