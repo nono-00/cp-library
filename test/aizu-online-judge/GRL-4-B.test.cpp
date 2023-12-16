@@ -9,14 +9,19 @@
 
 namespace nono {
 
+struct E {
+    int from;
+    int to;
+};
+
 void solve() {
     int n, m;
     std::cin >> n >> m;
-    Graph graph(n);
+    Graph<E> graph(n);
     for (int i = 0; i < m; i++) {
         int u, v;
         std::cin >> u >> v;
-        graph.add_directed_edge(u, v);
+        graph.add_edge(E(u, v));
     }
 
     for (int i: topological_sort(graph)) {

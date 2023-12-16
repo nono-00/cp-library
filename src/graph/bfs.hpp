@@ -16,11 +16,12 @@ namespace nono {
 //
 //  return:
 //  - 到達不可能な頂点は `-INF`
-template <internal::Graph GraphType>
-std::vector<int> bfs(const GraphType& graph, int source) {
-    constexpr int INF = std::numeric_limits<int>::min();
+template <internal::WeightedGraph GraphType>
+auto bfs(const GraphType& graph, int source) {
+    using T = GraphType::EdgeType::WeightType;
+    constexpr int INF = std::numeric_limits<T>::min();
 
-    std::vector<int> dist(graph.size(), INF);
+    std::vector<T> dist(graph.size(), INF);
     dist[source] = 0;
     std::queue<int> que;
     que.push(source);
@@ -30,7 +31,7 @@ std::vector<int> bfs(const GraphType& graph, int source) {
         que.pop();
         for (const auto& edge: graph[u]) {
             if (dist[edge.to] == INF) {
-                dist[edge.to] = dist[u] + 1;
+                dist[edge.to] = dist[u] + edge.weight;
                 que.push(edge.to);
             }
         }

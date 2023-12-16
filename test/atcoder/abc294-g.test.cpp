@@ -4,8 +4,9 @@
 #include <iostream>
 
 #include "data-structure/fenwick-tree.hpp"
-#include "graph/csr-graph.hpp"
-#include "graph/heavy-light-decomposition.hpp"
+#include "graph/edge.hpp"
+#include "tree/csr-tree.hpp"
+#include "tree/heavy-light-decomposition.hpp"
 
 namespace nono {
 
@@ -23,7 +24,7 @@ void solve() {
         edges.emplace_back(u, v, w);
     }
     FenwickTree<long long> fen(n);
-    HeavyLightDecomposition hld(CSRGraph(n, edges));
+    HeavyLightDecomposition hld(CSRTree(n, edges));
     for (auto e: edges) {
         fen.add(hld.edge(e.from, e.to), e.weight);
     }

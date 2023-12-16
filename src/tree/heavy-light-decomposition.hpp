@@ -6,6 +6,8 @@
 #include <utility>
 #include <vector>
 
+#include "tree/internal-tree-concepts.hpp"
+
 namespace nono {
 
 //  brief:
@@ -16,7 +18,7 @@ namespace nono {
 //  - 任意のパスがO(log N)の直線パスに分解できるので,
 //  - FenwickTree, SegmentTreeなどを用いることで、
 //  - 木のパスクエリにO((logN) ^ 2)で回答可能.
-template <class GraphType>
+template <internal::Tree TreeType>
 class HeavyLightDecomposition {
     static constexpr int NONE = -1;
 
@@ -26,7 +28,7 @@ class HeavyLightDecomposition {
     //
     //  complexity:
     //  - O(N)
-    HeavyLightDecomposition(const GraphType& graph, int root = 0)
+    HeavyLightDecomposition(const TreeType& graph, int root = 0)
         : graph_(graph),
           parent_(graph_.size(), NONE),
           head_(graph_.size(), NONE),
@@ -143,7 +145,7 @@ class HeavyLightDecomposition {
         finish_[u] = now;
     }
 
-    GraphType graph_;
+    TreeType graph_;
 
     //  parent_[i]: 頂点iの親頂点
     std::vector<int> parent_;
