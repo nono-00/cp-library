@@ -27,7 +27,7 @@ concept WeightedIndexedEdge = internal::WeightedEdge<E> && internal::IndexedEdge
 
 template <class G>
 concept Graph = internal::Edge<typename G::EdgeType> && requires(G g) { 
-    std::ranges::random_access_range<decltype(g[std::declval<int>()])>;
+    requires std::ranges::random_access_range<decltype(g[std::declval<int>()])>;
     g.size(); 
 };
 

@@ -104,4 +104,7 @@ class Modint {
     unsigned long long value_;
 };
 
+using Modint998244353 = Modint<998244353>;
+using Modint1000000007 = Modint<1000000007>;
+
 }  //  namespace nono

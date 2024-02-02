@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <utility>
 #include <vector>
@@ -55,7 +56,7 @@ class UndoUnionFind {
         if (-data_[lhs] < -data_[rhs]) {
             std::swap(lhs, rhs);
         }
-        history_.emplace_back(lhs, rhs, data_[rhs]);
+        historys_.emplace_back(lhs, rhs, data_[rhs]);
         if (lhs == rhs) return false;
         data_[lhs] += data_[rhs];
         data_[rhs] = lhs;
@@ -68,11 +69,13 @@ class UndoUnionFind {
     //  complexity:
     //  - O(1)
     void undo() {
-        assert(!history_.empty());
-        auto history = history_.back();
-        history_.pop_back();
-        data_[history.rhs] = history.size;
-        data_[history.lhs] -= history.size;
+        assert(!historys_.empty());
+        auto [lhs, rhs, data] = historys_.back();
+        historys_.pop_back();
+        if (lhs != rhs) {
+            data_[rhs] = data;
+            data_[lhs] -= data;
+        }
     }
 
     //  brief:
@@ -127,7 +130,7 @@ class UndoUnionFind {
     //  - `data[i] < 0` ならば `i` を代表元とする連結成分の大きさ
     //  - `data[i] >= 0` ならば `i` の属する連結成分の代表元
     std::vector<int> data_;
-    std::vector<History> history_;
+    std::vector<History> historys_;
 };
 
 }  //  namespace nono
