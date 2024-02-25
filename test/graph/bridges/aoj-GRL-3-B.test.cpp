@@ -5,32 +5,26 @@
 #include <vector>
 
 #include "nono/graph/bridges.hpp"
-#include "nono/graph/csr-graph.hpp"
-#include "nono/graph/edge.hpp"
+#include "nono/graph/base.hpp"
 
 namespace nono {
 
 void solve() {
     int n, m;
     std::cin >> n >> m;
-    std::vector<Edge<int>> edges;
+    std::vector<Edge> edges;
     edges.reserve(m);
     for (int i = 0; i < m; i++) {
         int u, v;
         std::cin >> u >> v;
         if (u > v) std::swap(u, v);
-        edges.emplace_back(u, v, 1, i);
-        edges.emplace_back(v, u, 1, i);
+        edges.emplace_back(u, v);
     }
-    CSRGraph graph(n, edges);
+    auto graph = to_undirected_graph(n, edges);
 
     std::vector<std::pair<int, int>> ans;
-    for (const auto& edge: bridges(graph)) {
-        if (edge.from < edge.to) {
-            ans.emplace_back(edge.from, edge.to);
-        } else {
-            ans.emplace_back(edge.to, edge.from);
-        }
+    for (auto i: bridges(graph)) {
+        ans.emplace_back(edges[i].from, edges[i].to);
     }
     std::sort(ans.begin(), ans.end());
     for (auto [s, t]: ans) {

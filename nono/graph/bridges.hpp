@@ -1,54 +1,43 @@
 #pragma once
 
 #include <algorithm>
+#include <cassert>
 #include <vector>
 
-#include "graph/internal-graph-concepts.hpp"
+#include "nono/graph/base.hpp"
 
 namespace nono {
 
-//  brief:
-//  - 橋列挙
+//  橋列挙
 //
-//  complexity:
-//  - O(V + E)
+//  無向グラフでないと壊れる
+//  非連結、非単純グラフでも動くはず
 //
-//  param:
-//  - `graph`: 無向グラフ. 連結非連結は問わない.
-//
-//  return:
-//  - 橋となる辺の配列
-//
-//  note:
-//  - 非単純グラフでも動く（はず）
-//  - edgeにindexを持たせないと壊れる
-//  - 橋: その辺を取り除くとグラフが非連結となるような辺.
-template <internal::IndexedGraph GraphType>
-auto bridges(const GraphType& graph) {
-    using EdgeType = GraphType::EdgeType;
+//  橋: その辺を取り除くとグラフが非連結となるような辺.
+template <class T>
+std::vector<int> bridges(const Graph<T>& graph) {
+    assert(graph.is_undirected());
     constexpr int NONE = -1;
-
     int n = graph.size();
     std::vector<int> order(n, NONE);
-    std::vector<int> low(n);
-    std::vector<EdgeType> result;
-    int now = 0;
+    std::vector<int> result;
 
-    auto dfs = [&](const auto& self, int u, int edge_id) -> void {
-        order[u] = now++;
-        low[u] = order[u];
-        for (const auto& edge: graph[u]) {
-            if (edge.id == edge_id) continue;
-            if (order[edge.to] == NONE) {
-                self(self, edge.to, edge.id);
-                low[u] = std::min(low[u], low[edge.to]);
-                if (order[u] < low[edge.to]) {
-                    result.push_back(edge);
+    int now = 0;
+    auto dfs = [&](const auto& self, int u, int edge_id) -> int {
+        int lowlink = order[u] = now++;
+        for (const auto& e: graph[u]) {
+            if (e.id == edge_id) continue;
+            if (order[e.to] == NONE) {
+                auto adj_low = self(self, e.to, e.id);
+                lowlink = std::min(adj_low, lowlink);
+                if (order[u] < adj_low) {
+                    result.push_back(e.id);
                 }
             } else {
-                low[u] = std::min(low[u], order[edge.to]);
+                lowlink = std::min(lowlink, order[e.to]);
             }
         }
+        return lowlink;
     };
 
     for (int i = 0; i < n; i++) {
