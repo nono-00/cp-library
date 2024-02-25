@@ -12,6 +12,9 @@ namespace nono {
 
 namespace internal {
 
+//  kruskal()の結果
+//
+//  edge_idは使う辺のid
 template <class T>
 class KruskalResult {
   public:
@@ -33,6 +36,7 @@ class KruskalResult {
 }  //  namespace internal
 
 //  最小全域木のコスト、使用する辺を取得する
+//  連結グラフでないと壊れる
 //
 //  `UnionFind`に依存
 //
