@@ -4,24 +4,18 @@
 #include <queue>
 #include <vector>
 
-#include "nono/graph/internal-graph-concepts.hpp"
+#include "nono/graph/base.hpp"
 
 namespace nono {
 
-//  brief:
-//  - bfs
+//  幅優先探索
 //
-//  complexity:
-//  - O(V + E)
-//
-//  return:
-//  - 到達不可能な頂点は `-INF`
-template <internal::WeightedGraph GraphType>
-auto bfs(const GraphType& graph, int source) {
-    using T = GraphType::EdgeType::WeightType;
-    constexpr int INF = std::numeric_limits<T>::min();
+//  到達できない頂点の値はstd::numeric_limits<T>::min()
+template <class T>
+std::vector<T> bfs(const Graph<T>& graph, int source) {
+    constexpr T NONE = std::numeric_limits<T>::min();
 
-    std::vector<T> dist(graph.size(), INF);
+    std::vector<T> dist(graph.size(), NONE);
     dist[source] = 0;
     std::queue<int> que;
     que.push(source);
@@ -29,10 +23,10 @@ auto bfs(const GraphType& graph, int source) {
     while (!que.empty()) {
         int u = que.front();
         que.pop();
-        for (const auto& edge: graph[u]) {
-            if (dist[edge.to] == INF) {
-                dist[edge.to] = dist[u] + edge.weight;
-                que.push(edge.to);
+        for (const auto& e: graph[u]) {
+            if (dist[e.to] == NONE) {
+                dist[e.to] = dist[u] + e.weight;
+                que.push(e.to);
             }
         }
     }

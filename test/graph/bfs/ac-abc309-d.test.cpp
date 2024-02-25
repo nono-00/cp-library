@@ -4,16 +4,15 @@
 #include <iostream>
 #include <vector>
 
+#include "nono/graph/base.hpp"
 #include "nono/graph/bfs.hpp"
-#include "nono/graph/csr-graph.hpp"
-#include "nono/graph/edge.hpp"
 
 namespace nono {
 
 void solve() {
     int n1, n2, m;
     std::cin >> n1 >> n2 >> m;
-    std::vector<Edge<int>> edges;
+    std::vector<Edge> edges;
     edges.reserve(m);
     for (int i = 0; i < m; i++) {
         int u, v;
@@ -22,8 +21,7 @@ void solve() {
         v--;
         edges.emplace_back(u, v);
     }
-    CSRGraph graph(n1 + n2, edges);
-
+    auto graph = to_directed_graph(n1 + n2, edges);
     auto dist1 = bfs(graph, 0);
     auto dist2 = bfs(graph, n1 + n2 - 1);
     std::cout << *std::max_element(dist1.begin(), dist1.begin() + n1)
