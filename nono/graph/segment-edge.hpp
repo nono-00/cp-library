@@ -3,7 +3,7 @@
 #include <utility>
 #include <vector>
 
-#include "graph/base.hpp"
+#include "nono/graph/base.hpp"
 
 namespace nono {
 
