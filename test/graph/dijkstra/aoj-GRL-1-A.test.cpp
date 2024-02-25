@@ -3,18 +3,15 @@
 #include <limits>
 #include <vector>
 
-#include "nono/graph/csr-graph.hpp"
+#include "nono/graph/base.hpp"
 #include "nono/graph/dijkstra.hpp"
-#include "nono/graph/edge.hpp"
 
 namespace nono {
 
 void solve() {
-    constexpr long long INF = std::numeric_limits<long long>::max();
-
     int n, m, s;
     std::cin >> n >> m >> s;
-    std::vector<Edge<long long>> edges;
+    std::vector<WeightedEdge<long long>> edges;
     edges.reserve(m);
     for (int i = 0; i < m; i++) {
         int a, b;
@@ -22,13 +19,13 @@ void solve() {
         std::cin >> a >> b >> c;
         edges.emplace_back(a, b, c);
     }
-    CSRGraph graph(n, edges);
-
-    for (auto dist: dijkstra(graph, s)) {
-        if (dist == INF) {
-            std::cout << "INF" << std::endl;
+    auto graph = to_directed_graph(n, edges);
+    auto result = dijkstra(graph, s);
+    for (int i = 0; i < n; i++) {
+        if (result.invalid(i)) {
+            std::cout << "INF" << '\n';
         } else {
-            std::cout << dist << std::endl;
+            std::cout << result.dist(i) << '\n';
         }
     }
 }
