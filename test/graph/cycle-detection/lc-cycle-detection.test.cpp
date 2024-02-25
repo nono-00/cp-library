@@ -2,32 +2,32 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/csr-graph.hpp"
 #include "nono/graph/cycle-detection.hpp"
-#include "nono/graph/edge.hpp"
+#include "nono/graph/base.hpp"
 
 namespace nono {
 
 void solve() {
     int n, m;
     std::cin >> n >> m;
-    std::vector<Edge<int>> edges;
+    std::vector<Edge> edges;
     edges.reserve(m);
     for (int i = 0; i < m; i++) {
         int u, v;
         std::cin >> u >> v;
-        edges.emplace_back(u, v, 1, i);
+        edges.emplace_back(u, v);
     }
-    CSRGraph graph(n, edges);
+    auto graph = to_directed_graph(n, edges);
+    auto result = cycle_detection(graph);
 
-    auto cycle = cycle_detection(graph);
-
-    if (cycle.empty()) {
+    if (!result.has_cycle()) {
         std::cout << -1 << std::endl;
     } else {
-        std::cout << cycle.size() << std::endl;
-        for (const auto& e: cycle) {
-            std::cout << e.id << std::endl;
+        auto eid = result.edge_id();
+        int len = eid.size();
+        std::cout << len << std::endl;
+        for (int i = 0; i < len; i++) {
+            std::cout << eid[i] << '\n';
         }
     }
 }
