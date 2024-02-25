@@ -4,10 +4,15 @@
 #include <cassert>
 #include <vector>
 
-#include "graph/base.hpp"
+#include "nono/graph/base.hpp"
 
 namespace nono {
 
+//  関節点列挙
+//
+//  無向グラフでないと壊れる
+//  頂点番号の昇順で返す
+//  非連結、非単純グラフでも動くはず
 template <class T>
 std::vector<int> articulation_points(const Graph<T>& graph) {
     assert(graph.is_undirected());
@@ -39,11 +44,17 @@ std::vector<int> articulation_points(const Graph<T>& graph) {
         }
     }
     std::vector<int> result;
-    for (int i = 0; i < n; i++) {
-        if (parent[i] == NONE) {
-            if (children[i] >= 2) result.push_back(i);
-        } else if (lowlink[i] >= order[i]) {
-            result.push_back(i);
+    for (int u = 0; u < n; u++) {
+        if (parent[u] == NONE) {
+            if (children[u] >= 2) result.push_back(u);
+        } else {
+            for (const auto& e: graph[u]) {
+                if (parent[e.to] != u) continue;
+                if (order[u] <= lowlink[e.to]) {
+                    result.push_back(u);
+                    break;
+                }
+            }
         }
     }
     return result;
