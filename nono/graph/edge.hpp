@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graph/internal-graph-concepts.hpp"
+#include "nono/graph/internal-graph-concepts.hpp"
 
 namespace nono {
 

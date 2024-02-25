@@ -4,8 +4,8 @@
 #include <ranges>
 #include <vector>
 
-#include "graph/edge.hpp"
-#include "graph/internal-graph-concepts.hpp"
+#include "nono/graph/edge.hpp"
+#include "nono/graph/internal-graph-concepts.hpp"
 
 namespace nono {
 

@@ -3,9 +3,9 @@
 #include <cassert>
 #include <vector>
 
-#include "graph/csr-graph.hpp"
-#include "graph/edge.hpp"
-#include "tree/internal-tree-concepts.hpp"
+#include "nono/graph/csr-graph.hpp"
+#include "nono/graph/edge.hpp"
+#include "nono/tree/internal-tree-concepts.hpp"
 
 namespace nono {
 
@@ -18,9 +18,7 @@ template <internal::Edge E>
 class CSRTree: public CSRGraph<E> {
   public:
     CSRTree() = default;
-    CSRTree(int vertex_size, const std::vector<E>& edges, int root = 0)
-        : CSRGraph<E>(vertex_size, edges),
-          root_(root) {}
+    CSRTree(int vertex_size, const std::vector<E>& edges, int root = 0): CSRGraph<E>(vertex_size, edges), root_(root) {}
 
     int root() const {
         return root_;

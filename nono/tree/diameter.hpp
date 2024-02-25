@@ -5,9 +5,9 @@
 #include <utility>
 #include <vector>
 
-#include "graph/bfs.hpp"
-#include "graph/internal-graph-concepts.hpp"
-#include "tree/internal-tree-concepts.hpp"
+#include "nono/graph/bfs.hpp"
+#include "nono/graph/internal-graph-concepts.hpp"
+#include "nono/tree/internal-tree-concepts.hpp"
 
 namespace nono {
 

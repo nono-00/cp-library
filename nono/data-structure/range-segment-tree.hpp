@@ -5,8 +5,8 @@
 #include <utility>
 #include <vector>
 
-#include "data-structure/segment-tree.hpp"
-#include "utility/compressor.hpp"
+#include "nono/data-structure/segment-tree.hpp"
+#include "nono/utility/compressor.hpp"
 
 namespace nono {
 

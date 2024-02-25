@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
-#include "string/lcp-array.hpp"
-#include "string/suffix-array.hpp"
+#include "nono/string/lcp-array.hpp"
+#include "nono/string/suffix-array.hpp"
 
 namespace nono {
 

@@ -3,9 +3,9 @@
 #include <cassert>
 #include <vector>
 
-#include "graph/edge.hpp"
-#include "graph/graph.hpp"
-#include "tree/internal-tree-concepts.hpp"
+#include "nono/graph/edge.hpp"
+#include "nono/graph/graph.hpp"
+#include "nono/tree/internal-tree-concepts.hpp"
 
 namespace nono {
 

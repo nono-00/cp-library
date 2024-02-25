@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "data-structure/fenwick-tree.hpp"
-#include "utility/compressor.hpp"
+#include "nono/data-structure/fenwick-tree.hpp"
+#include "nono/utility/compressor.hpp"
 
 namespace nono {
 

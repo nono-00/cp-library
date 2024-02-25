@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "string/suffix-array.hpp"
+#include "nono/string/suffix-array.hpp"
 
 namespace nono {
 

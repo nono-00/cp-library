@@ -6,7 +6,7 @@
 #include <utility>
 #include <vector>
 
-#include "graph/internal-graph-concepts.hpp"
+#include "nono/graph/internal-graph-concepts.hpp"
 
 namespace nono {
 

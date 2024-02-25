@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "tree/internal-tree-concepts.hpp"
+#include "nono/tree/internal-tree-concepts.hpp"
 
 namespace nono {
 
