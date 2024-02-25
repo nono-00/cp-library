@@ -9,7 +9,7 @@ namespace nono {
 //
 //  tparam:
 //  - `T`: 重みの型
-template <class T = int>
+template <class T = void>
 struct Edge {
     using WeightType = T;
 
