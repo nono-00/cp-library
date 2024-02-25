@@ -2,10 +2,9 @@
 
 #include <functional>
 #include <memory>
-#include <numeric>
 #include <type_traits>
 
-#include "data-structure/dynamic-segment-tree.hpp"
+#include "nono/data-structure/dynamic-segment-tree.hpp"
 
 namespace nono {
 

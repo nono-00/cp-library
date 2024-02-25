@@ -1,9 +1,8 @@
 #pragma once
 
-#include <vector>
 #include <cassert>
 
-#include "data-structure/fenwick-tree.hpp"
+#include "nono/data-structure/fenwick-tree.hpp"
 
 namespace nono {
 
