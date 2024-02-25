@@ -7,33 +7,29 @@
 
 namespace nono {
 
-//  グラフの辺を表す基本的な情報を保持する構造体
 //  直接利用することは少ない
-//  aliasとしてEdge, WeightedEdgeがあるのでそちらの利用を推奨
+//  aliasとしてEdge, WeightedEdgeがあるのでそちらを使うこと
 template <class T>
 struct EdgeBase {
-    int from;  //  辺の始点
-    int to;    //  辺の終点
-    T weight;  //  辺の重み
+    int from;
+    int to;
+    T weight;
     EdgeBase() {}
     EdgeBase(int from, int to, T weight = 1): from(from), to(to), weight(weight) {}
 };
 
-//  重みを持たない辺の型
-//  便宜上intを持たせている
 using Edge = EdgeBase<int>;
-//  任意の型の重みを持つ辺の型
 template <class T>
 using WeightedEdge = EdgeBase<T>;
 
-//  グラフを表すクラス
+//  グラフ構造体
+//  CSR方式で隣接リストを保持している
 template <class T>
 class Graph {
-    //  グラフの辺を表す内部構造体
     struct Edge {
-        int to;    //  辺の終点
-        T weight;  //  辺の重み
-        int id;    //  辺の識別子
+        int to;
+        T weight;
+        int id;
     };
 
     using iterator = std::vector<Edge>::iterator;
@@ -85,9 +81,9 @@ class Graph {
         }
     }
 
-    int n_;                    //  グラフの頂点数
-    std::vector<int> indptr_;  //  隣接リストのインデックス
-    std::vector<Edge> edges_;  //  エッジのリスト
+    int n_;
+    std::vector<int> indptr_;
+    std::vector<Edge> edges_;
 };
 
 //  無向グラフを作成する関数
