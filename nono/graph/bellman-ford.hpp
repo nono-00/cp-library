@@ -9,17 +9,20 @@
 
 namespace nono {
 
+namespace internal {
+
 //  bellman-fordの結果を表す型
-//
-//  コンストラクタはprivateなので呼び出せないようになっている
 template <class T>
 class BellmanFordResult {
   public:
     static constexpr T UNREACHABLE = std::numeric_limits<T>::max();
     static constexpr T INVALID = std::numeric_limits<T>::min();
 
-    template <class U>
-    friend BellmanFordResult<U> bellman_ford(int n, const std::vector<EdgeBase<U>>& edges, int source);
+    BellmanFordResult(int source, std::vector<T> dist, std::vector<int> parent, bool has_negative_cycle)
+        : source_(source),
+          dist_(std::move(dist)),
+          parent_(std::move(parent)),
+          has_negative_cycle_(has_negative_cycle) {}
 
     //  source -> destの最短距離
     T dist(int dest) const {
@@ -57,25 +60,21 @@ class BellmanFordResult {
     }
 
   private:
-    BellmanFordResult(int source, std::vector<T>&& dist, std::vector<int>&& parent, bool has_negative_cycle)
-        : source_(source),
-          dist_(dist),
-          parent_(parent),
-          has_negative_cycle_(has_negative_cycle) {}
-
     int source_;
     std::vector<T> dist_;
     std::vector<int> parent_;
     bool has_negative_cycle_;
 };
 
+}  //  namespace internal
+
 //  負辺ありの単一始点最短経路問題を解く
 //
 //  最短距離が確定しない頂点はstd::numeric_limits<T>::min()
 //  辿り着けない頂点はstd::numeric_limits<T>::max()
 template <class T>
-BellmanFordResult<T> bellman_ford(int n, const std::vector<EdgeBase<T>>& edges, int source) {
-    using Result = BellmanFordResult<T>;
+internal::BellmanFordResult<T> bellman_ford(int n, const std::vector<EdgeBase<T>>& edges, int source) {
+    using Result = internal::BellmanFordResult<T>;
     constexpr T INF = std::numeric_limits<T>::max();
     assert(0 <= source && source < n);
     std::vector<T> dist(n, Result::UNREACHABLE);
