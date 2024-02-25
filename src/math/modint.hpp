@@ -5,8 +5,8 @@ namespace nono {
 
 namespace internal {
 
-constexpr bool is_prime(unsigned long long n) {
-    for (unsigned long long i = 2; i * i <= n; i++) {
+constexpr bool is_prime(int n) {
+    for (int i = 2; i * i <= n; i++) {
         if (n % i == 0) return false;
     }
     return true;
@@ -14,12 +14,12 @@ constexpr bool is_prime(unsigned long long n) {
 
 }  //  namespace internal
 
-template <unsigned long long MOD = 998244353>
+template <int MOD = 998244353>
 class Modint {
   public:
     static_assert(internal::is_prime(MOD));
 
-    constexpr Modint(unsigned long long value = 0): value_(value % MOD) {}
+    constexpr Modint(long long value = 0): value_(((value % MOD) + MOD) % MOD) {}
 
     constexpr Modint pow(long long exp) const {
         Modint result(1);
@@ -39,12 +39,7 @@ class Modint {
         return pow(MOD - 2);
     }
 
-    void set(unsigned long long value) {
-        if (value >= MOD) value %= MOD;
-        value_ = value;
-    }
-
-    unsigned long long get() const {
+    int get() const {
         return value_;
     }
 
@@ -59,14 +54,13 @@ class Modint {
     }
 
     constexpr Modint& operator-=(const Modint other) {
-        this->value_ += MOD - other.value_;
-        if (this->value_ >= MOD) this->value_ -= MOD;
+        this->value_ -= other.value_;
+        if (this->value_ < 0) this->value_ += MOD;
         return *this;
     }
 
     constexpr Modint& operator*=(const Modint other) {
-        this->value_ *= other.value_;
-        if (this->value_ >= MOD) this->value_ %= MOD;
+        this->set(static_cast<long long>(this->value_) * other.value_);
         return *this;
     }
 
@@ -89,7 +83,7 @@ class Modint {
     }
 
     friend std::istream& operator>>(std::istream& stream, Modint& mint) {
-        unsigned long long value;
+        long long value;
         stream >> value;
         mint.set(value);
         return stream;
@@ -101,7 +95,11 @@ class Modint {
     }
 
   private:
-    unsigned long long value_;
+    constexpr void set(long long value) {
+        value_ = ((value % MOD) + MOD) % MOD;
+    }
+
+    int value_;
 };
 
 using Modint998244353 = Modint<998244353>;
