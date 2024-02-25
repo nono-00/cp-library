@@ -33,12 +33,14 @@ class BellmanFordResult {
     //  source -> destの最短経路
     //
     //  dist(dest)と違って辿り着けない/距離が確定しない頂点に対して
-    //  呼び足すと壊れる
+    //  呼び足すと空の配列を返す
     //
     //  source -> ... -> ... -> dest順
     std::vector<int> path(int dest) const {
         assert(0 <= dest && dest < dist_.size());
-        assert(!invalid(dest));
+        if (invalid(dest)) {
+            return {};
+        }
         std::vector<int> result;
         while (true) {
             result.push_back(dest);
