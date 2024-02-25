@@ -2,37 +2,31 @@
 #define PROBLEM "https://atcoder.jp/contests/abc137/tasks/abc137_e"
 #include <algorithm>
 #include <iostream>
-#include <limits>
 #include <vector>
 
+#include "nono/graph/base.hpp"
 #include "nono/graph/bellman-ford.hpp"
-#include "nono/graph/csr-graph.hpp"
-#include "nono/graph/edge.hpp"
 
 namespace nono {
 
 void solve() {
-    constexpr long long INF = std::numeric_limits<long long>::max();
-
     int n, m, p;
     std::cin >> n >> m >> p;
-    std::vector<Edge<long long>> edges(m);
+    std::vector<WeightedEdge<long long>> edges(m);
     for (int i = 0; i < m; i++) {
         int u, v;
         long long w;
         std::cin >> u >> v >> w;
         u--;
         v--;
-        edges[i] = Edge(u, v, w);
+        edges.emplace_back(u, v, p - w);
     }
-    CSRGraph graph(n, edges);
+    auto result = bellman_ford(n, edges, 0);
 
-    auto dist = bellman_ford(graph, 0);
-
-    if (dist[n - 1] == -INF) {
+    if (result.invalid(n - 1)) {
         std::cout << -1 << std::endl;
     } else {
-        std::cout << std::max(0LL, -dist[n - 1]) << std::endl;
+        std::cout << std::max(0LL, -result.dist(n - 1)) << std::endl;
     }
 }
 
