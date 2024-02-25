@@ -55,6 +55,12 @@ class Graph {
     int size() const {
         return n_;
     }
+    bool is_directed() const {
+        return directed_;
+    }
+    bool is_undirected() const {
+        return !is_directed();
+    }
 
   private:
     //  コンストラクタ
@@ -63,7 +69,8 @@ class Graph {
     Graph(int n, const std::vector<EdgeBase<T>>& edges, bool directed)
         : n_(n),
           indptr_(n + 1),
-          edges_(directed ? edges.size() : 2 * edges.size()) {
+          edges_(directed ? edges.size() : 2 * edges.size()),
+          directed_(directed) {
         for (const auto& edge: edges) {
             assert(0 <= edge.from && edge.from < n_);
             assert(0 <= edge.to && edge.to < n_);
@@ -84,6 +91,7 @@ class Graph {
     int n_;
     std::vector<int> indptr_;
     std::vector<Edge> edges_;
+    bool directed_;
 };
 
 //  無向グラフを作成する関数
