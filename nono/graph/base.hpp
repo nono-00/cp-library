@@ -26,14 +26,14 @@ using WeightedEdge = EdgeBase<T>;
 //  CSR方式で隣接リストを保持している
 template <class T>
 class Graph {
-    struct Edge {
+    struct Edge_ {
         int to;
         T weight;
         int id;
     };
 
-    using iterator = std::vector<Edge>::iterator;
-    using const_iterator = std::vector<Edge>::const_iterator;
+    using iterator = std::vector<Edge_>::iterator;
+    using const_iterator = std::vector<Edge_>::const_iterator;
     using subrange = std::ranges::subrange<iterator, iterator>;
     using const_subrange = std::ranges::subrange<const_iterator, const_iterator>;
 
@@ -83,14 +83,14 @@ class Graph {
         auto index = indptr_;
         for (int i = 0; i < std::ssize(edges); i++) {
             const auto& edge = edges[i];
-            edges_[index[edge.from]++] = Edge(edge.to, edge.weight, i);
-            if (!directed) edges_[index[edge.to]++] = Edge(edge.from, edge.weight, i);
+            edges_[index[edge.from]++] = Edge_(edge.to, edge.weight, i);
+            if (!directed) edges_[index[edge.to]++] = Edge_(edge.from, edge.weight, i);
         }
     }
 
     int n_;
     std::vector<int> indptr_;
-    std::vector<Edge> edges_;
+    std::vector<Edge_> edges_;
     bool directed_;
 };
 
