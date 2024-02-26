@@ -41,7 +41,7 @@ void solve() {
             for (auto&& [l, r]: hld.vertices_for_path(u, v)) {
                 ans += fen.sum(l, r);
             }
-            std::cout << ans << std::endl;
+            std::cout << ans << '\n';
         }
     }
 }
