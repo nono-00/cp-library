@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cassert>
 #include <vector>
 
 #include "nono/graph/base.hpp"
@@ -23,6 +24,7 @@ namespace nono {
 //  - Tarjan's algorithmを使用している.
 template <class T>
 std::vector<std::vector<int>> strongly_connected_components(const Graph<T>& graph) {
+    assert(graph.is_directed());
     constexpr int NONE = -1;
 
     int n = graph.size();
