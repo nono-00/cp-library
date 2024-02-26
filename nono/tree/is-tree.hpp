@@ -7,8 +7,6 @@
 
 namespace nono {
 
-namespace tree {
-
 //  brief:
 //  - 木かどうか判定する
 template <class T>
@@ -22,14 +20,12 @@ bool is_tree(const Graph<T>& graph) {
         for (const auto& e: graph[u]) {
             if (e.id == eid) continue;
             if (used[e.to]) return false;
-            if (!self(self, e.to, u)) return false;
+            if (!self(self, e.to, e.id)) return false;
         }
         return true;
     };
-    if (!dfs(dfs, graph.root(), NONE)) return false;
+    if (!dfs(dfs, 0, NONE)) return false;
     return std::ranges::all_of(used, [](int f) { return f == 1; });
 }
-
-}  //  namespace tree
 
 }  //  namespace nono
