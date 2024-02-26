@@ -1,29 +1,31 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/tree_diameter"
 #include <iostream>
+#include <vector>
 
-#include "nono/graph/edge.hpp"
+#include "nono/graph/base.hpp"
 #include "nono/tree/diameter.hpp"
-#include "nono/tree/tree.hpp"
 
 namespace nono {
 
 void solve() {
     int n;
     std::cin >> n;
-    Tree<Edge<long long>> graph(n);
+    std::vector<WeightedEdge<long long>> edges;
+    edges.reserve(n - 1);
     for (int i = 0; i + 1 < n; i++) {
         int u, v;
         long long w;
         std::cin >> u >> v >> w;
-        graph.add_edge(Edge(u, v, w));
-        graph.add_edge(Edge(v, u, w));
+        edges.emplace_back(u, v, w);
     }
-    const auto info = diameter(graph);
-    std::cout << info.dist << ' ' << info.path.size() + 1 << '\n';
-    for (const auto& e: info.path) {
-        std::cout << e.from << ' ';
+    const auto graph = to_undirected_graph(n, edges);
+    assert(is_tree(graph));
+    const auto result = diameter(graph);
+    const auto vid = result.vertex_id();
+    std::cout << result.dist() << ' ' << vid.size() << '\n';
+    for (int i = 0; i < std::ssize(vid); i++) {
+        std::cout << vid[i] << (i + 1 == std::ssize(vid) ? '\n' : ' ');
     }
-    std::cout << info.endpoints[1] << '\n';
 }
 
 }  //  namespace nono
