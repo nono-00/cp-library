@@ -2,9 +2,23 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/data-structure/range-fenwick-tree.hpp"
+#include "nono/data-structure/fenwick-range-tree.hpp"
 
 namespace nono {
+
+template <class T>
+struct Add {
+    using value_type = T;
+    static T op(T lhs, T rhs) {
+        return lhs + rhs;
+    }
+    static T e() {
+        return T(0);
+    }
+    static T inv(T elem) {
+        return -elem;
+    }
+};
 
 void solve() {
     int n, q;
@@ -20,15 +34,15 @@ void solve() {
         points.emplace_back(x, y);
         weight.push_back(w);
     }
-    RangeFenwickTree<long long, int, int> fen(points);
+    FenwickRangeTree<Add<long long>, int> fen(points);
     for (int i = 0; i < n; i++) {
         auto [x, y] = points[i];
-        fen.add(x, y, weight[i]);
+        fen.apply(x, y, weight[i]);
     }
     while (q--) {
         int l, d, r, u;
         std::cin >> l >> d >> r >> u;
-        std::cout << fen.sum(l, d, r, u) << '\n';
+        std::cout << fen.prod(l, d, r, u) << '\n';
     }
 }
 }  //  namespace nono
