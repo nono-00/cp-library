@@ -13,6 +13,7 @@ namespace nono {
 
 namespace internal {
 
+//  diameter(graph)の結果
 template <class T>
 class DiameterResult {
   public:
@@ -22,18 +23,24 @@ class DiameterResult {
           vertex_id_(std::move(vertex_id)),
           edge_id_(std::move(edge_id)) {}
 
+    //  直径の長さ
     T dist() const {
         return dist_;
     }
 
+    //  直径の端点
     std::array<int, 2> endpoints() const {
         return endpoints_;
     }
 
+    //  直径のパス 頂点
+    //  endpoints[0] -> ... -> ... -> endpoints[1]
     std::vector<int> vertex_id() const {
         return vertex_id_;
     }
 
+    //  直径のパス 辺
+    //  v[0] -> e[0] -> v[1] -> e[1] -> ... -> e[n - 2] -> v[n - 1]
     std::vector<int> edge_id() const {
         return edge_id_;
     }
@@ -47,16 +54,8 @@ class DiameterResult {
 
 }  //  namespace internal
 
-//  brief:
-//  - 木の直径を求める
-//
-//  return:
-//  - 木の直径の距離、両端点、パス
-//  - パスはendpoints[0]からendpoints[1]へのパス
-//
-//  note:
-//  - 重み付きグラフに対してのみ動く
-//  - 重みなしならedge.weight = 1としておく
+//  木の直径を求める
+//  木でないと壊れる
 template <class T>
 internal::DiameterResult<T> diameter(const Graph<T>& graph) {
     assert(is_tree(graph));
@@ -65,7 +64,7 @@ internal::DiameterResult<T> diameter(const Graph<T>& graph) {
 
     std::vector<int> parent(graph.size());
     std::vector<int> parent_edge(graph.size());
-    auto dfs = [&](auto self, int u, int p) -> std::pair<T, int> {
+    auto dfs = [&](auto&& self, int u, int p) -> std::pair<T, int> {
         parent[u] = p;
         std::pair<T, int> res = {0, u};
         for (const auto& e: graph[u]) {
@@ -79,7 +78,6 @@ internal::DiameterResult<T> diameter(const Graph<T>& graph) {
     };
     std::pair<T, int> p1 = dfs(dfs, 0, NONE);
     std::pair<T, int> p2 = dfs(dfs, p1.second, NONE);
-
     const T dist = p2.first;
     std::array<int, 2> endpoints = {p2.second, p1.second};
     std::vector<int> vertex_id, edge_id;
