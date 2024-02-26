@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/data-structure/fenwick-tree.hpp"
 #include "nono/graph/base.hpp"
 #include "nono/tree/heavy-light-decomposition.hpp"
 
@@ -18,7 +17,6 @@ void solve() {
         std::cin >> p;
         edges.emplace_back(p, i);
     }
-    FenwickTree<long long> fen(n);
     HeavyLightDecomposition hld(to_undirected_graph(n, edges));
 
     while (q--) {
