@@ -3,8 +3,7 @@
 #include <vector>
 
 #include "nono/data-structure/fenwick-tree.hpp"
-#include "nono/graph/edge.hpp"
-#include "nono/tree/csr-tree.hpp"
+#include "nono/graph/base.hpp"
 #include "nono/tree/heavy-light-decomposition.hpp"
 
 namespace nono {
@@ -14,7 +13,7 @@ void solve() {
     std::cin >> n >> q;
     std::vector<long long> a(n);
     for (int i = 0; i < n; i++) std::cin >> a[i];
-    std::vector<Edge<int>> edges;
+    std::vector<Edge> edges;
     edges.reserve(n - 1);
     for (int i = 1; i < n; i++) {
         int p;
@@ -22,7 +21,7 @@ void solve() {
         edges.emplace_back(p, i);
     }
     FenwickTree<long long> fen(n);
-    HeavyLightDecomposition hld(CSRTree(n, edges));
+    HeavyLightDecomposition hld(to_undirected_graph(n, edges));
     for (int i = 0; i < n; i++) {
         fen.add(hld.vertex(i), a[i]);
     }
@@ -38,9 +37,8 @@ void solve() {
         } else {
             int u;
             std::cin >> u;
-            auto [l, r] = hld.subtree(u);
-            long long ans = fen.sum(l, r);
-            std::cout << ans << std::endl;
+            auto [l, r] = hld.vertices_for_subtree(u);
+            std::cout << fen.sum(l, r) << std::endl;
         }
     }
 }

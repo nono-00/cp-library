@@ -5,159 +5,134 @@
 #include <utility>
 #include <vector>
 
-#include "nono/tree/internal-tree-concepts.hpp"
+#include "nono/graph/base.hpp"
+#include "nono/tree/is-tree.hpp"
 
 namespace nono {
 
-//  brief:
-//  - 重軽分解
-//
-//  details:
-//  - 木をパスに分解することによって列に変換する
-//  - 任意のパスがO(log N)の直線パスに分解できるので,
-//  - FenwickTree, SegmentTreeなどを用いることで、
-//  - 木のパスクエリにO((logN) ^ 2)で回答可能.
-template <internal::Tree TreeType>
+template <class T>
 class HeavyLightDecomposition {
     static constexpr int NONE = -1;
+    using Point = int;
+    using Interval = std::pair<int, int>;
+    using Intervals = std::vector<std::pair<int, int>>;
 
   public:
-    //  brief:
-    //  - コンストラクタ
-    //
-    //  complexity:
-    //  - O(N)
-    HeavyLightDecomposition(const TreeType& graph, int root = 0)
-        : graph_(graph),
-          parent_(graph_.size(), NONE),
-          head_(graph_.size(), NONE),
-          size_(graph_.size(), NONE),
-          depth_(graph_.size(), NONE),
-          discover_(graph_.size(), NONE),
-          finish_(graph_.size(), NONE) {
-        dfs_size(root);
-        int now = 0;
-        head_[root] = root;
-        depth_[root] = 0;
-        dfs_hld(now, root);
+    HeavyLightDecomposition(Graph<T> graph)
+        : graph_(std::move(graph)),
+          n_(graph_.size()),
+          depth_(n_),
+          parent_(n_, NONE),
+          head_(n_),
+          in_(n_),
+          out_(n_) {
+        assert(is_tree(graph_));
+        set_heavy_edge(0, NONE);
+        dfs(0, NONE, 0);
     }
 
-    //  brief:
-    //  - 辺(u, v)に対応するindexを取得
-    //
-    //  complexity:
-    //  - O(1)
-    int edge(int u, int v) {
-        if (depth_[u] > depth_[v]) {
-            return discover_[u];
-        } else {
-            return discover_[v];
-        }
-    }
-
-    //  brief:
-    //  - 頂点uに対応するindexを取得
-    int vertex(int u) {
-        return discover_[u];
-    }
-
-    //  brief:
-    //  - 頂点u, vの最近共通祖先を取得する
-    //
-    //  complexity:
-    //  - O(log N)
     int lowest_common_ancester(int u, int v) {
+        assert(0 <= u && u < n_);
+        assert(0 <= v && v < n_);
         while (head_[u] != head_[v]) {
-            if (depth_[head_[u]] > depth_[head_[v]]) std::swap(u, v);
+            if (in_[u] > in_[v]) std::swap(u, v);
             v = parent_[head_[v]];
         }
         return (depth_[u] < depth_[v] ? u : v);
     }
 
-    //  brief:
-    //  - 頂点uを根とする部分木の頂点集合に対応する
-    //  - 区間を取得する
-    std::pair<int, int> subtree(int u) {
-        return {discover_[u], finish_[u]};
+    int distance(int u, int v) {
+        return depth_[u] + depth_[v] - 2 * depth_[lowest_common_ancester(u, v)];
     }
 
-    //  brief:
-    //  - (u, v)パスを複数のパスに分解する
-    //
-    //  complexity:
-    //  - O(log N)
-    //
-    //  note:
-    //  - パスの辺に対応する区間が得られる //  - 頂点を得たい場合はvertec(lca(u, v))も加える
-    std::vector<std::pair<int, int>> path(int u, int v) {
-        std::vector<std::pair<int, int>> result;
-        while (head_[u] != head_[v]) {
-            if (depth_[head_[u]] > depth_[head_[v]]) std::swap(u, v);
-            assert(discover_[head_[v]] < discover_[v] + 1);
-            result.emplace_back(discover_[head_[v]], discover_[v] + 1);
-            assert(head_[parent_[head_[v]]] != head_[v]);
-            v = parent_[head_[v]];
-            assert(v != NONE);
-        }
-        if (u != v) {
-            if (depth_[u] > depth_[v]) std::swap(u, v);
-            assert(depth_[v] - depth_[u] == discover_[v] - discover_[u]);
-            result.emplace_back(discover_[u] + 1, discover_[v] + 1);
-        }
-        return result;
+    Point vertex(int v) {
+        return in_[v];
+    }
+
+    Point edge(int u, int v) {
+        if (depth_[u] > depth_[v]) std::swap(u, v);
+        assert(parent_[v] == u);
+        return in_[v];
+    }
+
+    Interval vertices_for_subtree(int u) {
+        return subtree(u, true);
+    }
+
+    Interval edges_for_subtree(int u) {
+        return subtree(u, false);
+    }
+
+    Intervals vertices_for_path(int u, int v) {
+        return path(u, v, true);
+    }
+
+    Intervals edges_for_path(int u, int v) {
+        return path(u, v, false);
     }
 
   private:
-    void dfs_size(int u, int p = NONE) {
-        size_[u] = 1;
-        int max_size = NONE;
-        int max_child = NONE;
-        for (int i = 0; const auto& e: graph_[u]) {
-            if (e.to != p) {
-                dfs_size(e.to, u);
-                size_[u] += size_[e.to];
-                if (max_size < size_[e.to]) {
-                    max_size = size_[e.to];
-                    max_child = i;
-                }
+    int set_heavy_edge(int u, int p) {
+        int size_sum = 1;
+        int max_size = 0;
+        int max_size_i = 0;
+        auto&& adj = graph_[u];
+        for (int i = 0; i < std::ssize(adj); i++) {
+            const auto& e = adj[i];
+            if (e.to == p) continue;
+            int size = set_heavy_edge(e.to, u);
+            size_sum += size;
+            if (max_size < size) {
+                max_size = size;
+                max_size_i = i;
             }
-            i++;
         }
-        if (max_child != NONE && max_child != 0) {
-            std::swap(graph_[u][0], graph_[u][max_child]);
+        if (max_size_i != 0) {
+            std::swap(adj[0], adj[max_size_i]);
         }
+        return size_sum;
     }
 
-    void dfs_hld(int& now, int u, int p = NONE) {
-        assert(head_[u] != NONE);
-        assert(depth_[u] != NONE);
-        discover_[u] = now++;
-        for (int i = 0; const auto& e: graph_[u]) {
-            if (e.to != p) {
-                parent_[e.to] = u;
-                head_[e.to] = (i == 0 ? head_[u] : e.to);
-                depth_[e.to] = depth_[u] + 1;
-                dfs_hld(now, e.to, u);
-            }
-            i++;
+    int dfs(int u, int p, int now) {
+        parent_[u] = p;
+        in_[u] = now++;
+        bool heavy = true;
+        for (const auto& e: graph_[u]) {
+            if (e.to == p) continue;
+            head_[e.to] = (heavy ? head_[u] : e.to);
+            depth_[e.to] = depth_[u] + 1;
+            heavy = false;
+            now = dfs(e.to, u, now);
         }
-        finish_[u] = now;
+        out_[u] = now;
+        return now;
     }
 
-    TreeType graph_;
+    Interval subtree(int u, bool vertex) {
+        return vertex ? Interval(in_[u], out_[u]) : Interval(in_[u] + 1, out_[u]);
+    }
 
-    //  parent_[i]: 頂点iの親頂点
-    std::vector<int> parent_;
-    //  head_[i]: 頂点iが属している連結成分の中で最も根に近い頂点
-    std::vector<int> head_;
-    //  size_[i]: 頂点iを根とする部分木のサイズ
-    std::vector<int> size_;
-    //  depth_[i]: 頂点iの深さ
+    Intervals path(int u, int v, bool vertex) {
+        int l = lowest_common_ancester(u, v);
+        Intervals result;
+        for (auto w: {u, v}) {
+            while (head_[w] != head_[l]) {
+                result.emplace_back(in_[head_[w]], in_[w] + 1);
+                w = parent_[head_[w]];
+            }
+            result.emplace_back(in_[l] + 1, in_[w] + 1);
+        }
+        if (vertex) result.emplace_back(in_[l], in_[l] + 1);
+        return result;
+    }
+
+    Graph<T> graph_;
+    int n_;
     std::vector<int> depth_;
-    //  depth_[i]: 頂点iの行きがけ順
-    std::vector<int> discover_;
-    //  depth_[i]: 頂点iの探索が終わる時間
-    std::vector<int> finish_;
+    std::vector<int> parent_;
+    std::vector<int> head_;
+    std::vector<int> in_;
+    std::vector<int> out_;
 };
 
 }  //  namespace nono
