@@ -68,23 +68,23 @@ class Graph {
     //  to_undirected_graph, to_directed_graphを代わりに使用すること
     Graph(int n, const std::vector<EdgeBase<T>>& edges, bool directed)
         : n_(n),
-          indptr_(n + 1),
+          indptr_(n_ + 1),
           edges_(directed ? edges.size() : 2 * edges.size()),
           directed_(directed) {
-        for (const auto& edge: edges) {
-            assert(0 <= edge.from && edge.from < n_);
-            assert(0 <= edge.to && edge.to < n_);
-            indptr_[edge.from + 1]++;
-            if (!directed) indptr_[edge.to + 1]++;
+        for (const auto& e: edges) {
+            assert(0 <= e.from && e.from < n_);
+            assert(0 <= e.to && e.to < n_);
+            indptr_[e.from + 1]++;
+            if (!directed_) indptr_[e.to + 1]++;
         }
         for (int i = 0; i < n_; i++) {
             indptr_[i + 1] += indptr_[i];
         }
         auto index = indptr_;
         for (int i = 0; i < std::ssize(edges); i++) {
-            const auto& edge = edges[i];
-            edges_[index[edge.from]++] = Edge_(edge.to, edge.weight, i);
-            if (!directed) edges_[index[edge.to]++] = Edge_(edge.from, edge.weight, i);
+            const auto& e = edges[i];
+            edges_[index[e.from]++] = Edge_(e.to, e.weight, i);
+            if (!directed_) edges_[index[e.to]++] = Edge_(e.from, e.weight, i);
         }
     }
 
