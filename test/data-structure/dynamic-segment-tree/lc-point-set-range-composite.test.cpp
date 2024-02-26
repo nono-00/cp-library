@@ -6,7 +6,7 @@
 
 namespace nono {
 
-using mint = Modint<998244353>;
+using Mint = nono::Modint998244353;
 
 template <class T>
 struct Line {
@@ -14,10 +14,21 @@ struct Line {
     T constant;
 
     Line() = default;
-    Line(const T& slope, const T& constant): slope(slope), constant(constant) {}
+    Line(T slope, T constant): slope(slope), constant(constant) {}
 
-    T eval(const T& x) {
+    T eval(T x) {
         return x * slope + constant;
+    }
+};
+
+template <class T>
+struct Composite {
+    using value_type = Line<T>;
+    static value_type op(value_type lhs, value_type rhs) {
+        return Line<Mint>(lhs.slope * rhs.slope, rhs.slope * lhs.constant + rhs.constant);
+    }
+    static value_type e() {
+        return Line<Mint>(1, 0);
     }
 };
 
@@ -25,19 +36,12 @@ void solve() {
     using namespace nono;
     int n, q;
     std::cin >> n >> q;
-
-    auto op = [](const Line<mint>& lhs, const Line<mint>& rhs) -> Line<mint> {
-        return Line<mint>(lhs.slope * rhs.slope, rhs.slope * lhs.constant + rhs.constant);
-    };
-    auto e = []() -> Line<mint> {
-        return Line<mint>(1, 0);
-    };
-
-    DynamicSegmentTree<Line<mint>, op, e> segtree;
+    DynamicSegmentTree<Composite<Mint>> segtree;
+    using Data = Composite<Mint>::value_type;
     for (int i = 0; i < n; i++) {
         int a, b;
         std::cin >> a >> b;
-        segtree.set(i, Line<mint>(a, b));
+        segtree.set(i, Data(a, b));
     }
 
     while (q--) {
@@ -46,7 +50,7 @@ void solve() {
         if (t == 0) {
             int p, c, d;
             std::cin >> p >> c >> d;
-            segtree.set(p, Line<mint>(c, d));
+            segtree.set(p, Data(c, d));
         } else {
             int l, r, x;
             std::cin >> l >> r >> x;

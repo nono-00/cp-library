@@ -1,8 +1,8 @@
 #pragma once
 
-#include <functional>
+#include <cassert>
+#include <limits>
 #include <memory>
-#include <type_traits>
 
 #include "nono/data-structure/dynamic-segment-tree.hpp"
 
@@ -17,10 +17,9 @@ namespace nono {
 //  - `op`: 演算関数. 戻り値 `T`, 引数 `T, T` でなければならない.
 //  - `e`: 単位元を返す関数. 戻り値 `T`, 引数 `void` でなければならない.
 //  - `S`: 添字の型
-template <class T, auto op, auto e, class S = long long>
+template <class M, class S = int>
 class DynamicSegmentTree2D {
-    static_assert(std::is_convertible_v<decltype(op), std::function<T(T, T)>>
-                  && std::is_convertible_v<decltype(e), std::function<T()>>);
+    using T = M::value_type;
     struct Node;
     using NodePtr = std::unique_ptr<Node>;
     using isize = S;
@@ -68,17 +67,17 @@ class DynamicSegmentTree2D {
         Node(isize lb, isize ub): segtree(lb, ub), left(nullptr), right(nullptr) {}
 
         void update(isize w) {
-            T value = e();
+            T value = M::e();
             if (left) {
-                value = op(value, left->segtree.get(w));
+                value = M::op(value, left->segtree.get(w));
             }
             if (right) {
-                value = op(value, right->segtree.get(w));
+                value = M::op(value, right->segtree.get(w));
             }
             segtree.set(w, value);
         }
 
-        DynamicSegmentTree<T, op, e> segtree;
+        DynamicSegmentTree<M, S> segtree;
         NodePtr left;
         NodePtr right;
     };
@@ -124,7 +123,7 @@ class DynamicSegmentTree2D {
     }
 
     T all_prod() {
-        return root_ ? root_->segtree.all_prod() : e();
+        return root_ ? root_->segtree.all_prod() : M::e();
     }
 
   private:
@@ -150,7 +149,7 @@ class DynamicSegmentTree2D {
     T get(NodePtr& node, Bounds h, isize pos_h, isize pos_w) {
         assert(h.inside(pos_h));
         if (!node) {
-            return e();
+            return M::e();
         }
         if (h.upper == h.lower + 1) {
             return node->segtree.get(pos_w);
@@ -166,18 +165,18 @@ class DynamicSegmentTree2D {
 
     T prod(NodePtr& node, Bounds h, Bounds target_h, Bounds target_w) {
         if (!node) {
-            return e();
+            return M::e();
         }
         if (target_h.contain(h)) {
             assert(target_h.lower <= h.lower && h.upper <= target_h.upper);
             return node->segtree.prod(target_w.lower, target_w.upper);
         } else if (target_h.intersect(h)) {
             isize med = h.median();
-            return op(prod(node->left, Bounds(h.lower, med), target_h, target_w),
-                      prod(node->right, Bounds(med, h.upper), target_h, target_w));
+            return M::op(prod(node->left, Bounds(h.lower, med), target_h, target_w),
+                         prod(node->right, Bounds(med, h.upper), target_h, target_w));
         } else {
             assert(target_h.upper <= h.lower || h.upper <= target_h.lower);
-            return e();
+            return M::e();
         }
     }
 

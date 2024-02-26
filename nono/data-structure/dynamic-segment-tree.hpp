@@ -1,10 +1,8 @@
 #pragma once
 
 #include <cassert>
-#include <functional>
 #include <limits>
 #include <memory>
-#include <type_traits>
 
 namespace nono {
 
@@ -17,27 +15,24 @@ namespace nono {
 //  - `op`: 演算関数. 戻り値 `T`, 引数 `T, T` でなければならない.
 //  - `e`: 単位元を返す関数. 戻り値 `T`, 引数 `void` でなければならない.
 //  - `S`: 添字の型
-template <class T, auto op, auto e, class S = long long>
+template <class M, class S = int>
 class DynamicSegmentTree {
-    static_assert(std::is_convertible_v<decltype(op), std::function<T(T, T)>>
-                  && std::is_convertible_v<decltype(e), std::function<T()>>);
+    using T = M::value_type;
     struct Node;
     using NodePtr = std::unique_ptr<Node>;
     using isize = S;
 
     struct Node {
-        Node(): left(nullptr), right(nullptr) {
-            value = e();
-        }
+        Node(): left(nullptr), right(nullptr), value(M::e()) {}
         Node(T value): value(value), left(nullptr), right(nullptr) {}
 
         void update() {
-            value = e();
+            value = M::e();
             if (left) {
-                value = op(value, left->value);
+                value = M::op(value, left->value);
             }
             if (right) {
-                value = op(value, right->value);
+                value = M::op(value, right->value);
             }
         }
 
@@ -87,7 +82,7 @@ class DynamicSegmentTree {
     //  complexity:
     //  - O(1)
     T all_prod() {
-        return root_ ? root_->value : e();
+        return root_ ? root_->value : M::e();
     }
 
   private:
@@ -125,7 +120,7 @@ class DynamicSegmentTree {
     T get(NodePtr& node, isize lb, isize ub, isize pos) {
         assert(lb <= pos && pos < ub);
         if (!node) {
-            return e();
+            return M::e();
         }
         if (ub == lb + 1) {
             assert(pos == lb);
@@ -142,12 +137,12 @@ class DynamicSegmentTree {
 
     T prod(NodePtr& node, isize lb, isize ub, isize target_lb, isize target_ub) {
         if (!node || target_ub <= lb || ub <= target_lb) {
-            return e();
+            return M::e();
         } else if (target_lb <= lb && ub <= target_ub) {
             return node->value;
         } else {
             isize m = median(lb, ub);
-            return op(prod(node->left, lb, m, target_lb, target_ub), prod(node->right, m, ub, target_lb, target_ub));
+            return M::op(prod(node->left, lb, m, target_lb, target_ub), prod(node->right, m, ub, target_lb, target_ub));
         }
     }
 

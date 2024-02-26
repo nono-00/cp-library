@@ -6,16 +6,21 @@
 
 namespace nono {
 
+template <class T>
+struct Add {
+    using value_type = T;
+    static T op(T lhs, T rhs) {
+        return lhs + rhs;
+    }
+    static T e() {
+        return 0;
+    }
+};
+
 void solve() {
     int n;
     std::cin >> n;
-    auto op = [](int lhs, int rhs) {
-        return lhs + rhs;
-    };
-    auto e = []() {
-        return 0;
-    };
-    DynamicSegmentTree2D<int, op, e> segtree(0, 1e5, 0, 1e5);
+    DynamicSegmentTree2D<Add<int>> segtree(0, 1e5, 0, 1e5);
     auto put = [&](int x1, int y1, int diff) {
         auto val = segtree.prod(x1, y1, x1 + 1, y1 + 1);
         segtree.set(x1, y1, val + diff);
