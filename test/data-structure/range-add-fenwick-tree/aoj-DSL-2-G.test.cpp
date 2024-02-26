@@ -5,13 +5,24 @@
 
 namespace nono {
 
-void solve() {
-    std::cin.tie(0)->sync_with_stdio(0);
+template <class T>
+struct Add {
+    using value_type = T;
+    static T op(T lhs, T rhs) {
+        return lhs + rhs;
+    }
+    static T e() {
+        return T(0);
+    }
+    static T inv(T elem) {
+        return -elem;
+    }
+};
 
+void solve() {
     int n, q;
     std::cin >> n >> q;
-    RangeAddFenwickTree<long long> fenwick(n);
-
+    RangeAddFenwickTree<Add<long long>> fenwick(n);
     while (q--) {
         int t;
         std::cin >> t;
@@ -19,12 +30,12 @@ void solve() {
             int l, r, x;
             std::cin >> l >> r >> x;
             l--;
-            fenwick.add(l, r, x);
+            fenwick.apply(l, r, x);
         } else {
             int l, r;
             std::cin >> l >> r;
             l--;
-            std::cout << fenwick.sum(l, r) << '\n';
+            std::cout << fenwick.prod(l, r) << '\n';
         }
     }
 }

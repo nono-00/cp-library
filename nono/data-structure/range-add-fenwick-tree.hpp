@@ -7,54 +7,66 @@
 namespace nono {
 
 //  brief:
-//  - 区間加算可能な `FenwickTree` 
+//  - 区間加算可能な `FenwickTree`
 //
-//  depend:
-//  - `FenwickTree`
-template <class T>
+//  すまん、壊れている
+//  困った
+template <class G>
 class RangeAddFenwickTree {
-public:
-    RangeAddFenwickTree(int size = 0): size_(size), data1_(size), data2_(size) {}
+    using T = G::value_type;
+
+  public:
+    RangeAddFenwickTree(int n = 0): n_(n), data1_(n), data2_(n) {}
 
     //  brief:
     //  - `i` 番目の要素に `v` を加算する
-    void add(int i, const T& v) {
-        assert(0 <= i && i < size_);
-        data1_.add(i, v);
+    void apply(int i, T elem) {
+        assert(0 <= i && i < n_);
+        data1_.apply(i, elem);
     }
 
     //  brief:
     //  - 区間 `[l, r)` の各要素に `v` を加算する
-    void add(int l, int r, const T& v) {
-        assert(0 <= l && l <= size_);
-        assert(l <= r && r <= size_);
-        data1_.add(l, -l * v);
-        data2_.add(l, v);
-        if (r < size_) {
-            data1_.add(r, r * v);
-            data2_.add(r, -v);
+    void apply(int left, int right, T elem) {
+        assert(0 <= left && left <= n_);
+        assert(left <= right && right <= n_);
+        data1_.apply(left, G::inv(left) * elem);
+        data2_.apply(left, elem);
+        if (right < n_) {
+            data1_.apply(right, right * elem);
+            data2_.apply(right, G::inv(elem));
         }
+    }
+
+    void set(int i, T elem) {
+        assert(0 <= i && i < n_);
+        apply(i, G::op(elem, G::inv(get(i))));
     }
 
     //  brief:
     //  - 区間 `[0, i)` の要素の総和を取得する
-    T sum(int i) const {
-        assert(0 <= i && i <= size_);
-        return data1_.sum(i) + i * data2_.sum(i);
+    T prod(int i) const {
+        assert(0 <= i && i <= n_);
+        return G::op(data1_.prod(i), i * data2_.prod(i));
     }
 
     //  brief:
-    //  - 区間 `[l, r)` の要素の総和を取得する 
-    T sum(int l, int r) const {
-        assert(0 <= l && l <= size_);
-        assert(l <= r && r <= size_);
-        return sum(r) - sum(l);
+    //  - 区間 `[l, r)` の要素の総和を取得する
+    T prod(int left, int right) const {
+        assert(0 <= left && left <= n_);
+        assert(left <= right && right <= n_);
+        return G::op(prod(right), G::inv(prod(left)));
     }
 
-private:
-    int size_;
-    FenwickTree<T> data1_;
-    FenwickTree<T> data2_;
+    T get(int i) const {
+        assert(0 <= i && i < n_);
+        return prod(i, i + 1);
+    }
+
+  private:
+    int n_;
+    FenwickTree<G> data1_;
+    FenwickTree<G> data2_;
 };
 
 }  //  namespace nono
