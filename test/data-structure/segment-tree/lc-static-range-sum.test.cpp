@@ -6,12 +6,23 @@
 
 namespace nono {
 
+template <class T>
+struct Add {
+    using value_type = T;
+    static value_type op(value_type lhs, value_type rhs) {
+        return lhs + rhs;
+    }
+    static value_type e() {
+        return 0;
+    }
+};
+
 void solve() {
     int n, q;
     std::cin >> n >> q;
     std::vector<long long> a(n);
     for (int i = 0; i < n; i++) std::cin >> a[i];
-    SumSegmentTree<long long> segtree(a);
+    const SegmentTree<Add<long long>> segtree(a);
     while (q--) {
         int l, r;
         std::cin >> l >> r;

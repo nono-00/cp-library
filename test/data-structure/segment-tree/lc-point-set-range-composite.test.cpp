@@ -15,10 +15,21 @@ struct Line {
     T constant;
 
     Line() = default;
-    Line(const T& slope, const T& constant): slope(slope), constant(constant) {}
+    Line(T slope, T constant): slope(slope), constant(constant) {}
 
-    T eval(const T& x) {
+    T eval(T x) {
         return x * slope + constant;
+    }
+};
+
+template <class T>
+struct Composite {
+    using value_type = Line<T>;
+    static value_type op(value_type lhs, value_type rhs) {
+        return Line<Mint>(lhs.slope * rhs.slope, rhs.slope * lhs.constant + rhs.constant);
+    }
+    static value_type e() {
+        return Line<Mint>(1, 0);
     }
 };
 
@@ -32,15 +43,8 @@ void solve() {
         lines[i] = Line<Mint>(a, b);
     }
 
-    auto op = [](const Line<Mint>& lhs, const Line<Mint>& rhs) -> Line<Mint> {
-        return Line<Mint>(lhs.slope * rhs.slope, rhs.slope * lhs.constant + rhs.constant);
-    };
-
-    auto e = []() -> Line<Mint> {
-        return Line<Mint>(1, 0);
-    };
-
-    SegmentTree<Line<Mint>, op, e> segtree(lines);
+    SegmentTree<Composite<Mint>> segtree(lines);
+    using Data = Composite<Mint>::value_type;
 
     while (q--) {
         int t;
@@ -48,7 +52,7 @@ void solve() {
         if (t == 0) {
             int p, c, d;
             std::cin >> p >> c >> d;
-            segtree.set(p, Line<Mint>(c, d));
+            segtree.set(p, Data(c, d));
         } else {
             int l, r, x;
             std::cin >> l >> r >> x;
