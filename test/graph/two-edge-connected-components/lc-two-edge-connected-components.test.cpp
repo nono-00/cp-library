@@ -2,8 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/csr-graph.hpp"
-#include "nono/graph/edge.hpp"
+#include "nono/graph/base.hpp"
 #include "nono/graph/two-edge-connected-components.hpp"
 
 namespace nono {
@@ -11,23 +10,22 @@ namespace nono {
 void solve() {
     int n, m;
     std::cin >> n >> m;
-    std::vector<Edge<int>> edges;
+    std::vector<Edge> edges;
     edges.reserve(m);
     for (int i = 0; i < m; i++) {
         int u, v;
         std::cin >> u >> v;
-        edges.emplace_back(u, v, 1, i);
-        edges.emplace_back(v, u, 1, i);
+        edges.emplace_back(u, v);
     }
-    const CSRGraph graph(n, edges);
+    const auto graph = to_undirected_graph(n, edges);
     const auto groups = two_edge_connected_components(graph);
     std::cout << groups.size() << '\n';
     for (const auto& group: groups) {
-        std::cout << group.size() << ' ';
-        for (int i = 0; auto v: group) {
-            std::cout << v << (i + 1 < (int)group.size() ? ' ' : '\n');
-            i++;
+        std::cout << group.size();
+        for (auto v: group) {
+            std::cout << ' ' << v;
         }
+        std::cout << '\n';
     }
 }
 
