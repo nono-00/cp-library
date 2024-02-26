@@ -1,4 +1,4 @@
-#define PROBLEM "https://judge.yosupo.jp/problem/vertex_add_subtree_sum"
+#define PROBLEM "https://judge.yosupo.jp/problem/lca"
 #include <iostream>
 #include <vector>
 
