@@ -8,6 +8,17 @@
 
 namespace nono {
 
+template <class T>
+struct Add {
+    using value_type = T;
+    static value_type op(value_type lhs, value_type rhs) {
+        return lhs + rhs;
+    }
+    static value_type e() {
+        return 0;
+    }
+};
+
 void solve() {
     int n;
     std::cin >> n;
@@ -26,11 +37,7 @@ void solve() {
     Compressor y(ys);
     int h = x.size();
     int w = y.size();
-    SegmentTree2D<int, [](int lhs, int rhs) { return lhs + rhs; },
-                  []() {
-        return 0;
-    }>
-        segtree(h, w);
+    SegmentTree2D<Add<int>> segtree(h, w);
 
     auto put = [&](int x1, int y1, int diff) {
         x1 = x.compress(x1);
