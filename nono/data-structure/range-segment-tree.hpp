@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cassert>
-#include <ranges>
 #include <utility>
 #include <vector>
 
@@ -10,8 +9,10 @@
 
 namespace nono {
 
-template <class T, auto op, auto e, class S>
+template <class M, class S>
 class RangeSegmentTree {
+    using T = M::value_type;
+
   public:
     //  brief:
     //  - コンストラクタ
@@ -60,12 +61,12 @@ class RangeSegmentTree {
         segtrees[i].set(Ys[i].compress(y), w);
         for (i >>= 1; i > 0; i >>= 1) {
             assert(Ys[i].contains(y));
-            T val = e();
+            T val = M::e();
             if (Ys[2 * i].contains(y)) {
-                val = op(val, segtrees[2 * i].get(Ys[2 * i].compress(y)));
+                val = M::op(val, segtrees[2 * i].get(Ys[2 * i].compress(y)));
             }
             if (Ys[2 * i + 1].contains(y)) {
-                val = op(val, segtrees[2 * i + 1].get(Ys[2 * i + 1].compress(y)));
+                val = M::op(val, segtrees[2 * i + 1].get(Ys[2 * i + 1].compress(y)));
             }
             segtrees[i].set(Ys[i].compress(y), val);
         }
@@ -92,28 +93,24 @@ class RangeSegmentTree {
     T prod(S x1, S y1, S x2, S y2) {
         int left = X.compress(x1);
         int right = X.compress(x2);
-        T res = e();
+        T res = M::e();
         for (left += X.size(), right += X.size(); left < right; left >>= 1, right >>= 1) {
             if (left & 1) {
-                res = op(res, segtrees[left].prod(Ys[left].compress(y1), Ys[left].compress(y2)));
+                res = M::op(res, segtrees[left].prod(Ys[left].compress(y1), Ys[left].compress(y2)));
                 left++;
             }
             if (right & 1) {
                 right--;
-                res = op(res, segtrees[right].prod(Ys[right].compress(y1), Ys[right].compress(y2)));
+                res = M::op(res, segtrees[right].prod(Ys[right].compress(y1), Ys[right].compress(y2)));
             }
         }
         return res;
     }
 
-    T all_prod() {
-        return segtrees[1].all_prod();
-    }
-
   private:
     Compressor<S> X;
     std::vector<Compressor<S>> Ys;
-    std::vector<SegmentTree<T, op, e>> segtrees;
+    std::vector<SegmentTree<M>> segtrees;
 };
 
 }  //  namespace nono

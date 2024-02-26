@@ -6,6 +6,17 @@
 
 namespace nono {
 
+template <class T>
+struct Add {
+    using value_type = T;
+    static T op(T lhs, T rhs) {
+        return lhs + rhs;
+    }
+    static T e() {
+        return 0;
+    }
+};
+
 void solve() {
     int n, q;
     std::cin >> n >> q;
@@ -20,13 +31,7 @@ void solve() {
         points.emplace_back(x, y);
         weight.push_back(w);
     }
-    auto op = [](long long lhs, long long rhs) {
-        return lhs + rhs;
-    };
-    auto e = []() -> long long {
-        return 0;
-    };
-    RangeSegmentTree<long long, op, e, int> segtree(points);
+    RangeSegmentTree<Add<long long>, int> segtree(points);
     for (int i = 0; i < n; i++) {
         auto [x, y] = points[i];
         segtree.set(x, y, segtree.get(x, y) + weight[i]);
