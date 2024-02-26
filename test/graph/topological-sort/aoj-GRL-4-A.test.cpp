@@ -2,8 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/csr-graph.hpp"
-#include "nono/graph/edge.hpp"
+#include "nono/graph/base.hpp"
 #include "nono/graph/topological-sort.hpp"
 
 namespace nono {
@@ -11,16 +10,14 @@ namespace nono {
 void solve() {
     int n, m;
     std::cin >> n >> m;
-    std::vector<Edge<int>> edges;
+    std::vector<Edge> edges;
     edges.reserve(m);
-
     for (int i = 0; i < m; i++) {
         int u, v;
         std::cin >> u >> v;
         edges.emplace_back(u, v);
     }
-
-    const CSRGraph graph(n, edges);
+    const auto graph = to_directed_graph(n, edges);
     auto toposort = topological_sort(graph);
     if ((int)toposort.size() == n) {
         std::cout << 0 << std::endl;
