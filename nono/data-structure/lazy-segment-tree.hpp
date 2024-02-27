@@ -109,10 +109,8 @@ class LazySegmentTree {
     void push(int i) {
         assert(0 <= i && i < n_);
         if (lazy_[i] != M::id()) {
-            data_[2 * i] = M::mapping(lazy_[i], data_[2 * i]);
-            if (2 * i < n_) lazy_[2 * i] = M::composition(lazy_[i], lazy_[2 * i]);
-            data_[2 * i + 1] = M::mapping(lazy_[i], data_[2 * i + 1]);
-            if (2 * i + 1 < n_) lazy_[2 * i + 1] = M::composition(lazy_[i], lazy_[2 * i + 1]);
+            eval(2 * i, lazy_[i]);
+            eval(2 * i + 1, lazy_[i]);
             lazy_[i] = M::id();
         }
     }

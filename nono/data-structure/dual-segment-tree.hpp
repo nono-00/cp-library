@@ -1,14 +1,9 @@
 #pragma once
 
-#include <bit>
 #include <cassert>
-#include <concepts>
-#include <functional>
-#include <type_traits>
 #include <vector>
 
 namespace nono {
-
 
 //  brief:
 //  - segment-tree. 一点更新, 範囲取得
@@ -23,106 +18,50 @@ namespace nono {
 //  note:
 //  - 作用が可換のときしか使えない
 //  - そうじゃないなら遅延セグ木で
-template <class T, auto e, class F, auto mapping, auto composition, auto id>
+template <class M>
 class DualSegmentTree {
-    static_assert(std::is_convertible_v<decltype(e), std::function<T()>>
-                  && std::is_convertible_v<decltype(mapping), std::function<T(F, T)>>
-                  && std::is_convertible_v<decltype(composition), std::function<F(F, F)>>
-                  && std::is_convertible_v<decltype(id), std::function<F()>>);
+    using T = M::value_type;
+    using F = M::func_type;
 
   public:
     DualSegmentTree() = default;
-    //  brief:
-    //  - コンストラクタ
-    //
-    //  complexity:
-    //  - O(n)
-    //
-    //  param:
-    //  - `size`: 元の配列のサイズ
-    DualSegmentTree(int size)
-        : input_size_(size),
-          data_size_(std::bit_ceil(static_cast<unsigned>(input_size_))),
-          data_(data_size_, e()),
-          lazy_(data_size_, id()) {}
+    DualSegmentTree(int n): n_(n), data_(n_, M::e()), lazy_(n_, M::id()) {}
+    DualSegmentTree(const std::vector<T>& data): n_(data.size()), data_(data_), lazy_(n_, M::id()) {}
 
-    //  brief:
-    //  - コンストラクタ. `vector` で初期化する
-    //
-    //  complexity:
-    //  - O(n)
-    //
-    //  param:
-    //  - `data`: 初期化する配列
-    DualSegmentTree(const std::vector<T>& data)
-        : input_size_(data.size()),
-          data_size_(std::bit_ceil(static_cast<unsigned>(input_size_))),
-          data_(data_size_, e()),
-          lazy_(data_size_, id()) {
-        std::copy(data.begin(), data.end(), data_.begin());
+    void apply(int i, F value) {
+        assert(0 <= i && i < n_);
+        i += n_;
+        eval(i, value);
     }
 
-    //  brief:
-    //  - pos番目をfで更新する
-    //
-    //  complexity:
-    //  - O(1)
-    void apply(int pos, F f) {
-        assert(0 <= pos && pos < input_size_);
-        data_[pos] = mapping(f, data_[pos]);
-    }
-
-    //  brief:
-    //  - [l, r)をfで更新する
-    //
-    //  complexity:
-    //  - O(logn)
-    void apply(int l, int r, F f) {
-        assert(0 <= l && l < input_size_);
-        assert(l <= r && r <= input_size_);
-        if (l & 1) {
-            data_[l] = mapping(f, data_[l]);
-            l++;
-        }
-        if (r & 1) {
-            r--;
-            data_[r] = mapping(f, data_[r]);
-        }
-        l = (l + data_size_) >> 1;
-        r = (r + data_size_) >> 1;
-        while (l < r) {
-            if (l & 1) {
-                lazy_[l] = composition(f, lazy_[l]);
-                l++;
-            }
-            if (r & 1) {
-                r--;
-                lazy_[r] = composition(f, lazy_[r]);
-            }
-            l >>= 1;
-            r >>= 1;
+    void apply(int left, int right, F value) {
+        assert(0 <= left && left <= n_);
+        assert(left <= right && right <= n_);
+        for (left += n_, right += n_; left < right; left >>= 1, right >>= 1) {
+            if (left & 1) eval(left++, value);
+            if (right & 1) eval(--right, value);
         }
     }
 
-    //  brief:
-    //  - pos番目の要素を取得する
-    //
-    //  complexity:
-    //  - O(logn)
-    T get(int pos) const {
-        assert(0 <= pos && pos < input_size_);
-        T res = data_[pos];
-        pos = (pos + data_size_) >> 1;
-        while (pos > 0) {
-            res = mapping(lazy_[pos], res);
-            pos >>= 1;
+    T get(int i) const {
+        assert(0 <= i && i < n_);
+        T result = data_[i];
+        for ((i += n_) >>= 1; i > 0; i >>= 1) {
+            result = M::mapping(lazy_[i], result);
         }
-        return res;
+        return result;
     }
 
   private:
-    int input_size_;
-    int data_size_;
+    void eval(int i, F value) {
+        if (i < n_) {
+            lazy_[i] = M::composition(value, lazy_[i]);
+        } else {
+            data_[i - n_] = M::mapping(value, data_[i - n_]);
+        }
+    }
+
+    int n_;
     std::vector<T> data_;
     std::vector<F> lazy_;
 };

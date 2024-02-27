@@ -14,34 +14,35 @@ struct Data {
     int value;
 };
 
-Data id() {
-    return {std::numeric_limits<int>::min(), std::numeric_limits<int>::max()};
-}
-
-Data mapping(Data f, Data v) {
-    if (f.timestamp < v.timestamp) {
-        return v;
-    } else {
-        return f;
+struct M {
+    using value_type = Data;
+    using func_type = Data;
+    static Data id() {
+        return {std::numeric_limits<int>::min(), std::numeric_limits<int>::max()};
     }
-}
-
-Data compsition(Data f, Data v) {
-    if (f.timestamp < v.timestamp) {
-        return v;
-    } else {
-        return f;
+    static Data mapping(Data f, Data v) {
+        if (f.timestamp < v.timestamp) {
+            return v;
+        } else {
+            return f;
+        }
     }
-}
-
-Data e() {
-    return {std::numeric_limits<int>::min(), std::numeric_limits<int>::max()};
-}
+    static Data composition(Data f, Data v) {
+        if (f.timestamp < v.timestamp) {
+            return v;
+        } else {
+            return f;
+        }
+    }
+    static Data e() {
+        return {std::numeric_limits<int>::min(), std::numeric_limits<int>::max()};
+    }
+};
 
 void solve() {
     int n, q;
     std::cin >> n >> q;
-    DualSegmentTree<Data, e, Data, mapping, compsition, id> segtree(n);
+    DualSegmentTree<M> segtree(n);
     for (int i = 0; i < q; i++) {
         int t;
         std::cin >> t;
