@@ -1,16 +1,27 @@
 #define PROBLEM "https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/1/DSL_1_B"
 #include <iostream>
-#include <limits>
 
 #include "nono/data-structure/potentialized-union-find.hpp"
 
 namespace nono {
 
+struct Add {
+    using value_type = int;
+    static value_type op(value_type lhs, value_type rhs) {
+        return lhs + rhs;
+    }
+    static value_type e() {
+        return 0;
+    }
+    static value_type inv(value_type value) {
+        return -value;
+    }
+};
+
 void solve() {
-    constexpr int INF = std::numeric_limits<int>::max();
     int n, q;
     std::cin >> n >> q;
-    PotentializedUnionFind<int> puf(n);
+    PotentializedUnionFind<Add> puf(n);
 
     while (q--) {
         int t;
@@ -23,10 +34,10 @@ void solve() {
             int x, y;
             std::cin >> x >> y;
             auto result = puf.potential(x, y);
-            if (result == INF) {
+            if (result.invalid()) {
                 std::cout << '?' << std::endl;
             } else {
-                std::cout << result << std::endl;
+                std::cout << result.potential() << std::endl;
             }
         }
     }

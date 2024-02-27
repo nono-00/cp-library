@@ -2,34 +2,49 @@
 
 #include <algorithm>
 #include <cassert>
-#include <limits>
 #include <vector>
 
 namespace nono {
 
 //  brief:
 //  - 連結成分を管理する
-template <class T>
+template <class G>
 class PotentializedUnionFind {
-    static constexpr T INF = std::numeric_limits<T>::max();
+    using T = G::value_type;
+
+    class Result_ {
+      public:
+        Result_() {}
+        Result_(T potential): potential_(potential), valid_(true) {}
+
+        bool invalid() const {
+            return !valid_;
+        }
+
+        T potential() const {
+            assert(valid_);
+            return potential_;
+        }
+
+      private:
+        T potential_ = G::e();
+        bool valid_ = false;
+    };
 
   public:
     using value_type = T;
 
     PotentializedUnionFind() = default;
-    PotentializedUnionFind(int size)
-        : size_(size),
-          data_(size, -1),
-          potential_(size) {}
+    PotentializedUnionFind(int n): n_(n), data_(n, -1), potential_(n, G::e()) {}
 
     //  brief:
     //  - 代表元を取得する
     int leader(int x) {
-        assert(0 <= x && x < size_);
+        assert(0 <= x && x < n_);
         if (data_[x] < 0) {
             return x;
         }
-        potential_[x] += potential(data_[x]);
+        potential_[x] = G::op(potential_[x], potential(data_[x]));
         return data_[x] = leader(data_[x]);
     }
 
@@ -41,18 +56,18 @@ class PotentializedUnionFind {
     //  - 頂点 `lhs`, `rhs` がすでに連結ならば `flase`
     //  - そうでないならば `true`
     bool merge(int lhs, int rhs, T diff) {
-        assert(0 <= lhs && lhs < size_);
-        assert(0 <= rhs && rhs < size_);
+        assert(0 <= lhs && lhs < n_);
+        assert(0 <= rhs && rhs < n_);
         if (same(lhs, rhs)) {
             return false;
         }
-        diff += potential(lhs) - potential(rhs);
+        diff = G::op(diff, G::op(potential(lhs), G::inv(potential(rhs))));
         lhs = leader(lhs);
         rhs = leader(rhs);
         //  size(lhs) > size(rhs)とする
         if (-data_[lhs] < -data_[lhs]) {
             std::swap(lhs, rhs);
-            diff = -diff;
+            diff = G::inv(diff);
         }
         data_[lhs] += data_[rhs];
         data_[rhs] = lhs;
@@ -64,7 +79,7 @@ class PotentializedUnionFind {
     //  brief:
     //  - `leader(x)` を基準とした `x` のポテンシャルを取得する
     T potential(int x) {
-        assert(0 <= x && x < size_);
+        assert(0 <= x && x < n_);
         leader(x);
         return potential_[x];
     }
@@ -75,35 +90,35 @@ class PotentializedUnionFind {
     //  return:
     //  - `lhs`, `rhs` が同じ連結成分に属しているのならば、上述のポテンシャル
     //  - そうでないならば `INF`
-    T potential(int lhs, int rhs) {
-        assert(0 <= lhs && lhs < size_);
-        assert(0 <= rhs && rhs < size_);
+    Result_ potential(int lhs, int rhs) {
+        assert(0 <= lhs && lhs < n_);
+        assert(0 <= rhs && rhs < n_);
         if (same(lhs, rhs)) {
-            return potential(rhs) - potential(lhs);
+            return Result_(G::op(potential(rhs), G::inv(potential(lhs))));
         } else {
-            return INF;
+            return Result_();
         }
     }
 
     //  brief:
     //  - 頂点 `lhs`, `rhs`が連結かどうか
     bool same(int lhs, int rhs) {
-        assert(0 <= lhs && lhs < size_);
-        assert(0 <= rhs && rhs < size_);
+        assert(0 <= lhs && lhs < n_);
+        assert(0 <= rhs && rhs < n_);
         return leader(lhs) == leader(rhs);
     }
 
     //  brief:
     //  - 頂点 `x` の属する連結成分の大きさを取得する
     int size(int x) {
-        assert(0 <= x && x < size_);
+        assert(0 <= x && x < n_);
         return -data_[leader(x)];
     }
 
     //  brief:
     //  - 頂点数を取得する
     int size() const {
-        return size_;
+        return n_;
     }
 
     //  brief:
@@ -115,27 +130,25 @@ class PotentializedUnionFind {
     //  see:
     //  - https://atcoder.github.io/ac-library/document_ja/dsu.html
     std::vector<std::vector<int>> groups() {
-        std::vector<int> leader_buf(size_), group_size(size_);
-        for (int i = 0; i < size_; i++) {
+        std::vector<int> leader_buf(n_), group_size(n_);
+        for (int i = 0; i < n_; i++) {
             leader_buf[i] = leader(i);
             group_size[leader_buf[i]]++;
         }
-        std::vector<std::vector<int>> result(size_);
-        for (int i = 0; i < size_; i++) {
+        std::vector<std::vector<int>> result(n_);
+        for (int i = 0; i < n_; i++) {
             result[i].reserve(group_size[i]);
         }
-        for (int i = 0; i < size_; i++) {
+        for (int i = 0; i < n_; i++) {
             result[leader_buf[i]].push_back(i);
         }
-        result.erase(std::remove_if(
-                         result.begin(), result.end(),
-                         [&](const std::vector<int>& v) { return v.empty(); }),
+        result.erase(std::remove_if(result.begin(), result.end(), [&](const std::vector<int>& v) { return v.empty(); }),
                      result.end());
         return result;
     }
 
   private:
-    int size_;
+    int n_;
     //  brief::
     //  - `data[i] < 0` ならば `i` を代表元とする連結成分の大きさ
     //  - `data[i] >= 0` ならば `i` の属する連結成分の代表元
