@@ -17,18 +17,20 @@ struct Data {
     }
 };
 
-Data e() {
-    return Data(1, 0);
-}
-
-Data op(Data lhs, Data rhs) {
-    return Data(lhs.coef * rhs.coef, lhs.coef * rhs.constant + lhs.constant);
-}
+struct M {
+    using value_type = Data;
+    static Data e() {
+        return Data(1, 0);
+    }
+    static Data op(Data rhs, Data lhs) {
+        return Data(lhs.coef * rhs.coef, lhs.coef * rhs.constant + lhs.constant);
+    }
+};
 
 void solve() {
     int q;
     std::cin >> q;
-    TwoStackDeque<Data, op, e> que;
+    TwoStackDeque<M> que;
     while (q--) {
         int t;
         std::cin >> t;
