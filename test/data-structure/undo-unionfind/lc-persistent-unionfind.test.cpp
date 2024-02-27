@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "nono/data-structure/undo-unionfind.hpp"
-#include "nono/graph/csr-graph.hpp"
+#include "nono/graph/base.hpp"
 
 namespace nono {
 
@@ -13,7 +13,7 @@ void solve() {
     int n, q;
     std::cin >> n >> q;
     std::vector<std::vector<std::tuple<int, int, int>>> query(q + 1);
-    std::vector<Edge<std::pair<int, int>>> edges;
+    std::vector<WeightedEdge<std::pair<int, int>>> edges;
     int count = 0;
     for (int i = 1; i <= q; i++) {
         int t, k, u, v;
@@ -27,7 +27,7 @@ void solve() {
         }
     }
     std::vector<int> ans(count);
-    CSRGraph graph(q + 1, edges);
+    auto graph = to_directed_graph(q + 1, edges);
     const int root = 0;
     UndoUnionFind uf(n);
 
