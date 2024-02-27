@@ -10,38 +10,38 @@ template <typename T>
 class Matrix {
   public:
     Matrix() = default;
-    Matrix(int row, int column): row_(row), column_(column), data_(row, std::vector<T>(column)) {}
-    Matrix(int row, int column, T elem): row_(row), column_(column), data_(row, std::vector<T>(column, elem)) {}
+    Matrix(int h, int w): h_(h), w_(w), data_(h, std::vector<T>(w)) {}
+    Matrix(int h, int w, T init): h_(h), w_(w), data_(h, std::vector<T>(w, init)) {}
     explicit Matrix(const std::vector<std::vector<T>>& data)
-        : row_(data.size()),
-          column_(data.front().size()),
+        : h_(data.size()),
+          w_(data.front().size()),
           data_(data) {
-        for (int i = 0; i < row_; i++) {
-            assert(static_cast<int>(data_[i].size()) == column_);
+        for (int i = 0; i < h_; i++) {
+            assert(static_cast<int>(data_[i].size()) == w_);
         }
     }
     Matrix(std::initializer_list<std::vector<T>> init): data_(init.begin(), init.end()) {
-        row_ = data_.size();
-        column_ = data_.front().size();
-        for (int i = 0; i < row_; i++) {
-            assert(static_cast<int>(data_[i].size()) == column_);
+        h_ = data_.size();
+        w_ = data_.front().size();
+        for (int i = 0; i < h_; i++) {
+            assert(static_cast<int>(data_[i].size()) == w_);
         }
     }
 
     const std::vector<T>& operator[](const int pos) const {
-        assert(0 <= pos && pos < row_);
+        assert(0 <= pos && pos < h_);
         return data_[pos];
     }
 
     std::vector<T>& operator[](const int pos) {
-        assert(0 <= pos && pos < row_);
+        assert(0 <= pos && pos < h_);
         return data_[pos];
     }
 
     //  スカラー演算
     Matrix& operator+=(const T rhs) {
-        for (int i = 0; i < row_; i++) {
-            for (int j = 0; j < column_; j++) {
+        for (int i = 0; i < h_; i++) {
+            for (int j = 0; j < w_; j++) {
                 data_[i][j] += rhs;
             }
         }
@@ -49,8 +49,8 @@ class Matrix {
     }
 
     Matrix& operator-=(const T rhs) {
-        for (int i = 0; i < row_; i++) {
-            for (int j = 0; j < column_; j++) {
+        for (int i = 0; i < h_; i++) {
+            for (int j = 0; j < w_; j++) {
                 data_[i][j] -= rhs;
             }
         }
@@ -58,8 +58,8 @@ class Matrix {
     }
 
     Matrix& operator*=(const T rhs) {
-        for (int i = 0; i < row_; i++) {
-            for (int j = 0; j < column_; j++) {
+        for (int i = 0; i < h_; i++) {
+            for (int j = 0; j < w_; j++) {
                 data_[i][j] *= rhs;
             }
         }
@@ -67,8 +67,8 @@ class Matrix {
     }
 
     Matrix& operator/=(const T rhs) {
-        for (int i = 0; i < row_; i++) {
-            for (int j = 0; j < column_; j++) {
+        for (int i = 0; i < h_; i++) {
+            for (int j = 0; j < w_; j++) {
                 data_[i][j] /= rhs;
             }
         }
@@ -102,9 +102,9 @@ class Matrix {
 
     //  行列演算
     Matrix& operator+=(const Matrix& rhs) {
-        assert(row_ == rhs.row_ && column_ == rhs.column_);
-        for (int i = 0; i < row_; i++) {
-            for (int j = 0; j < column_; j++) {
+        assert(h_ == rhs.h_ && w_ == rhs.w_);
+        for (int i = 0; i < h_; i++) {
+            for (int j = 0; j < w_; j++) {
                 data_[i][j] += rhs.data_[i][j];
             }
         }
@@ -112,9 +112,9 @@ class Matrix {
     }
 
     Matrix& operator-=(const Matrix& rhs) {
-        assert(row_ == rhs.row_ && column_ == rhs.column_);
-        for (int i = 0; i < row_; i++) {
-            for (int j = 0; j < column_; j++) {
+        assert(h_ == rhs.h_ && w_ == rhs.w_);
+        for (int i = 0; i < h_; i++) {
+            for (int j = 0; j < w_; j++) {
                 data_[i][j] -= rhs.data_[i][j];
             }
         }
@@ -122,17 +122,17 @@ class Matrix {
     }
 
     Matrix& operator*=(const Matrix& rhs) {
-        assert(column_ == rhs.row_);
-        std::vector<std::vector<T>> mat(row_, std::vector<T>(rhs.column_));
-        for (int i = 0; i < row_; i++) {
-            for (int k = 0; k < column_; k++) {
-                for (int j = 0; j < rhs.column_; j++) {
+        assert(w_ == rhs.h_);
+        std::vector<std::vector<T>> mat(h_, std::vector<T>(rhs.w_));
+        for (int i = 0; i < h_; i++) {
+            for (int k = 0; k < w_; k++) {
+                for (int j = 0; j < rhs.w_; j++) {
                     mat[i][j] += data_[i][k] * rhs.data_[k][j];
                 }
             }
         }
         data_ = std::move(mat);
-        column_ = rhs.column_;
+        w_ = rhs.w_;
         return *this;
     }
 
@@ -147,10 +147,10 @@ class Matrix {
     }
 
     [[nodiscard]] Matrix pow(long long exp) const {
-        assert(row_ == column_);
-        Matrix result(row_, column_);
+        assert(h_ == w_);
+        Matrix result(h_, w_);
         Matrix base(*this);
-        for (int i = 0; i < row_; i++) {
+        for (int i = 0; i < h_; i++) {
             result[i][i] = static_cast<T>(1);
         }
         while (exp > 0) {
@@ -163,36 +163,37 @@ class Matrix {
         return result;
     }
 
-    [[nodiscard]] Matrix rotate() {
-        std::vector<std::vector<T>> result(column_, std::vector<T>(row_));
-        for (int i = 0; i < row_; i++) {
-            for (int j = 0; j < column_; j++) {
-                result[j][row_ - i - 1] = data_[i][j];
+    // 多分時計周り
+    [[nodiscard]] Matrix rotate() const {
+        std::vector<std::vector<T>> result(w_, std::vector<T>(h_));
+        for (int i = 0; i < h_; i++) {
+            for (int j = 0; j < w_; j++) {
+                result[j][h_ - i - 1] = data_[i][j];
             }
         }
         return Matrix(result);
     }
 
-    [[nodiscard]] Matrix transpose() {
-        std::vector<std::vector<T>> result(column_, std::vector<T>(row_));
-        for (int i = 0; i < row_; i++) {
-            for (int j = 0; j < column_; j++) {
+    [[nodiscard]] Matrix transpose() const {
+        std::vector<std::vector<T>> result(w_, std::vector<T>(h_));
+        for (int i = 0; i < h_; i++) {
+            for (int j = 0; j < w_; j++) {
                 result[j][i] = data_[i][j];
             }
         }
         return Matrix(result);
     }
 
-    int row() {
-        return row_;
+    int row() const {
+        return h_;
     }
 
-    int column() {
-        return column_;
+    int column() const {
+        return w_;
     }
 
   private:
-    int row_, column_;
+    int h_, w_;
     std::vector<std::vector<T>> data_;
 };
 
