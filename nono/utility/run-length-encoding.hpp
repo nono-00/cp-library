@@ -1,27 +1,30 @@
 #pragma once
 
-#include <utility>
 #include <ranges>
 #include <vector>
 
 namespace nono {
 
-template <std::ranges::contiguous_range R>
-std::vector<std::pair<typename R::value_type, int>> run_length_encoding(const R& sequence) {
+namespace internal {
+
+template <class T>
+struct RLEPair {
+    T value;
+    int count;
+};
+
+}  //  namespace internal
+
+template <std::ranges::random_access_range R>
+std::vector<internal::RLEPair<typename R::value_type>> run_length_encoding(const R& sequence) {
     if (std::ranges::empty(sequence)) return {};
-    using T = typename R::value_type;
-    T prev = *std::ranges::begin(sequence);
-    int count = 0;
-    std::vector<std::pair<T, int>> result;
-    for (auto elem: sequence) {
-        if (elem != prev) {
-            result.emplace_back(prev, count);
-            prev = elem;
-            count = 0;
-        }
-        count++;
+    std::vector<internal::RLEPair<typename R::value_type>> result;
+    for (auto lit = std::ranges::begin(sequence); lit != std::ranges::end(sequence);) {
+        auto rit = lit;
+        while (rit != std::ranges::end(sequence) && *lit == *rit) rit++;
+        result.emplace_back(*lit, rit - lit);
+        lit = rit;
     }
-    result.emplace_back(prev, count);
     return result;
 }
 
