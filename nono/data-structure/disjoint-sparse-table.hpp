@@ -5,19 +5,6 @@
 
 namespace nono {
 
-//  - - - -*- - - -
-//  - -*- -|- -*- -
-//  -*-|-*-|-*-|-*-
-//
-//
-//  data[i][j]:
-//    000 001 | 010 011 | 100 101 | 110 111
-//
-//  prod(left, right)
-//      length = right - left
-//
-//
-
 template <class M>
 class DisjointSparseTable {
     using T = M::value_type;
@@ -45,8 +32,8 @@ class DisjointSparseTable {
     T prod(int left, int right) const {
         assert(0 <= left && left <= right);
         assert(left <= right && right <= n_);
-        const int log = std::bit_width(static_cast<unsigned>(right ^ left));
-        return M::op(data_[log][left], data_[log][right]);
+        const int i = std::bit_width(static_cast<unsigned>(right ^ left));
+        return M::op(data_[i][left], data_[i][right]);
     }
 
   private:
