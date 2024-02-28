@@ -53,7 +53,7 @@ void solve() {
         }
     }
 
-    RangeFenwickTree<Add<long long>, int> fen(points);
+    FenwickRangeTree<Add<long long>, int> fen(points);
     for (int i = 0; i < n; i++) {
         auto [x, y] = points[i];
         fen.apply(x, y, weight[i]);
