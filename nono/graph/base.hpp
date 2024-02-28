@@ -55,6 +55,9 @@ class Graph {
     int size() const {
         return n_;
     }
+    int edge_size() const {
+        return m_;
+    }
     bool is_directed() const {
         return directed_;
     }
@@ -68,6 +71,7 @@ class Graph {
     //  to_undirected_graph, to_directed_graphを代わりに使用すること
     Graph(int n, const std::vector<EdgeBase<T>>& edges, bool directed)
         : n_(n),
+          m_(edges.size()),
           indptr_(n_ + 1),
           edges_(directed ? edges.size() : 2 * edges.size()),
           directed_(directed) {
@@ -89,6 +93,7 @@ class Graph {
     }
 
     int n_;
+    int m_;
     std::vector<int> indptr_;
     std::vector<Edge_> edges_;
     bool directed_;
