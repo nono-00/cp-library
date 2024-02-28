@@ -11,6 +11,7 @@ class SparseTable {
     using T = M::value_type;
 
   public:
+    SparseTable() {}
     SparseTable(std::vector<T> data): n_(data.size()) {
         const int log = std::bit_width((unsigned)n_);
         data_.resize(log);
