@@ -8,6 +8,19 @@
 
 namespace nono {
 
+struct Add {
+    using value_type = long long;
+    static long long op(long long lhs, long rhs) {
+        return lhs + rhs;
+    }
+    static long long e() {
+        return 0;
+    }
+    static long long inv(long long value) {
+        return -value;
+    }
+};
+
 void solve() {
     int n, q;
     std::cin >> n >> q;
@@ -20,10 +33,10 @@ void solve() {
         std::cin >> u >> v;
         edges.emplace_back(u, v);
     }
-    FenwickTree<long long> fen(n);
+    FenwickTree<Add> fen(n);
     HeavyLightDecomposition hld(to_undirected_graph(n, edges));
     for (int i = 0; i < n; i++) {
-        fen.add(hld.vertex(i), a[i]);
+        fen.apply(hld.vertex(i), a[i]);
     }
     while (q--) {
         int t;
@@ -33,13 +46,13 @@ void solve() {
             long long x;
             std::cin >> p >> x;
             int e = hld.vertex(p);
-            fen.add(e, x);
+            fen.apply(e, x);
         } else {
             int u, v;
             std::cin >> u >> v;
             long long ans = 0;
             for (auto&& [l, r]: hld.vertices_for_path(u, v)) {
-                ans += fen.sum(l, r);
+                ans += fen.prod(l, r);
             }
             std::cout << ans << '\n';
         }
