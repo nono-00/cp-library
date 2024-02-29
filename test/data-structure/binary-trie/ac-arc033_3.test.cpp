@@ -1,6 +1,7 @@
 #define IGNORE
 #define PROBLEM "https://atcoder.jp/contests/arc033/tasks/arc033_3"
 
+#include <cassert>
 #include <iostream>
 
 #include "nono/data-structure/binary-trie.hpp"
@@ -21,12 +22,13 @@ void solve() {
             x--;
             auto ans = trie.kth_element(x);
             std::cout << ans << '\n';
+            assert(trie.lower_bound(ans) == (int)x);
             trie.erase(ans);
         }
     }
 }
 
-}
+}  //  namespace nono
 
 int main() {
     std::cin.tie(0)->sync_with_stdio(0);
