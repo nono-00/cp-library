@@ -29,7 +29,7 @@ class LazySegmentTree {
         assert(0 <= i && i < n_);
         i += n_;
         for (int j = log_; j > 0; j--) {
-            if ((i >> j) << j != i) push(i >> j);
+            push(i >> j);
         }
         data_[i] = value;
         for (int j = 1; j <= log_; j++) update(i >> j);
@@ -39,7 +39,7 @@ class LazySegmentTree {
         assert(0 <= i && i < n_);
         i += n_;
         for (int j = log_; j > 0; j--) {
-            if ((i >> j) << j != i) push(i >> j);
+            push(i >> j);
         }
         data_[i] = M::mapping(value, data_[i]);
         for (int j = 1; j <= log_; j++) update(i >> j);
@@ -90,7 +90,7 @@ class LazySegmentTree {
         assert(0 <= i && i < n_);
         i += n_;
         for (int j = log_; j > 0; j--) {
-            if ((i >> j) << j != i) push(i >> j);
+            push(i >> j);
         }
         return data_[i];
     }
