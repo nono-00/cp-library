@@ -47,6 +47,10 @@ class Modint {
         return lhs.value_ == rhs.value_;
     }
 
+    friend constexpr bool operator!=(const Modint lhs, const Modint rhs) {
+        return !(lhs.value_ == rhs.value_);
+    }
+
     constexpr Modint& operator+=(const Modint other) {
         this->value_ += other.value_;
         if (this->value_ >= MOD) this->value_ -= MOD;
