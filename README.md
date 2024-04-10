@@ -1,4 +1,4 @@
-# nono's cpp conpetitive library
+# nonolib
 
 ## 命名規則メモ
 - ファイル名 `kebab-case`
@@ -14,4 +14,6 @@
 - `using namespace std;`は基本的にしない
   - 使うならスコープに入れる
 - `namespace nono`に入れる
+- ドキュメントは書かない
+  - 代わりにコメントをたくさん入れる
 
