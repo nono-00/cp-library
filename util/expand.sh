@@ -12,10 +12,6 @@ cd ${CUR_DIR}
 
 input_file=${CUR_DIR}/$1
 
-echo ${CUR_DIR}
-echo ${BASE_DIR}
-echo ${input_file}
-
 if [ ! -f $input_file ]; then
     echo "Error: File '$input_file' does not exist."
     exit 1
