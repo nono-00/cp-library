@@ -1,11 +1,5 @@
+in
+out
+ans
 a.out
-expanded.cpp
 .expanded.cpp
-working/*
-atcoder/*
-bits/*
-!working/README.md
-!working/compile-all-test-file.sh
-!working/make-library-template.sh
-!working/.compile_check.sh
-!working/.template
