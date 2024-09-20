@@ -87,6 +87,7 @@ Undoが可能なUnionFind
 ### [cycle-detection](./graph/cycle-detection.md)
 サイクル検出. 無向, 有向, 単純, 非単純問わない.
 ### [dijkstra](./graph/dijkstra.md)
+負辺なしの単一始点最短経路問題を解く. \\( O(|E| \log |E|) \\)
 ### [kruskal](./graph/kruskal.md)
 ### [segment-edge](./graph/segment-edge.md)
 ### [strongly-connected-components](./graph/strongly-connected-components.md)

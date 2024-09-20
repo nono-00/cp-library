@@ -5,7 +5,7 @@
 #include <numeric>
 #include <vector>
 
-#include "nono/data-structure/union-find.hpp"
+#include "nono/ds/union-find.hpp"
 #include "nono/graph/base.hpp"
 
 namespace nono {
@@ -34,6 +34,8 @@ class KruskalResult {
 };
 
 }  //  namespace internal
+
+///  brief : 最小全域木を求める.
 
 //  最小全域木のコスト、使用する辺を取得する
 //  連結グラフでないと壊れる

@@ -58,6 +58,10 @@ class DijkstraResult {
         return dist_[dest] == UNREACHABLE;
     }
 
+    std::vector<T> raw() const {
+        return dist_;
+    }
+
   private:
     int source_;
     std::vector<T> dist_;
@@ -65,6 +69,8 @@ class DijkstraResult {
 };
 
 }  //  namespace internal
+
+///  brief : 負辺なしの単一始点最短経路問題を解く. \\( O(|E| \log |E|) \\)
 
 //  brief:
 //  - 負辺無し単一始点最短経路問題を解く
