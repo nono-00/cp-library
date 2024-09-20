@@ -1,8 +1,9 @@
 #pragma once
 
 #include <vector>
+#include <utility>
 
-#include "nono/data-structure/fenwick-tree.hpp"
+#include "nono/ds/fenwick-tree.hpp"
 #include "nono/utility/compressor.hpp"
 
 namespace nono {
@@ -21,10 +22,8 @@ namespace nono {
 //  depend:
 //  - fenwick tree
 //  - compressor
-template <class G, class U>
+template <class T, class Index>
 class FenwickRangeTree {
-    using T = G::value_type;
-
   public:
     //  brief:
     //  - コンストラクタ
@@ -34,14 +33,14 @@ class FenwickRangeTree {
     //
     //  complexity:
     //  - O(N(logN)^2)
-    FenwickRangeTree(const std::vector<std::pair<U, U>>& points) {
-        std::vector<U> xs;
+    FenwickRangeTree(const std::vector<std::pair<Index, Index>>& points) {
+        std::vector<Index> xs;
         for (auto [x, y]: points) {
             xs.push_back(x);
         }
         X = Compressor(std::move(xs));
         int n = X.size();
-        std::vector<std::vector<U>> ys(n + 1);
+        std::vector<std::vector<Index>> ys(n + 1);
         Ys.reserve(n + 1);
 
         for (auto [x, y]: points) {
@@ -62,14 +61,14 @@ class FenwickRangeTree {
     //
     //  complexity:
     //  - O((logN)^2)
-    void apply(U x, U y, T elem) {
+    void apply(Index x, Index y, T elem) {
         int i = X.compress(x);
         for (i++; i <= X.size(); i += i & -i) {
             fens[i].apply(Ys[i].compress(y), elem);
         }
     }
 
-    void set(U x, U y, T elem) {
+    void set(Index x, Index y, T elem) {
         apply(x, y, G::op(elem, G::inv(get(x, y))));
     }
 
@@ -78,16 +77,16 @@ class FenwickRangeTree {
     //
     //  complexity:
     //  - O((logN)^2)
-    T prod(U x1, U y1, U x2, U y2) const {
+    T prod(Index x1, Index y1, Index x2, Index y2) const {
         return G::op(prod(x2, y1, y2), G::inv(prod(x1, y1, y2)));
     }
 
-    T get(U x, U y) const {
+    T get(Index x, Index y) const {
         return prod(x, y, x + 1, y + 1);
     }
 
   private:
-    T prod(U x, U y1, U y2) const {
+    T prod(Index x, Index y1, Index y2) const {
         T result = G::e();
         for (int i = X.compress(x); i > 0; i -= i & -i) {
             result = G::op(result, fens[i].prod(Ys[i].compress(y1), Ys[i].compress(y2)));
@@ -95,9 +94,9 @@ class FenwickRangeTree {
         return result;
     }
 
-    Compressor<U> X;
-    std::vector<Compressor<U>> Ys;
-    std::vector<FenwickTree<G>> fens;
+    Compressor<Index> X;
+    std::vector<Compressor<Index>> Ys;
+    std::vector<FenwickTree<T>> fens;
 };
 
 }  //  namespace nono

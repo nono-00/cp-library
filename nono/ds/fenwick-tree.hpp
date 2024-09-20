@@ -5,42 +5,44 @@
 
 namespace nono {
 
-template <class G>
+/// brief : 一点加算区間取得. segment treeよりも定数倍が良い.
+/// TODO : 二分探索
+template <class T>
 class FenwickTree {
-    using T = G::value_type;
-
   public:
-    FenwickTree(int n): n_(n), data_(n_ + 1, G::e()) {}
+    FenwickTree(int n): n_(n), data_(n_ + 1, T{0}) {}
 
-    void apply(int i, T elem) {
+    void add(int i, T elem) {
         assert(0 <= i && i < n_);
         for (i++; i <= n_; i += i & -i) {
-            data_[i] = G::op(data_[i], elem);
+            data_[i] = data_[i] + elem;
         }
     }
 
     void set(int i, T elem) {
         assert(0 <= i && i < n_);
-        apply(i, G::op(elem, G::inv(get(i))));
+        add(i, elem - get(i));
     }
 
-    T prod(int i) const {
+    // [0, i)の総和
+    T sum(int i) const {
         assert(0 <= i && i <= n_);
-        T result = G::e();
+        T result{0};
         for (; i > 0; i -= i & -i) {
-            result = G::op(result, data_[i]);
+            result = result + data_[i];
         }
         return result;
     }
 
-    T prod(int left, int right) const {
+    // [left, right)
+    T sum(int left, int right) const {
         assert(left <= right);
-        return G::op(prod(right), G::inv(prod(left)));
+        return sum(right) - sum(left);
     }
 
     T get(int i) const {
         assert(0 <= i && i < n_);
-        return prod(i, i + 1);
+        return sum(i, i + 1);
     }
 
   private:

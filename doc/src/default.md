@@ -18,6 +18,9 @@ Compressed Sparse Row Array. 二次元配列を一次元に潰すやつ. 使っ�
 ### [fenwick-range-tree](./fenwick-range-tree.md)
 ### [fenwick-tree-2d](./fenwick-tree-2d.md)
 ### [fenwick-tree](./fenwick-tree.md)
+一点加算区間取得. segment treeよりも定数倍が良い.
+
+**TODO**: 二分探索
 ### [lazy-segment-tree](./lazy-segment-tree.md)
 ### [offline-dynamic-connectivity](./offline-dynamic-connectivity.md)
 ### [potentialized-union-find](./potentialized-union-find.md)
