@@ -6,9 +6,10 @@
 
 namespace nono {
 
+///  brief : 静的な区間積クエリを前処理\\( O(n \log n) \\), クエリ \\( O(1) \\)で. だいたいDisjointを使った方が良い
 template <class M>
 class SparseTable {
-    using T = M::value_type;
+    using T = M::Value;
 
   public:
     SparseTable() {}

@@ -4,13 +4,14 @@
 #include <cassert>
 #include <vector>
 
-#include "nono/data-structure/sparse-table.hpp"
+#include "nono/ds/sparse-table.hpp"
 
 namespace nono {
 
+///  brief : 静的な矩形領域積クエリを前処理\\( O(n \log ^ 2 n) \\), クエリ \\( O(1) \\)で. メモリ使用量がバカ.
 template <class M>
 class SparseTable2D {
-    using T = M::value_type;
+    using T = M::Value;
 
   public:
     SparseTable2D() {}

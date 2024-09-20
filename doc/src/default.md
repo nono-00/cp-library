@@ -40,7 +40,9 @@ UnionFind with Potential. 可換/非可換どちらでも動く.
 ### [segment-tree](./segment-tree.md)
 一点更新 区間取得のsegment tree. <https://atcoder.github.io/ac-library/master/document_ja/segtree.html>
 ### [sparse-table-2d](./sparse-table-2d.md)
+静的な矩形領域積クエリを前処理\\( O(n \log ^ 2 n) \\), クエリ \\( O(1) \\)で. メモリ使用量がバカ.
 ### [sparse-table](./sparse-table.md)
+静的な区間積クエリを前処理\\( O(n \log n) \\), クエリ \\( O(1) \\)で. だいたいDisjointを使った方が良い
 ### [splay-tree](./splay-tree.md)
 ### [two-stack-deque](./two-stack-deque.md)
 ### [two-stack-queue](./two-stack-queue.md)
