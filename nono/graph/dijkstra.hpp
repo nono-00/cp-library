@@ -71,6 +71,7 @@ class DijkstraResult {
 }  //  namespace internal
 
 ///  brief : 負辺なしの単一始点最短経路問題を解く. \\( O(|E| \log |E|) \\)
+///  TODO : 負辺なしかどうかassertion
 
 //  brief:
 //  - 負辺無し単一始点最短経路問題を解く

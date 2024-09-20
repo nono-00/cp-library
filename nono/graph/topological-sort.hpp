@@ -6,6 +6,9 @@
 
 namespace nono {
 
+/// brief : トポソする. 
+/// TODO : DAGかどうかassertion
+
 //  brief:
 //  - トポロジカルソート. 入次数が0の頂点を削っていく.
 //
