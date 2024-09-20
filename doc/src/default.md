@@ -89,8 +89,11 @@ Undoが可能なUnionFind
 ### [dijkstra](./graph/dijkstra.md)
 負辺なしの単一始点最短経路問題を解く. \\( O(|E| \log |E|) \\)
 ### [kruskal](./graph/kruskal.md)
+最小全域木を求める.
 ### [segment-edge](./graph/segment-edge.md)
+区間に辺を貼るやつ.
 ### [strongly-connected-components](./graph/strongly-connected-components.md)
+強連結成分分解する. 単純非単純を問わない.
 ### [topological-sort](./graph/topological-sort.md)
 ### [two-edge-connected-components](./graph/two-edge-connected-components.md)
 ## heuristic

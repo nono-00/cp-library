@@ -7,6 +7,8 @@
 
 namespace nono {
 
+///  brief : 区間に辺を貼るやつ.
+
 //  区間辺
 //  from, to共に半開区間
 template <class T>
