@@ -34,8 +34,10 @@ UnionFind with Potential. 可換/非可換どちらでも動く.
 ### [range-add-fenwick-tree](./range-add-fenwick-tree.md)
 区間加算区間取得 Fenwick Tree. lazy segment tree よりも定数倍が良い(はず).
 ### [range-segment-tree](./range-segment-tree.md)
+領域木segment tree盛り. 一点加算座標が事前にわかる場合に使える二次元 segment tree.
 ### [segment-tree-2d](./segment-tree-2d.md)
 ### [segment-tree](./segment-tree.md)
+一点更新 区間取得のsegment tree. <https://atcoder.github.io/ac-library/master/document_ja/segtree.html>
 ### [sparse-table-2d](./sparse-table-2d.md)
 ### [sparse-table](./sparse-table.md)
 ### [splay-tree](./splay-tree.md)

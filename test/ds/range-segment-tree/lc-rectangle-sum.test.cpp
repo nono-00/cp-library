@@ -2,13 +2,13 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/data-structure/range-segment-tree.hpp"
+#include "nono/ds/range-segment-tree.hpp"
 
 namespace nono {
 
 template <class T>
 struct Add {
-    using value_type = T;
+    using Value = T;
     static T op(T lhs, T rhs) {
         return lhs + rhs;
     }

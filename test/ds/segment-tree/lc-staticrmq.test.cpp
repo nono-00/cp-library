@@ -4,13 +4,13 @@
 #include <limits>
 #include <vector>
 
-#include "nono/data-structure/segment-tree.hpp"
+#include "nono/ds/segment-tree.hpp"
 
 namespace nono {
 
 template <class T>
 struct Min {
-    using value_type = T;
+    using Value = T;
     static T op(T lhs, T rhs) {
         return std::min(lhs, rhs);
     }

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/data-structure/segment-tree.hpp"
+#include "nono/ds/segment-tree.hpp"
 #include "nono/math/modint.hpp"
 
 namespace nono {
@@ -24,11 +24,11 @@ struct Line {
 
 template <class T>
 struct Composite {
-    using value_type = Line<T>;
-    static value_type op(value_type lhs, value_type rhs) {
+    using Value = Line<T>;
+    static Value op(Value lhs, Value rhs) {
         return Line<Mint>(lhs.slope * rhs.slope, rhs.slope * lhs.constant + rhs.constant);
     }
-    static value_type e() {
+    static Value e() {
         return Line<Mint>(1, 0);
     }
 };
@@ -44,7 +44,7 @@ void solve() {
     }
 
     SegmentTree<Composite<Mint>> segtree(lines);
-    using Data = Composite<Mint>::value_type;
+    using Data = Composite<Mint>::Value;
 
     while (q--) {
         int t;

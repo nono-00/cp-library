@@ -2,17 +2,17 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/data-structure/segment-tree.hpp"
+#include "nono/ds/segment-tree.hpp"
 
 namespace nono {
 
 template <class T>
 struct Add {
-    using value_type = T;
-    static value_type op(value_type lhs, value_type rhs) {
+    using Value = T;
+    static Value op(Value lhs, Value rhs) {
         return lhs + rhs;
     }
-    static value_type e() {
+    static Value e() {
         return 0;
     }
 };
