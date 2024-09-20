@@ -4,6 +4,7 @@
 ### [binary-trie](./binary-trie.md)
 非負整数用のset. kth_elementやxormin/max, 全部にxorなどができる
 ### [csr-array](./csr-array.md)
+Compressed Sparse Row Array. 二次元配列を一次元に潰すやつ. 使ったことがない.
 ### [disjoint-sparse-table](./disjoint-sparse-table.md)
 ### [dual-segment-tree](./dual-segment-tree.md)
 ### [dynamic-segment-tree-2d](./dynamic-segment-tree-2d.md)

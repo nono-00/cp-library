@@ -7,6 +7,7 @@
 
 namespace nono {
 
+///  brief : Compressed Sparse Row Array. 二次元配列を一次元に潰すやつ. 使ったことがない.
 template <class T>
 class CSRArray {
     using iterator = std::vector<T>::iterator;
