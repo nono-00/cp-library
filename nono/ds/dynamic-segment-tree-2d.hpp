@@ -8,39 +8,36 @@
 
 namespace nono {
 
-//  brief:
-//  - dynamic-segment-tree-2d. 一点更新, 範囲取得
-//  - 座圧せずに使えるがとても遅い
-//
+///  brief : 座圧せずに使える二次元segment tree. とっっても遅い
+
 //  tparam:
 //  - `T`: 配列の要素の型
 //  - `op`: 演算関数. 戻り値 `T`, 引数 `T, T` でなければならない.
 //  - `e`: 単位元を返す関数. 戻り値 `T`, 引数 `void` でなければならない.
-//  - `S`: 添字の型
-template <class M, class S = int>
+//  - `Index`: 添字の型
+template <class M, class Index = int>
 class DynamicSegmentTree2D {
-    using T = M::value_type;
+    using T = M::Value;
     struct Node;
-    using NodePtr = std::unique_ptr<Node>;
-    using isize = S;
+    using NodePtr = Node*;
 
     //  brief:
     //  - 一次元の領域を表す構造体
     //  - あまりにも引数が面倒になったので利用
     struct Bounds {
-        isize lower;
-        isize upper;
+        Index lower;
+        Index upper;
 
         Bounds() {}
-        Bounds(isize lower, isize upper): lower(lower), upper(upper) {
+        Bounds(Index lower, Index upper): lower(lower), upper(upper) {
             assert(lower <= upper);
         }
 
-        bool inside(isize pos) const {
+        bool inside(Index pos) const {
             return lower <= pos && pos < upper;
         }
 
-        bool outside(isize pos) const {
+        bool outside(Index pos) const {
             return !inside(pos);
         }
 
@@ -52,21 +49,25 @@ class DynamicSegmentTree2D {
             return lower <= other.lower && other.upper <= upper;
         }
 
-        isize median() const {
+        Index median() const {
             assert(lower < upper);
-            if ((lower >= 0) ^ (upper >= 0)) {
-                return (lower + upper) / 2;
-            } else {
-                return lower + (upper - lower) / 2;
-            }
+            return std::midpoint(lower, upper);
         }
     };
 
     struct Node {
         Node(): left(nullptr), right(nullptr) {}
-        Node(isize lb, isize ub): segtree(lb, ub), left(nullptr), right(nullptr) {}
+        Node(Index lb, Index ub): segtree(lb, ub), left(nullptr), right(nullptr) {}
+        ~Node() {
+            if (left) {
+                delete left;
+            }
+            if (right) {
+                delete right;
+            }
+        }
 
-        void update(isize w) {
+        void update(Index w) {
             T value = M::e();
             if (left) {
                 value = M::op(value, left->segtree.get(w));
@@ -77,7 +78,7 @@ class DynamicSegmentTree2D {
             segtree.set(w, value);
         }
 
-        DynamicSegmentTree<M, S> segtree;
+        DynamicSegmentTree<M, Index> segtree;
         NodePtr left;
         NodePtr right;
     };
@@ -92,29 +93,29 @@ class DynamicSegmentTree2D {
     //  param:
     //  - `{h/w}_lb`: 格納する領域の下界
     //  - `{h/w}_ub`: 格納する領域の上界
-    DynamicSegmentTree2D(isize h_lb = std::numeric_limits<isize>::min(), isize h_ub = std::numeric_limits<isize>::max(),
-                         isize w_lb = std::numeric_limits<isize>::min(), isize w_ub = std::numeric_limits<isize>::max())
+    DynamicSegmentTree2D(Index h_lb = std::numeric_limits<Index>::min(), Index h_ub = std::numeric_limits<Index>::max(),
+                         Index w_lb = std::numeric_limits<Index>::min(), Index w_ub = std::numeric_limits<Index>::max())
         : root_(nullptr),
           h_(h_lb, h_ub),
           w_(w_lb, w_ub) {}
 
     //  complexity:
     //  - O((logN) ^ 2)
-    void set(isize pos_h, isize pos_w, T value) {
+    void set(Index pos_h, Index pos_w, T value) {
         assert(h_.inside(pos_h) && w_.inside(pos_w));
         set(root_, h_, pos_h, pos_w, value);
     }
 
     //  complexity:
     //  - O((logN) ^ 2)
-    T get(isize pos_h, isize pos_w) {
+    T get(Index pos_h, Index pos_w) {
         assert(h_.inside(pos_h) && w_.inside(pos_w));
         return get(root_, h_, pos_h, pos_w);
     }
 
     //  complexity:
     //  - O((logN) ^ 2)
-    T prod(isize pos_h1, isize pos_w1, isize pos_h2, isize pos_w2) {
+    T prod(Index pos_h1, Index pos_w1, Index pos_h2, Index pos_w2) {
         assert(h_.inside(pos_h1) && w_.inside(pos_w1));
         assert(h_.inside(pos_h2) && w_.inside(pos_w2));
         assert(pos_h1 <= pos_h2);
@@ -127,16 +128,16 @@ class DynamicSegmentTree2D {
     }
 
   private:
-    void set(NodePtr& node, Bounds h, isize pos_h, isize pos_w, T value) {
+    void set(NodePtr& node, Bounds h, Index pos_h, Index pos_w, T value) {
         assert(h.inside(pos_h));
         if (!node) {
-            node = std::make_unique<Node>(w_.lower, w_.upper);
+            node = new Node(w_.lower, w_.upper);
         }
         if (h.upper == h.lower + 1) {
             node->segtree.set(pos_w, value);
             return;
         }
-        isize med = h.median();
+        Index med = h.median();
         if (h.lower <= pos_h && pos_h < med) {
             set(node->left, Bounds(h.lower, med), pos_h, pos_w, value);
         } else {
@@ -146,7 +147,7 @@ class DynamicSegmentTree2D {
         node->update(pos_w);
     }
 
-    T get(NodePtr& node, Bounds h, isize pos_h, isize pos_w) {
+    T get(NodePtr& node, Bounds h, Index pos_h, Index pos_w) {
         assert(h.inside(pos_h));
         if (!node) {
             return M::e();
@@ -154,7 +155,7 @@ class DynamicSegmentTree2D {
         if (h.upper == h.lower + 1) {
             return node->segtree.get(pos_w);
         }
-        isize med = h.median();
+        Index med = h.median();
         if (h.lower <= pos_h && pos_h < med) {
             return get(node->left, Bounds(h.lower, med), pos_h, pos_w);
         } else {
@@ -171,7 +172,7 @@ class DynamicSegmentTree2D {
             assert(target_h.lower <= h.lower && h.upper <= target_h.upper);
             return node->segtree.prod(target_w.lower, target_w.upper);
         } else if (target_h.intersect(h)) {
-            isize med = h.median();
+            Index med = h.median();
             return M::op(prod(node->left, Bounds(h.lower, med), target_h, target_w),
                          prod(node->right, Bounds(med, h.upper), target_h, target_w));
         } else {

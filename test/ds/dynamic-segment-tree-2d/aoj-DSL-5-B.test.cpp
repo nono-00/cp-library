@@ -2,13 +2,13 @@
 #include <algorithm>
 #include <iostream>
 
-#include "nono/data-structure/dynamic-segment-tree-2d.hpp"
+#include "nono/ds/dynamic-segment-tree-2d.hpp"
 
 namespace nono {
 
 template <class T>
 struct Add {
-    using value_type = T;
+    using Value = T;
     static T op(T lhs, T rhs) {
         return lhs + rhs;
     }

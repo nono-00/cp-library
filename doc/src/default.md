@@ -10,6 +10,7 @@ Compressed Sparse Row Array. 二次元配列を一次元に潰すやつ. 使っ�
 ### [dual-segment-tree](./dual-segment-tree.md)
 区間作用, 一点取得のsegment tree. 作用が可換のもののみに対応.
 ### [dynamic-segment-tree-2d](./dynamic-segment-tree-2d.md)
+座圧せずに使える二次元segment tree. とっっても遅い
 ### [dynamic-segment-tree](./dynamic-segment-tree.md)
 座圧せずに使えるsegment tree. とても遅い.
 
