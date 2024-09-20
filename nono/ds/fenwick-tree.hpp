@@ -15,7 +15,7 @@ class FenwickTree {
     void add(int i, T elem) {
         assert(0 <= i && i < n_);
         for (i++; i <= n_; i += i & -i) {
-            data_[i] = data_[i] + elem;
+            data_[i] += elem;
         }
     }
 
@@ -29,7 +29,7 @@ class FenwickTree {
         assert(0 <= i && i <= n_);
         T result{0};
         for (; i > 0; i -= i & -i) {
-            result = result + data_[i];
+            result += data_[i];
         }
         return result;
     }

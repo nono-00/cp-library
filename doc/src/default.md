@@ -17,6 +17,7 @@ Compressed Sparse Row Array. 二次元配列を一次元に潰すやつ. 使っ�
 **TODO**: 二分探索
 ### [fenwick-range-tree](./fenwick-range-tree.md)
 ### [fenwick-tree-2d](./fenwick-tree-2d.md)
+一点加算、総和取得が \\( O(\log ^ 2 N) \\) で可能
 ### [fenwick-tree](./fenwick-tree.md)
 一点加算区間取得. segment treeよりも定数倍が良い.
 

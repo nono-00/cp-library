@@ -21,3 +21,5 @@
 - 基本的にはclassを使う
 - メモリアロケートは全て new で, deallocateはしない
 - よくあるmonoidはValue, Actを型として持つ
+- めちゃくちゃassertを入れる
+- 計算量が悪化する/定数倍がめちゃくちゃ悪くなるassertは`if constexpr (is_debug())`に入れる
