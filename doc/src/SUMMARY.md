@@ -57,7 +57,6 @@
     - [modint](./math/modint.md)
     - [zeta-mobius-transform](./math/zeta-mobius-transform.md)
 - [string]()
-    - [](./string/.md)
     - [lcp-array](./string/lcp-array.md)
     - [manacher](./string/manacher.md)
     - [suffix-array](./string/suffix-array.md)

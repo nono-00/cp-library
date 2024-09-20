@@ -73,8 +73,11 @@ Undoが可能なUnionFind
 **TODO**: split
 ## graph
 ### [articulation-points](./graph/articulation-points.md)
+関節点列挙
 ### [base](./graph/base.md)
+辺/グラフ構造体などの基礎となるデータ構造など.
 ### [bellman-ford](./graph/bellman-ford.md)
+負辺ありの単一始点最短経路問題を解く. \\( O(|E||V|) \\)
 ### [bfs](./graph/bfs.md)
 ### [bridges](./graph/bridges.md)
 ### [contract](./graph/contract.md)
@@ -96,7 +99,6 @@ Undoが可能なUnionFind
 ### [modint](./math/modint.md)
 ### [zeta-mobius-transform](./math/zeta-mobius-transform.md)
 ## string
-### [](./string/.md)
 ### [lcp-array](./string/lcp-array.md)
 ### [manacher](./string/manacher.md)
 ### [suffix-array](./string/suffix-array.md)

@@ -22,6 +22,8 @@ using Edge = EdgeBase<int>;
 template <class T>
 using WeightedEdge = EdgeBase<T>;
 
+///  brief : 辺/グラフ構造体などの基礎となるデータ構造など.
+
 //  グラフ構造体
 //  CSR方式で隣接リストを保持している
 template <class T>

@@ -70,7 +70,7 @@ class BellmanFordResult {
 
 }  //  namespace internal
 
-//  負辺ありの単一始点最短経路問題を解く
+///  brief : 負辺ありの単一始点最短経路問題を解く. \\( O(|E||V|) \\)
 //
 //  最短距離が確定しない頂点はstd::numeric_limits<T>::min()
 //  辿り着けない頂点はstd::numeric_limits<T>::max()
