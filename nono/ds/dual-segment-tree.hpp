@@ -5,9 +5,8 @@
 
 namespace nono {
 
-//  brief:
-//  - segment-tree. 一点更新, 範囲取得
-//
+///  brief : 区間作用, 一点取得のsegment tree. 作用が可換のもののみに対応.
+
 //  tparam:
 //  - `T`: 配列の要素の型
 //  - `e`: 単位元を返す関数. 戻り値 `T`, 引数 `void` でなければならない.
@@ -20,8 +19,8 @@ namespace nono {
 //  - そうじゃないなら遅延セグ木で
 template <class M>
 class DualSegmentTree {
-    using T = M::value_type;
-    using F = M::func_type;
+    using T = M::Value;
+    using F = M::Act;
 
   public:
     DualSegmentTree() = default;

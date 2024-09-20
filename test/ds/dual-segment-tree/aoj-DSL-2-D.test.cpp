@@ -2,7 +2,7 @@
 #include <iostream>
 #include <limits>
 
-#include "nono/data-structure/dual-segment-tree.hpp"
+#include "nono/ds/dual-segment-tree.hpp"
 
 namespace nono {
 
@@ -15,8 +15,8 @@ struct Data {
 };
 
 struct M {
-    using value_type = Data;
-    using func_type = Data;
+    using Value = Data;
+    using Act = Data;
     static Data id() {
         return {std::numeric_limits<int>::min(), std::numeric_limits<int>::max()};
     }

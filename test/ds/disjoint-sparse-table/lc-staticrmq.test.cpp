@@ -10,11 +10,11 @@ namespace nono {
 
 template <class T>
 struct Min {
-    using value_type = T;
-    static value_type op(value_type lhs, value_type rhs) {
+    using Value = T;
+    static Value op(Value lhs, Value rhs) {
         return std::min(lhs, rhs);
     }
-    static value_type e() {
+    static Value e() {
         return std::numeric_limits<T>::max();
     }
 };

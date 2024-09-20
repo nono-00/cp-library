@@ -20,3 +20,4 @@
 - public, privateは使う
 - 基本的にはclassを使う
 - メモリアロケートは全て new で, deallocateはしない
+- よくあるmonoidはValue, Actを型として持つ

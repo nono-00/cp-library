@@ -8,7 +8,7 @@ namespace nono {
 
 template <class T>
 struct Add {
-    using value_type = T;
+    using Value = T;
     static T op(T lhs, T rhs) {
         return lhs + rhs;
     }
