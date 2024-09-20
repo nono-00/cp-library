@@ -4,7 +4,7 @@
 #include <cassert>
 #include <iostream>
 
-#include "nono/data-structure/binary-trie.hpp"
+#include "nono/ds/binary-trie.hpp"
 
 namespace nono {
 

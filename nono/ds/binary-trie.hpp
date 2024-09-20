@@ -1,32 +1,13 @@
 #pragma once
 
 #include <cassert>
-#include <numeric>
-#include <vector>
+#include <utility>
 
 namespace nono {
 
-template <class T, int N = 15000000>
-class MemoryPool {
-  public:
-    MemoryPool(): head_(N) {
-        std::iota(std::begin(stack_), std::end(stack_), 0);
-    }
+///  brief : 非負整数用のset. kth_elementやxormin/max, 全部にxorなどができる
 
-    T* allocate() {
-        return pool_ + stack_[--head_];
-    }
-
-    void deallocate(T* ptr) {
-        if (ptr) stack_[head_++] = ptr - pool_;
-    }
-
-  private:
-    T pool_[N];
-    int stack_[N];
-    int head_;
-};
-
+//  BinaryTrie32とBinaryTrie64が用意してある
 template <class T = unsigned, unsigned B = 32>
 struct BinaryTrie {
     struct Node;
@@ -36,11 +17,9 @@ struct BinaryTrie {
         T lazy;
         NodePtr child[2];
         Node(): count(0), lazy(0), child{nullptr, nullptr} {}
-        static void* operator new(std::size_t) {
-            return pool_.allocate();
-        }
-        static void operator delete(void* ptr) {
-            pool_.deallocate(static_cast<NodePtr>(ptr));
+        ~Node() {
+            if (child[0]) delete child[0];
+            if (child[1]) delete child[1];
         }
         void push(int bit) {
             if (lazy == 0) return;
@@ -50,20 +29,26 @@ struct BinaryTrie {
             lazy = 0;
         }
     };
-    static MemoryPool<Node> pool_;
 
   public:
     BinaryTrie(): root_(new Node()) {}
+    ~BinaryTrie() {
+        delete root_;
+    }
     void insert(T value) {
         insert(root_, value, 1);
     }
     void erase(T value) {
         insert(root_, value, -1);
     }
+    //  0-index
     T kth_element(int k, T value = 0) {
+        assert(!empty());
         assert(0 <= k && k < size());
         return kth_element(root_, k, value);
     }
+    //  xor valueが最小となるような値 v を返す
+    //  ちゃんとxorするのを忘れないこと
     T min_element(T value = 0) {
         assert(!empty());
         return kth_element(root_, 0, value);
@@ -88,6 +73,7 @@ struct BinaryTrie {
     int upper_bound(T value) {
         return lower_bound(root_, value + 1);
     }
+    //  全ての要素にxor valueする
     void all_xor(T value) {
         root_->lazy ^= value;
     }
@@ -145,7 +131,7 @@ struct BinaryTrie {
     NodePtr root_;
 };
 
-template <class T, unsigned B>
-MemoryPool<typename BinaryTrie<T, B>::Node> BinaryTrie<T, B>::pool_;
+using BinaryTrie32 = BinaryTrie<unsigned, 32>;
+using BinaryTrie64 = BinaryTrie<unsigned long long, 64>;
 
 }  //  namespace nono

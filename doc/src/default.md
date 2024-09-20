@@ -2,6 +2,7 @@
 ## algorithm
 ## ds
 ### [binary-trie](./binary-trie.md)
+非負整数用のset. kth_elementやxormin/max, 全部にxorなどができる
 ### [csr-array](./csr-array.md)
 ### [disjoint-sparse-table](./disjoint-sparse-table.md)
 ### [dual-segment-tree](./dual-segment-tree.md)

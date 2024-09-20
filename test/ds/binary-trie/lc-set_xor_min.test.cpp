@@ -3,14 +3,14 @@
 #include <cassert>
 #include <iostream>
 
-#include "nono/data-structure/binary-trie.hpp"
+#include "nono/ds/binary-trie.hpp"
 
 namespace nono {
 
 void solve() {
     int q;
     std::cin >> q;
-    BinaryTrie trie;
+    BinaryTrie32 trie;
     while (q--) {
         int op;
         unsigned x;
