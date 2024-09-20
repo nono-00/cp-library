@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/data-structure/offline-dynamic-connectivity.hpp"
-#include "nono/data-structure/undo-unionfind.hpp"
+#include "nono/ds/offline-dynamic-connectivity.hpp"
+#include "nono/ds/undo-unionfind.hpp"
 
 namespace nono {
 

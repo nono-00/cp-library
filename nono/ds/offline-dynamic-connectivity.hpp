@@ -5,10 +5,15 @@
 #include <map>
 #include <vector>
 
-#include "nono/data-structure/undo-unionfind.hpp"
+#include "nono/ds/undo-unionfind.hpp"
 
 namespace nono {
 
+///  brief : オフライン辺追加/削除クエリを捌きながら, 連結成分を管理するやつ
+///  TODO : interfaceがカスかも？
+
+//  querys := 辺追加/削除クエリなら辺. そうでないなら適当に(0, 0)にしておけば良い
+//  func := func(query_i, UnfoUnionFind&)
 template <class F>
 void offline_dynamic_connectivity(int n, const std::vector<std::pair<int, int>>& querys, F func) {
     int t = std::bit_ceil(querys.size());
