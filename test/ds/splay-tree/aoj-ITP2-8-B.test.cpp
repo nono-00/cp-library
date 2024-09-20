@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "nono/data-structure/splay-tree.hpp"
+#include "nono/ds/splay-tree.hpp"
 
 namespace nono {
 

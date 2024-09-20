@@ -46,7 +46,9 @@ UnionFind with Potential. 可換/非可換どちらでも動く.
 ### [splay-tree](./splay-tree.md)
 deprecated
 ### [two-stack-deque](./two-stack-deque.md)
+二つのStackをくっつけてDequeにするやつ. 要素の総積を計算できる
 ### [two-stack-queue](./two-stack-queue.md)
+二つのStackをくっつけてQueueにするやつ. 要素の総積を計算できる
 ### [undo-unionfind](./undo-unionfind.md)
 ### [union-find](./union-find.md)
 ## geometry

@@ -5,9 +5,10 @@
 
 namespace nono {
 
+///  brief : 二つのStackをくっつけてDequeにするやつ. 要素の総積を計算できる
 template <class M>
 class TwoStackDeque {
-    using T = M::value_type;
+    using T = M::Value;
 
   public:
     TwoStackDeque(): prod_front_(1, M::e()), prod_back_(1, M::e()) {}

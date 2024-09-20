@@ -1,7 +1,7 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/queue_operate_all_composite"
 #include <iostream>
 
-#include "nono/data-structure/two-stack-queue.hpp"
+#include "nono/ds/two-stack-queue.hpp"
 #include "nono/math/modint.hpp"
 
 namespace nono {
@@ -18,7 +18,7 @@ struct Data {
 };
 
 struct M {
-    using value_type = Data;
+    using Value = Data;
     static Data e() {
         return Data(1, 0);
     }

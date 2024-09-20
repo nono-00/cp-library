@@ -4,9 +4,10 @@
 
 namespace nono {
 
+///  brief : 二つのStackをくっつけてQueueにするやつ. 要素の総積を計算できる
 template <class M>
 class TwoStackQueue {
-    using T = M::value_type;
+    using T = M::Value;
 
   public:
     TwoStackQueue(): prod_front_(1, M::e()), prod_back_(1, M::e()) {}
