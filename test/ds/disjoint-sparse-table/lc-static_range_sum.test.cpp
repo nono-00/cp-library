@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/data-structure/disjoint-sparse-table.hpp"
+#include "nono/ds/disjoint-sparse-table.hpp"
 
 namespace nono {
 

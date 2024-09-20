@@ -6,6 +6,7 @@
 ### [csr-array](./csr-array.md)
 Compressed Sparse Row Array. 二次元配列を一次元に潰すやつ. 使ったことがない.
 ### [disjoint-sparse-table](./disjoint-sparse-table.md)
+静的な区間積クエリを前処理\\( O(n \log n) \\), クエリ \\( O(1) \\)で. Disjointなので, 冪等律を要求しない.
 ### [dual-segment-tree](./dual-segment-tree.md)
 ### [dynamic-segment-tree-2d](./dynamic-segment-tree-2d.md)
 ### [dynamic-segment-tree](./dynamic-segment-tree.md)

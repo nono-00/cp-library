@@ -1,10 +1,12 @@
 #pragma once
 
+#include <bit>
 #include <cassert>
 #include <vector>
 
 namespace nono {
 
+///  brief : 静的な区間積クエリを前処理\\( O(n \log n) \\), クエリ \\( O(1) \\)で. Disjointなので, 冪等律を要求しない.
 template <class M>
 class DisjointSparseTable {
     using T = M::value_type;
