@@ -64,5 +64,6 @@
     - [tree-compressor](./tree-compressor.md)
 - [utility]()
     - [compressor](./compressor.md)
+    - [debug](./debug.md)
     - [inversion_number](./inversion_number.md)
     - [run-length-encoding](./run-length-encoding.md)

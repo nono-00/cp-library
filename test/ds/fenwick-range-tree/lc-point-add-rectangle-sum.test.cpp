@@ -3,23 +3,9 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/data-structure/fenwick-range-tree.hpp"
+#include "nono/ds/fenwick-range-tree.hpp"
 
 namespace nono {
-
-template <class T>
-struct Add {
-    using value_type = T;
-    static T op(T lhs, T rhs) {
-        return lhs + rhs;
-    }
-    static T e() {
-        return T(0);
-    }
-    static T inv(T elem) {
-        return -elem;
-    }
-};
 
 void solve() {
     int n, q;
@@ -53,23 +39,23 @@ void solve() {
         }
     }
 
-    FenwickRangeTree<Add<long long>, int> fen(points);
+    FenwickRangeTree<long long, int> fen(points);
     for (int i = 0; i < n; i++) {
         auto [x, y] = points[i];
-        fen.apply(x, y, weight[i]);
+        fen.add(x, y, weight[i]);
     }
     for (const auto& query: querys) {
         if (query[0] == 0) {
             int x = query[1];
             int y = query[2];
             long long w = query[3];
-            fen.apply(x, y, w);
+            fen.add(x, y, w);
         } else {
             int l = query[1];
             int d = query[2];
             int r = query[3];
             int u = query[4];
-            std::cout << fen.prod(l, d, r, u) << '\n';
+            std::cout << fen.sum(l, d, r, u) << '\n';
         }
     }
 }

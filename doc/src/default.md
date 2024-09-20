@@ -16,6 +16,7 @@ Compressed Sparse Row Array. 二次元配列を一次元に潰すやつ. 使っ�
 
 **TODO**: 二分探索
 ### [fenwick-range-tree](./fenwick-range-tree.md)
+領域木fenwick tree盛り. 一点加算座標が事前にわかる場合に使える二次元 fenwick tree.
 ### [fenwick-tree-2d](./fenwick-tree-2d.md)
 一点加算、総和取得が \\( O(\log ^ 2 N) \\) で可能
 ### [fenwick-tree](./fenwick-tree.md)
@@ -76,5 +77,6 @@ Compressed Sparse Row Array. 二次元配列を一次元に潰すやつ. 使っ�
 ### [tree-compressor](./tree-compressor.md)
 ## utility
 ### [compressor](./compressor.md)
+### [debug](./debug.md)
 ### [inversion_number](./inversion_number.md)
 ### [run-length-encoding](./run-length-encoding.md)
