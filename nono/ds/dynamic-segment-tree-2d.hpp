@@ -4,7 +4,7 @@
 #include <limits>
 #include <memory>
 
-#include "nono/data-structure/dynamic-segment-tree.hpp"
+#include "nono/ds/dynamic-segment-tree.hpp"
 
 namespace nono {
 

@@ -74,6 +74,10 @@ def create_md_files(src_dir, nono_dir):
                         if "brief" in data:
                             file.write(data['brief'])
                             file.write('\n')
+                        if "TODO" in data:
+                            file.write("\n**TODO**: ")
+                            file.write(data['TODO'])
+                            file.write('\n')
 
 
 def remove_directory(dir_path):

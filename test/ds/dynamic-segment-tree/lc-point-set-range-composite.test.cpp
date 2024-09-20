@@ -1,7 +1,7 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/point_set_range_composite"
 #include <iostream>
 
-#include "nono/data-structure/dynamic-segment-tree.hpp"
+#include "nono/ds/dynamic-segment-tree.hpp"
 #include "nono/math/modint.hpp"
 
 namespace nono {
@@ -23,11 +23,11 @@ struct Line {
 
 template <class T>
 struct Composite {
-    using value_type = Line<T>;
-    static value_type op(value_type lhs, value_type rhs) {
+    using Value = Line<T>;
+    static Value op(Value lhs, Value rhs) {
         return Line<Mint>(lhs.slope * rhs.slope, rhs.slope * lhs.constant + rhs.constant);
     }
-    static value_type e() {
+    static Value e() {
         return Line<Mint>(1, 0);
     }
 };
@@ -37,7 +37,7 @@ void solve() {
     int n, q;
     std::cin >> n >> q;
     DynamicSegmentTree<Composite<Mint>> segtree;
-    using Data = Composite<Mint>::value_type;
+    using Data = Composite<Mint>::Value;
     for (int i = 0; i < n; i++) {
         int a, b;
         std::cin >> a >> b;

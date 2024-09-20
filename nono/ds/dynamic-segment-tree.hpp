@@ -2,29 +2,29 @@
 
 #include <cassert>
 #include <limits>
-#include <memory>
+#include <numeric>
 
 namespace nono {
 
-//  brief:
-//  - dynamic-segment-tree. 一点更新, 範囲取得
-//  - 座圧せずに使えるがとても遅い
-//
-//  tparam:
-//  - `T`: 配列の要素の型
-//  - `op`: 演算関数. 戻り値 `T`, 引数 `T, T` でなければならない.
-//  - `e`: 単位元を返す関数. 戻り値 `T`, 引数 `void` でなければならない.
-//  - `S`: 添字の型
-template <class M, class S = int>
+///  brief : 座圧せずに使えるsegment tree. とても遅い.
+///  TODO : 二分探索
+template <class M, class Index = int>
 class DynamicSegmentTree {
-    using T = M::value_type;
+    using T = M::Value;
     struct Node;
-    using NodePtr = std::unique_ptr<Node>;
-    using isize = S;
+    using NodePtr = Node*;
 
     struct Node {
         Node(): left(nullptr), right(nullptr), value(M::e()) {}
         Node(T value): value(value), left(nullptr), right(nullptr) {}
+        ~Node() {
+            if (left) {
+                delete left;
+            }
+            if (right) {
+                delete right;
+            }
+        }
 
         void update() {
             value = M::e();
@@ -42,39 +42,39 @@ class DynamicSegmentTree {
     };
 
   public:
-    //  brief:
-    //  - コンストラクタ
-    //
     //  complexity:
     //  - O(1)
     //
     //  param:
     //  - `lb`: 格納する領域の下界
     //  - `ub`: 格納する領域の上界
-    DynamicSegmentTree(isize lb = std::numeric_limits<isize>::min(), isize ub = std::numeric_limits<isize>::max())
+    DynamicSegmentTree(Index lb = std::numeric_limits<Index>::min(), Index ub = std::numeric_limits<Index>::max())
         : root_(nullptr),
           lb_(lb),
           ub_(ub) {
         assert(lb_ < ub_);
     }
+    ~DynamicSegmentTree() {
+        delete root_;
+    }
 
     //  complexity:
     //  - O(log (ub - lb))
-    void set(isize pos, T value) {
+    void set(Index pos, T value) {
         assert(lb_ <= pos && pos < ub_);
         set(root_, lb_, ub_, pos, value);
     }
 
     //  complexity:
     //  - O(log (ub - lb))
-    T get(isize pos) {
+    T get(Index pos) {
         assert(lb_ <= pos && pos < ub_);
         return get(root_, lb_, ub_, pos);
     }
 
     //  complexity:
     //  - O(log (ub - lb))
-    T prod(isize lb, isize ub) {
+    T prod(Index lb, Index ub) {
         assert(lb_ <= lb && lb <= ub && ub <= ub_);
         return prod(root_, lb_, ub_, lb, ub);
     }
@@ -86,28 +86,17 @@ class DynamicSegmentTree {
     }
 
   private:
-    //  note:
-    //  - オーバーフロー回避のための関数
-    inline isize median(isize lb, isize ub) {
-        assert(lb < ub);
-        if ((lb >= 0) ^ (ub >= 0)) {
-            return (lb + ub) / 2;
-        } else {
-            return lb + (ub - lb) / 2;
-        }
-    }
-
-    void set(NodePtr& node, isize lb, isize ub, isize pos, T value) {
+    void set(NodePtr& node, Index lb, Index ub, Index pos, T value) {
         assert(lb <= pos && pos < ub);
         if (!node) {
-            node = std::make_unique<Node>();
+            node = new Node();
         }
         if (ub == lb + 1) {
             assert(pos == lb);
             node->value = value;
             return;
         }
-        isize m = median(lb, ub);
+        Index m = std::midpoint(lb, ub);
         if (lb <= pos && pos < m) {
             set(node->left, lb, m, pos, value);
         } else {
@@ -117,38 +106,38 @@ class DynamicSegmentTree {
         node->update();
     }
 
-    T get(NodePtr& node, isize lb, isize ub, isize pos) {
-        assert(lb <= pos && pos < ub);
+    T get(NodePtr& node, Index node_lb, Index node_rb, Index pos) {
+        assert(node_lb <= pos && pos < node_rb);
         if (!node) {
             return M::e();
         }
-        if (ub == lb + 1) {
-            assert(pos == lb);
+        if (node_rb == node_lb + 1) {
+            assert(pos == node_lb);
             return node->value;
         }
-        isize m = median(lb, ub);
-        if (lb <= pos && pos < m) {
-            return get(node->left, lb, m, pos);
+        Index m = std::midpoint(node_lb, node_rb);
+        if (node_lb <= pos && pos < m) {
+            return get(node->left, node_lb, m, pos);
         } else {
-            assert(m <= pos && pos < ub);
-            return get(node->right, m, ub, pos);
+            assert(m <= pos && pos < node_rb);
+            return get(node->right, m, node_rb, pos);
         }
     }
 
-    T prod(NodePtr& node, isize lb, isize ub, isize target_lb, isize target_ub) {
+    T prod(NodePtr& node, Index lb, Index ub, Index target_lb, Index target_ub) {
         if (!node || target_ub <= lb || ub <= target_lb) {
             return M::e();
         } else if (target_lb <= lb && ub <= target_ub) {
             return node->value;
         } else {
-            isize m = median(lb, ub);
+            Index m = std::midpoint(lb, ub);
             return M::op(prod(node->left, lb, m, target_lb, target_ub), prod(node->right, m, ub, target_lb, target_ub));
         }
     }
 
     NodePtr root_;
-    isize lb_;
-    isize ub_;
+    Index lb_;
+    Index ub_;
 };
 
 }  //  namespace nono

@@ -8,8 +8,12 @@ Compressed Sparse Row Array. 二次元配列を一次元に潰すやつ. 使っ�
 ### [disjoint-sparse-table](./disjoint-sparse-table.md)
 静的な区間積クエリを前処理\\( O(n \log n) \\), クエリ \\( O(1) \\)で. Disjointなので, 冪等律を要求しない.
 ### [dual-segment-tree](./dual-segment-tree.md)
+区間作用, 一点取得のsegment tree. 作用が可換のもののみに対応.
 ### [dynamic-segment-tree-2d](./dynamic-segment-tree-2d.md)
 ### [dynamic-segment-tree](./dynamic-segment-tree.md)
+座圧せずに使えるsegment tree. とても遅い.
+
+**TODO**: 二分探索
 ### [fenwick-range-tree](./fenwick-range-tree.md)
 ### [fenwick-tree-2d](./fenwick-tree-2d.md)
 ### [fenwick-tree](./fenwick-tree.md)
