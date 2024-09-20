@@ -36,6 +36,7 @@ UnionFind with Potential. 可換/非可換どちらでも動く.
 ### [range-segment-tree](./range-segment-tree.md)
 領域木segment tree盛り. 一点加算座標が事前にわかる場合に使える二次元 segment tree.
 ### [segment-tree-2d](./segment-tree-2d.md)
+一点更新矩形取得 二次元segment tree.
 ### [segment-tree](./segment-tree.md)
 一点更新 区間取得のsegment tree. <https://atcoder.github.io/ac-library/master/document_ja/segtree.html>
 ### [sparse-table-2d](./sparse-table-2d.md)
