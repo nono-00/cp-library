@@ -4,7 +4,7 @@
 #include <utility>
 #include <vector>
 
-#include "nono/data-structure/lazy-segment-tree.hpp"
+#include "nono/ds/lazy-segment-tree.hpp"
 #include "nono/math/modint.hpp"
 
 namespace nono {
@@ -16,22 +16,22 @@ using Mint = nono::Modint998244353;
 //  c * a * x + c * b + d
 
 struct M {
-    using value_type = std::pair<Mint, int>;
-    using func_type = std::pair<Mint, Mint>;
+    using Value = std::pair<Mint, int>;
+    using Act = std::pair<Mint, Mint>;
 
-    static value_type op(value_type lhs, value_type rhs) {
+    static Value op(Value lhs, Value rhs) {
         return {lhs.first + rhs.first, lhs.second + rhs.second};
     }
-    static value_type e() {
+    static Value e() {
         return {0, 0};
     }
-    static value_type mapping(func_type lhs, value_type rhs) {
+    static Value mapping(Act lhs, Value rhs) {
         return {lhs.first * rhs.first + lhs.second * rhs.second, rhs.second};
     }
-    static func_type composition(func_type lhs, func_type rhs) {
+    static Act composition(Act lhs, Act rhs) {
         return {lhs.first * rhs.first, lhs.first * rhs.second + lhs.second};
     }
-    static func_type id() {
+    static Act id() {
         return {1, 0};
     }
 };

@@ -24,6 +24,7 @@ Compressed Sparse Row Array. 二次元配列を一次元に潰すやつ. 使っ�
 
 **TODO**: 二分探索
 ### [lazy-segment-tree](./lazy-segment-tree.md)
+区間作用 区間取得のsegment tree. acl のインターフェースを少し変えただけ. <https://atcoder.github.io/ac-library/master/document_ja/lazysegtree.html>
 ### [offline-dynamic-connectivity](./offline-dynamic-connectivity.md)
 ### [potentialized-union-find](./potentialized-union-find.md)
 ### [range-add-fenwick-tree](./range-add-fenwick-tree.md)

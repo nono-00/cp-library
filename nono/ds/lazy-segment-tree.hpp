@@ -1,124 +1,181 @@
 #pragma once
 
-#include <algorithm>
 #include <bit>
 #include <cassert>
 #include <vector>
 
 namespace nono {
 
+///  brief : 区間作用 区間取得のsegment tree. acl のインターフェースを少し変えただけ. <https://atcoder.github.io/ac-library/master/document_ja/lazysegtree.html>
 template <class M>
-class LazySegmentTree {
-    using T = M::value_type;
-    using F = M::func_type;
+struct LazySegmentTree {
+    using T = M::Value;
+    using F = M::Act;
 
   public:
-    LazySegmentTree(int n): n_(n), log_(std::bit_width((unsigned)n_)), data_(2 * n_, M::e()), lazy_(n_, M::id()) {}
-    LazySegmentTree(const std::vector<T>& data)
-        : n_(data.size()),
-          log_(std::bit_width((unsigned)n_)),
-          data_(2 * n_, M::e()),
-          lazy_(n_, M::id()) {
-        std::copy(data.begin(), data.end(), data_.begin() + n_);
-        for (int i = n_ - 1; i > 0; i--) {
+    LazySegmentTree(): LazySegmentTree(0) {}
+    explicit LazySegmentTree(int n): LazySegmentTree(std::vector<T>(n, M::e())) {}
+    explicit LazySegmentTree(const std::vector<T>& v): n_(int(v.size())) {
+        size_ = std::bit_ceil((unsigned int)(n_));
+        log_ = std::countr_zero((unsigned int)size_);
+        data_ = std::vector<T>(2 * size_, M::e());
+        lazy_ = std::vector<F>(size_, M::id());
+        for (int i = 0; i < n_; i++) data_[size_ + i] = v[i];
+        for (int i = size_ - 1; i >= 1; i--) {
             update(i);
         }
     }
 
-    void set(int i, T value) {
-        assert(0 <= i && i < n_);
-        i += n_;
-        for (int j = log_; j > 0; j--) {
-            push(i >> j);
-        }
-        data_[i] = value;
-        for (int j = 1; j <= log_; j++) update(i >> j);
+    void set(int p, T x) {
+        assert(0 <= p && p < n_);
+        p += size_;
+        for (int i = log_; i >= 1; i--) push(p >> i);
+        data_[p] = x;
+        for (int i = 1; i <= log_; i++) update(p >> i);
     }
 
-    void apply(int i, F value) {
-        assert(0 <= i && i < n_);
-        i += n_;
-        for (int j = log_; j > 0; j--) {
-            push(i >> j);
-        }
-        data_[i] = M::mapping(value, data_[i]);
-        for (int j = 1; j <= log_; j++) update(i >> j);
+    T get(int p) {
+        assert(0 <= p && p < n_);
+        p += size_;
+        for (int i = log_; i >= 1; i--) push(p >> i);
+        return data_[p];
     }
 
-    void apply(int left, int right, F value) {
-        assert(0 <= left && left <= n_);
-        assert(left <= right && right <= n_);
-        left += n_;
-        right += n_;
-        for (int i = log_; i > 0; i--) {
-            if ((left >> i) << i != left) push(left >> i);
-            if ((right >> i) << i != right) push((right - 1) >> i);
+    T prod(int l, int r) {
+        assert(0 <= l && l <= r && r <= n_);
+        if (l == r) return M::e();
+
+        l += size_;
+        r += size_;
+
+        for (int i = log_; i >= 1; i--) {
+            if (((l >> i) << i) != l) push(l >> i);
+            if (((r >> i) << i) != r) push((r - 1) >> i);
         }
-        int left_ = left;
-        int right_ = right;
-        for (; left < right; left >>= 1, right >>= 1) {
-            if (left & 1) eval(left++, value);
-            if (right & 1) eval(--right, value);
+
+        T sml = M::e(), smr = M::e();
+        while (l < r) {
+            if (l & 1) sml = M::op(sml, data_[l++]);
+            if (r & 1) smr = M::op(data_[--r], smr);
+            l >>= 1;
+            r >>= 1;
         }
-        left = left_;
-        right = right_;
+
+        return M::op(sml, smr);
+    }
+
+    T all_prod() {
+        return data_[1];
+    }
+
+    void apply(int p, F f) {
+        assert(0 <= p && p < n_);
+        p += size_;
+        for (int i = log_; i >= 1; i--) push(p >> i);
+        data_[p] = M::mapping(f, data_[p]);
+        for (int i = 1; i <= log_; i++) update(p >> i);
+    }
+    void apply(int l, int r, F f) {
+        assert(0 <= l && l <= r && r <= n_);
+        if (l == r) return;
+
+        l += size_;
+        r += size_;
+
+        for (int i = log_; i >= 1; i--) {
+            if (((l >> i) << i) != l) push(l >> i);
+            if (((r >> i) << i) != r) push((r - 1) >> i);
+        }
+
+        {
+            int l2 = l, r2 = r;
+            while (l < r) {
+                if (l & 1) all_apply(l++, f);
+                if (r & 1) all_apply(--r, f);
+                l >>= 1;
+                r >>= 1;
+            }
+            l = l2;
+            r = r2;
+        }
+
         for (int i = 1; i <= log_; i++) {
-            if ((left >> i) << i != left) update(left >> i);
-            if ((right >> i) << i != right) update((right - 1) >> i);
+            if (((l >> i) << i) != l) update(l >> i);
+            if (((r >> i) << i) != r) update((r - 1) >> i);
         }
     }
 
-    T prod(int left, int right) {
-        assert(0 <= left && left <= n_);
-        assert(left <= right && right <= n_);
-        left += n_;
-        right += n_;
-        for (int i = log_; i > 0; i--) {
-            if ((left >> i) << i != left) push(left >> i);
-            if ((right >> i) << i != right) push((right - 1) >> i);
-        }
-        T l_result = M::e();
-        T r_result = M::e();
-        for (; left < right; left >>= 1, right >>= 1) {
-            if (left & 1) l_result = M::op(l_result, data_[left++]);
-            if (right & 1) r_result = M::op(data_[--right], r_result);
-        }
-        return M::op(l_result, r_result);
+    template <class G>
+    int max_right(int l, G g) {
+        assert(0 <= l && l <= n_);
+        assert(g(M::e()));
+        if (l == n_) return n_;
+        l += size_;
+        for (int i = log_; i >= 1; i--) push(l >> i);
+        T sm = M::e();
+        do {
+            while (l % 2 == 0) l >>= 1;
+            if (!g(M::op(sm, data_[l]))) {
+                while (l < size_) {
+                    push(l);
+                    l = (2 * l);
+                    if (g(M::op(sm, data_[l]))) {
+                        sm = M::op(sm, data_[l]);
+                        l++;
+                    }
+                }
+                return l - size_;
+            }
+            sm = M::op(sm, data_[l]);
+            l++;
+        } while ((l & -l) != l);
+        return n_;
     }
 
-    T get(int i) {
-        assert(0 <= i && i < n_);
-        i += n_;
-        for (int j = log_; j > 0; j--) {
-            push(i >> j);
-        }
-        return data_[i];
+    template <class G>
+    int min_left(int r, G g) {
+        assert(0 <= r && r <= n_);
+        assert(g(M::e()));
+        if (r == 0) return 0;
+        r += size_;
+        for (int i = log_; i >= 1; i--) push((r - 1) >> i);
+        T sm = M::e();
+        do {
+            r--;
+            while (r > 1 && (r % 2)) r >>= 1;
+            if (!g(M::op(data_[r], sm))) {
+                while (r < size_) {
+                    push(r);
+                    r = (2 * r + 1);
+                    if (g(M::op(data_[r], sm))) {
+                        sm = M::op(data_[r], sm);
+                        r--;
+                    }
+                }
+                return r + 1 - size_;
+            }
+            sm = M::op(data_[r], sm);
+        } while ((r & -r) != r);
+        return 0;
     }
 
   private:
-    void update(int i) {
-        assert(0 <= i && i < n_);
-        data_[i] = M::op(data_[2 * i], data_[2 * i + 1]);
-    }
-
-    void eval(int i, F value) {
-        data_[i] = M::mapping(value, data_[i]);
-        if (i < n_) lazy_[i] = M::composition(value, lazy_[i]);
-    }
-
-    void push(int i) {
-        assert(0 <= i && i < n_);
-        if (lazy_[i] != M::id()) {
-            eval(2 * i, lazy_[i]);
-            eval(2 * i + 1, lazy_[i]);
-            lazy_[i] = M::id();
-        }
-    }
-
-    int n_;
-    int log_;
+    int n_, size_, log_;
     std::vector<T> data_;
     std::vector<F> lazy_;
+
+    void update(int k) {
+        data_[k] = M::op(data_[2 * k], data_[2 * k + 1]);
+    }
+    void all_apply(int k, F f) {
+        data_[k] = M::mapping(f, data_[k]);
+        if (k < size_) lazy_[k] = M::composition(f, lazy_[k]);
+    }
+    void push(int k) {
+        all_apply(2 * k, lazy_[k]);
+        all_apply(2 * k + 1, lazy_[k]);
+        lazy_[k] = M::id();
+    }
 };
 
 }  //  namespace nono
