@@ -1,4 +1,4 @@
 ## utility
-### [inversion_number]()
 ### [compressor]()
+### [inversion_number]()
 ### [run-length-encoding]()

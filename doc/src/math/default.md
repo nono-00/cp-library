@@ -1,6 +1,6 @@
 ## math
-### [modint]()
+### [bitwise-and-convolution]()
 ### [bitwise-or-convolution]()
 ### [matrix]()
+### [modint]()
 ### [zeta-mobius-transform]()
-### [bitwise-and-convolution]()

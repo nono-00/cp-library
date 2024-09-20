@@ -1,7 +1,7 @@
 ## tree
-### [tree-compressor]()
+### [centroids]()
+### [diameter]()
+### [heavy-light-decomposition]()
 ### [is-tree]()
 木かどうか判定する
-### [heavy-light-decomposition]()
-### [diameter]()
-### [centroids]()
+### [tree-compressor]()

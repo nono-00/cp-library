@@ -37,7 +37,6 @@ def create_directory_structure(src_dir, nono_dir):
         os.makedirs(src_dir)
     subdirs = [d for d in os.listdir(
         nono_dir) if os.path.isdir(os.path.join(nono_dir, d))]
-    print(*subdirs)
     for subdir in subdirs:
         os.makedirs(os.path.join(src_dir, subdir), exist_ok=True)
 
@@ -49,6 +48,7 @@ def create_md_files(src_dir, nono_dir):
         file.write('[Home](default.md)\n')
         subdirs = [d for d in os.listdir(
             nono_dir) if os.path.isdir(os.path.join(nono_dir, d))]
+        subdirs.sort()
         for subdir in subdirs:
             file.write(f'[{subdir}]({subdir}/default.md)\n')
 
@@ -58,19 +58,20 @@ def create_md_files(src_dir, nono_dir):
         # include 文を書く
         subdirs = [d for d in os.listdir(
             nono_dir) if os.path.isdir(os.path.join(nono_dir, d))]
+        subdirs.sort()
         # include 文を書く
         for subdir in subdirs:
             file.write(f'{{{{#include {subdir}/default.md}}}}\n')
 
     # 各サブディレクトリ下の default.md の作成
-    for subdir in os.listdir(nono_dir):
+    for subdir in sorted(os.listdir(nono_dir)):
         subdir_path = os.path.join(nono_dir, subdir)
         if os.path.isdir(subdir_path):
             with open(os.path.join(src_dir, subdir, 'default.md'), 'w') as file:
                 # H1 タイトルをディレクトリ名で書く
                 file.write(f'## {subdir}\n')
                 # nono ディレクトリ下のファイル名を取り出してリストに書く
-                for filename in os.listdir(os.path.join(nono_dir, subdir)):
+                for filename in sorted(os.listdir(os.path.join(nono_dir, subdir))):
                     file_path = os.path.join(nono_dir, subdir, filename)
                     if os.path.isfile(file_path):
                         file.write(f'### [{filename.split(".")[0]}]()\n')
@@ -84,9 +85,6 @@ def remove_directory(dir_path):
     """ 指定されたディレクトリとその内容を削除します。 """
     if os.path.exists(dir_path):
         shutil.rmtree(dir_path)
-        print(f"Deleted {dir_path}")
-    else:
-        print(f"{dir_path} does not exist")
 
 
 if __name__ == "__main__":

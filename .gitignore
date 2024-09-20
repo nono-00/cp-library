@@ -3,3 +3,5 @@ out
 ans
 a.out
 .expanded.cpp
+*.swp
+/doc/src
