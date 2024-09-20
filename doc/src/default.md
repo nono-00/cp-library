@@ -32,6 +32,7 @@ Compressed Sparse Row Array. 二次元配列を一次元に潰すやつ. 使っ�
 ### [potentialized-union-find](./potentialized-union-find.md)
 UnionFind with Potential. 可換/非可換どちらでも動く.
 ### [range-add-fenwick-tree](./range-add-fenwick-tree.md)
+区間加算区間取得 Fenwick Tree. lazy segment tree よりも定数倍が良い(はず).
 ### [range-segment-tree](./range-segment-tree.md)
 ### [segment-tree-2d](./segment-tree-2d.md)
 ### [segment-tree](./segment-tree.md)
