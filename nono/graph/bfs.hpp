@@ -1,6 +1,6 @@
 #pragma once
 
-#include <limits>
+#include <optional>
 #include <queue>
 #include <vector>
 
@@ -8,14 +8,10 @@
 
 namespace nono {
 
-//  幅優先探索
-//
-//  到達できない頂点の値はstd::numeric_limits<T>::min()
+///  brief : 幅優先探索. 使ったことがない.
 template <class T>
-std::vector<T> bfs(const Graph<T>& graph, int source) {
-    constexpr T NONE = std::numeric_limits<T>::min();
-
-    std::vector<T> dist(graph.size(), NONE);
+std::vector<std::optional<T>> bfs(const Graph<T>& graph, int source) {
+    std::vector<std::optional<T>> dist(graph.size());
     dist[source] = 0;
     std::queue<int> que;
     que.push(source);
@@ -24,8 +20,8 @@ std::vector<T> bfs(const Graph<T>& graph, int source) {
         int u = que.front();
         que.pop();
         for (const auto& e: graph[u]) {
-            if (dist[e.to] == NONE) {
-                dist[e.to] = dist[u] + e.weight;
+            if (!dist[e.to]) {
+                dist[e.to] = *dist[u] + e.weight;
                 que.push(e.to);
             }
         }

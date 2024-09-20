@@ -24,8 +24,8 @@ void solve() {
     auto graph = to_directed_graph(n1 + n2, edges);
     auto dist1 = bfs(graph, 0);
     auto dist2 = bfs(graph, n1 + n2 - 1);
-    std::cout << *std::max_element(dist1.begin(), dist1.begin() + n1)
-                     + *std::max_element(dist2.begin() + n1, dist2.end()) + 1
+    std::cout << **std::max_element(dist1.begin(), dist1.begin() + n1)
+                     + **std::max_element(dist2.begin() + n1, dist2.end()) + 1
               << std::endl;
 }
 
