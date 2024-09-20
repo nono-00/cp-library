@@ -79,7 +79,9 @@ Undoが可能なUnionFind
 ### [bellman-ford](./graph/bellman-ford.md)
 負辺ありの単一始点最短経路問題を解く. \\( O(|E||V|) \\)
 ### [bfs](./graph/bfs.md)
+幅優先探索. 使ったことがない.
 ### [bridges](./graph/bridges.md)
+橋列挙
 ### [contract](./graph/contract.md)
 ### [cycle-detection](./graph/cycle-detection.md)
 ### [dijkstra](./graph/dijkstra.md)
