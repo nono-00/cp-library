@@ -1,18 +1,11 @@
-# Summary
-
-[Introduction](./introduction.md)
-
-# Library
-
-- [Algo](./algo/README.md)
-- [DataStructure](./data-structure/README.md)
-- [Geometry](./geometry/README.md)
-- [Graph](./graph/README.md)
-- [Heuristic](./heuristic/README.md)
-- [Math](./math/README.md)
-- [String](./string/README.md)
-- [Tree](./tree/README.md)
-- [Utility](./utility/README.md)
-
-# Tips
-
+# SUMMARY
+[Home](default.md)
+[tree](tree/default.md)
+[ds](ds/default.md)
+[heuristic](heuristic/default.md)
+[graph](graph/default.md)
+[algorithm](algorithm/default.md)
+[math](math/default.md)
+[string](string/default.md)
+[geometry](geometry/default.md)
+[utility](utility/default.md)

@@ -7,8 +7,7 @@
 
 namespace nono {
 
-//  brief:
-//  - 木かどうか判定する
+///  brief  : 木かどうか判定する
 template <class T>
 bool is_tree(const Graph<T>& graph) {
     if (graph.is_directed()) return false;
