@@ -9,7 +9,7 @@ namespace nono {
 void solve() {
     int n, q;
     std::cin >> n >> q;
-    DynamicLiChaoTree<long long, int> tree;
+    MinDynamicLiChaoTree<long long, int> tree;
     for (int i = 0; i < n; i++) {
         int l, r;
         long long a, b;

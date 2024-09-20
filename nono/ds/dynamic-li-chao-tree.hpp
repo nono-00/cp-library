@@ -9,8 +9,11 @@
 namespace nono {
 
 ///  brief : 直線, 線分追加, ある地点での最小値/最大値取得ができる
-template <class T, class Index>
+
+//  MinDynamicLiChaoTree, MaxDynamicLiChaoTreeを定義してあるので使うと良い
+template <class T, class Index = int, bool minimum = true>
 class DynamicLiChaoTree {
+    static constexpr T compare = minimum ? 1 : -1;
     struct Line {
         Line(T a = 0, T b = 0): a(a), b(b) {}
         T a, b;
@@ -46,11 +49,12 @@ class DynamicLiChaoTree {
     //  [l, r)にax+bを追加
     void add_segment(Index l, Index r, T a, T b) {
         assert(lb_ <= l && l <= r && r <= ub_);
-        add(root_, lb_, ub_, l, r, Line(a, b));
+        add(root_, lb_, ub_, l, r, Line(compare * a, compare * b));
     }
     std::optional<T> get(Index x) {
         assert(lb_ <= x && x < ub_);
-        return get(root_, lb_, ub_, x);
+        auto result = get(root_, lb_, ub_, x);
+        return result ? compare * *result : result;
     }
 
   private:
@@ -121,5 +125,11 @@ class DynamicLiChaoTree {
     Index ub_;
     NodePtr root_;
 };
+
+template <class T, class Index = int>
+using MinDynamicLiChaoTree = DynamicLiChaoTree<T, Index, true>;
+
+template <class T, class Index = int>
+using MaxDynamicLiChaoTree = DynamicLiChaoTree<T, Index, false>;
 
 }  //  namespace nono
