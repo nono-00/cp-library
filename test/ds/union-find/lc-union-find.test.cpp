@@ -1,7 +1,7 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/unionfind"
 #include <iostream>
 
-#include "nono/data-structure/union-find.hpp"
+#include "nono/ds/union-find.hpp"
 
 namespace nono {
 

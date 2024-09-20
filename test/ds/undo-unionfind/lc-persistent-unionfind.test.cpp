@@ -4,7 +4,7 @@
 #include <utility>
 #include <vector>
 
-#include "nono/data-structure/undo-unionfind.hpp"
+#include "nono/ds/undo-unionfind.hpp"
 #include "nono/graph/base.hpp"
 
 namespace nono {

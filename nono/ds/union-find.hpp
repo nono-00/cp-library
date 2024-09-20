@@ -6,8 +6,7 @@
 
 namespace nono {
 
-//  brief:
-//  - 連結成分を管理する
+///  brief : 連結成分を管理する
 class UnionFind {
   public:
     UnionFind() = default;

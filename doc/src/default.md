@@ -50,7 +50,9 @@ deprecated
 ### [two-stack-queue](./two-stack-queue.md)
 二つのStackをくっつけてQueueにするやつ. 要素の総積を計算できる
 ### [undo-unionfind](./undo-unionfind.md)
+Undoが可能なUnionFind
 ### [union-find](./union-find.md)
+連結成分を管理する
 ## geometry
 ## graph
 ### [articulation-points](./articulation-points.md)

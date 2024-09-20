@@ -1,15 +1,13 @@
 #pragma once
 
 #include <algorithm>
-#include <array>
 #include <cassert>
 #include <utility>
 #include <vector>
 
 namespace nono {
 
-//  brief:
-//  - Undoが可能なUnionFind
+///  brief : Undoが可能なUnionFind
 class UndoUnionFind {
     struct History {
         int lhs;
