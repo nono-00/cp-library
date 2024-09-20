@@ -6,6 +6,7 @@
     - [csr-array](./csr-array.md)
     - [disjoint-sparse-table](./disjoint-sparse-table.md)
     - [dual-segment-tree](./dual-segment-tree.md)
+    - [dynamic-li-chao-tree](./dynamic-li-chao-tree.md)
     - [dynamic-segment-tree-2d](./dynamic-segment-tree-2d.md)
     - [dynamic-segment-tree](./dynamic-segment-tree.md)
     - [fenwick-range-tree](./fenwick-range-tree.md)

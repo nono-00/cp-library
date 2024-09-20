@@ -9,6 +9,8 @@ Compressed Sparse Row Array. 二次元配列を一次元に潰すやつ. 使っ�
 静的な区間積クエリを前処理\\( O(n \log n) \\), クエリ \\( O(1) \\)で. Disjointなので, 冪等律を要求しない.
 ### [dual-segment-tree](./dual-segment-tree.md)
 区間作用, 一点取得のsegment tree. 作用が可換のもののみに対応.
+### [dynamic-li-chao-tree](./dynamic-li-chao-tree.md)
+直線, 線分追加, ある地点での最小値/最大値取得ができる
 ### [dynamic-segment-tree-2d](./dynamic-segment-tree-2d.md)
 座圧せずに使える二次元segment tree. とっっても遅い
 ### [dynamic-segment-tree](./dynamic-segment-tree.md)
