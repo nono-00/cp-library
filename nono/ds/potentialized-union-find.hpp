@@ -2,38 +2,18 @@
 
 #include <algorithm>
 #include <cassert>
+#include <optional>
 #include <vector>
 
 namespace nono {
 
-//  brief:
-//  - 連結成分を管理する
+///  brief : UnionFind with Potential. 可換/非可換どちらでも動く.
 template <class G>
 class PotentializedUnionFind {
-    using T = G::value_type;
-
-    class Result_ {
-      public:
-        Result_() {}
-        Result_(T potential): potential_(potential), valid_(true) {}
-
-        bool invalid() const {
-            return !valid_;
-        }
-
-        T potential() const {
-            assert(valid_);
-            return potential_;
-        }
-
-      private:
-        T potential_ = G::e();
-        bool valid_ = false;
-    };
+    using T = G::Value;
+    using Result = std::optional<T>;
 
   public:
-    using value_type = T;
-
     PotentializedUnionFind() = default;
     PotentializedUnionFind(int n): n_(n), data_(n, -1), potential_(n, G::e()) {}
 
@@ -61,7 +41,7 @@ class PotentializedUnionFind {
         if (same(lhs, rhs)) {
             return false;
         }
-        diff = G::op(diff, G::op(potential(lhs), G::inv(potential(rhs))));
+        diff = G::op(G::inv(potential(rhs)), G::op(diff, potential(lhs)));
         lhs = leader(lhs);
         rhs = leader(rhs);
         //  size(lhs) > size(rhs)とする
@@ -90,13 +70,13 @@ class PotentializedUnionFind {
     //  return:
     //  - `lhs`, `rhs` が同じ連結成分に属しているのならば、上述のポテンシャル
     //  - そうでないならば `INF`
-    Result_ potential(int lhs, int rhs) {
+    Result potential(int lhs, int rhs) {
         assert(0 <= lhs && lhs < n_);
         assert(0 <= rhs && rhs < n_);
         if (same(lhs, rhs)) {
-            return Result_(G::op(potential(rhs), G::inv(potential(lhs))));
+            return Result(G::op(potential(rhs), G::inv(potential(lhs))));
         } else {
-            return Result_();
+            return std::nullopt;
         }
     }
 

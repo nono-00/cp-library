@@ -1,12 +1,15 @@
-#define PROBLEM "https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/1/DSL_1_B"
+#define PROBLEM "https://judge.yosupo.jp/problem/unionfind_with_potential"
 #include <iostream>
 
 #include "nono/ds/potentialized-union-find.hpp"
+#include "nono/math/modint.hpp"
 
 namespace nono {
 
+using Mint = Modint998244353;
+
 struct Add {
-    using Value = int;
+    using Value = Mint;
     static Value op(Value lhs, Value rhs) {
         return lhs + rhs;
     }
@@ -14,7 +17,7 @@ struct Add {
         return 0;
     }
     static Value inv(Value value) {
-        return -value;
+        return -1 * value;
     }
 };
 
@@ -27,15 +30,22 @@ void solve() {
         int t;
         std::cin >> t;
         if (t == 0) {
-            int x, y, z;
+            int x, y;
+            Mint z;
             std::cin >> x >> y >> z;
-            puf.merge(x, y, z);
+            if (puf.merge(x, y, z)) {
+                std::cout << 1 << '\n';
+            } else if (puf.potential(x, y) == z) {
+                std::cout << 1 << '\n';
+            } else {
+                std::cout << 0 << '\n';
+            }
         } else {
             int x, y;
             std::cin >> x >> y;
             auto result = puf.potential(x, y);
             if (!result) {
-                std::cout << '?' << std::endl;
+                std::cout << -1 << std::endl;
             } else {
                 std::cout << *result << std::endl;
             }
