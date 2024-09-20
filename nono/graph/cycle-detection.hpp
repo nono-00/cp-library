@@ -52,7 +52,7 @@ class CycleDetectionResult {
 
 }  //  namespace internal
 
-//  サイクル検出. 無向, 有向, 単純, 非単純問わず実行可能.
+/// brief : サイクル検出. 無向, 有向, 単純, 非単純問わない.
 template <class T>
 auto cycle_detection(const Graph<T>& graph) {
     using internal::State;

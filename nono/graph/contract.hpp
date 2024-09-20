@@ -7,6 +7,10 @@
 
 namespace nono {
 
+///  brief : グラフを縮約する. 二辺連結成分分解や強連結成分分解したあとに使うと便利.
+
+//  自己ループは無い, 多重辺はあるので注意
+//  二重辺連結成分分解, 強連結成分などの場合はとくに気にすることは無い
 template <class T>
 Graph<T> contract(const Graph<T>& graph, const std::vector<std::vector<int>>& groups) {
     constexpr int NONE = -1;

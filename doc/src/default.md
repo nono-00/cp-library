@@ -83,7 +83,9 @@ Undoが可能なUnionFind
 ### [bridges](./graph/bridges.md)
 橋列挙
 ### [contract](./graph/contract.md)
+グラフを縮約する. 二辺連結成分分解や強連結成分分解したあとに使うと便利.
 ### [cycle-detection](./graph/cycle-detection.md)
+サイクル検出. 無向, 有向, 単純, 非単純問わない.
 ### [dijkstra](./graph/dijkstra.md)
 ### [kruskal](./graph/kruskal.md)
 ### [segment-edge](./graph/segment-edge.md)
