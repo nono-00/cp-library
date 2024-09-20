@@ -1,100 +1,115 @@
 # nonolib
 ## algorithm
 ## ds
-### [binary-trie](./binary-trie.md)
+### [binary-trie](./ds/binary-trie.md)
 非負整数用のset. kth_elementやxormin/max, 全部にxorなどができる
-### [csr-array](./csr-array.md)
+### [csr-array](./ds/csr-array.md)
 Compressed Sparse Row Array. 二次元配列を一次元に潰すやつ. 使ったことがない.
-### [disjoint-sparse-table](./disjoint-sparse-table.md)
+### [disjoint-sparse-table](./ds/disjoint-sparse-table.md)
 静的な区間積クエリを前処理\\( O(n \log n) \\), クエリ \\( O(1) \\)で. Disjointなので, 冪等律を要求しない.
-### [dual-segment-tree](./dual-segment-tree.md)
+### [dual-segment-tree](./ds/dual-segment-tree.md)
 区間作用, 一点取得のsegment tree. 作用が可換のもののみに対応.
-### [dynamic-li-chao-tree](./dynamic-li-chao-tree.md)
+### [dynamic-li-chao-tree](./ds/dynamic-li-chao-tree.md)
 直線, 線分追加, ある地点での最小値/最大値取得ができる
-### [dynamic-segment-tree-2d](./dynamic-segment-tree-2d.md)
+### [dynamic-segment-tree-2d](./ds/dynamic-segment-tree-2d.md)
 座圧せずに使える二次元segment tree. とっっても遅い
-### [dynamic-segment-tree](./dynamic-segment-tree.md)
+### [dynamic-segment-tree](./ds/dynamic-segment-tree.md)
 座圧せずに使えるsegment tree. とても遅い.
 
 **TODO**: 二分探索
-### [fenwick-range-tree](./fenwick-range-tree.md)
+### [fenwick-range-tree](./ds/fenwick-range-tree.md)
 領域木fenwick tree盛り. 一点加算座標が事前にわかる場合に使える二次元 fenwick tree.
-### [fenwick-tree-2d](./fenwick-tree-2d.md)
+### [fenwick-tree-2d](./ds/fenwick-tree-2d.md)
 一点加算、総和取得が \\( O(\log ^ 2 N) \\) で可能
-### [fenwick-tree](./fenwick-tree.md)
+### [fenwick-tree](./ds/fenwick-tree.md)
 一点加算区間取得. segment treeよりも定数倍が良い.
 
 **TODO**: 二分探索
-### [lazy-segment-tree](./lazy-segment-tree.md)
+### [lazy-segment-tree](./ds/lazy-segment-tree.md)
 区間作用 区間取得のsegment tree. acl のインターフェースを少し変えただけ. <https://atcoder.github.io/ac-library/master/document_ja/lazysegtree.html>
-### [offline-dynamic-connectivity](./offline-dynamic-connectivity.md)
+### [li-chao-tree](./ds/li-chao-tree.md)
+
+**TODO**: implementation
+### [offline-dynamic-connectivity](./ds/offline-dynamic-connectivity.md)
 オフライン辺追加/削除クエリを捌きながら, 連結成分を管理するやつ
 
 **TODO**: interfaceがカスかも？
-### [potentialized-union-find](./potentialized-union-find.md)
+### [potentialized-union-find](./ds/potentialized-union-find.md)
 UnionFind with Potential. 可換/非可換どちらでも動く.
-### [range-add-fenwick-tree](./range-add-fenwick-tree.md)
+### [range-add-fenwick-tree](./ds/range-add-fenwick-tree.md)
 区間加算区間取得 Fenwick Tree. lazy segment tree よりも定数倍が良い(はず).
-### [range-segment-tree](./range-segment-tree.md)
+### [range-segment-tree](./ds/range-segment-tree.md)
 領域木segment tree盛り. 一点加算座標が事前にわかる場合に使える二次元 segment tree.
-### [segment-tree-2d](./segment-tree-2d.md)
+### [segment-tree-2d](./ds/segment-tree-2d.md)
 一点更新矩形取得 二次元segment tree.
-### [segment-tree](./segment-tree.md)
+### [segment-tree-beats](./ds/segment-tree-beats.md)
+
+**TODO**: implementation
+### [segment-tree](./ds/segment-tree.md)
 一点更新 区間取得のsegment tree. <https://atcoder.github.io/ac-library/master/document_ja/segtree.html>
-### [sparse-table-2d](./sparse-table-2d.md)
+### [sparse-table-2d](./ds/sparse-table-2d.md)
 静的な矩形領域積クエリを前処理\\( O(n \log ^ 2 n) \\), クエリ \\( O(1) \\)で. メモリ使用量がバカ.
-### [sparse-table](./sparse-table.md)
+### [sparse-table](./ds/sparse-table.md)
 静的な区間積クエリを前処理\\( O(n \log n) \\), クエリ \\( O(1) \\)で. だいたいDisjointを使った方が良い
-### [splay-tree](./splay-tree.md)
+### [splay-tree](./ds/splay-tree.md)
 deprecated
-### [two-stack-deque](./two-stack-deque.md)
+### [treap](./ds/treap.md)
+
+**TODO**: implementation
+### [trie-sequence](./ds/trie-sequence.md)
+
+**TODO**: implementation
+### [two-stack-deque](./ds/two-stack-deque.md)
 二つのStackをくっつけてDequeにするやつ. 要素の総積を計算できる
-### [two-stack-queue](./two-stack-queue.md)
+### [two-stack-queue](./ds/two-stack-queue.md)
 二つのStackをくっつけてQueueにするやつ. 要素の総積を計算できる
-### [undo-unionfind](./undo-unionfind.md)
+### [undo-unionfind](./ds/undo-unionfind.md)
 Undoが可能なUnionFind
-### [union-find](./union-find.md)
+### [union-find](./ds/union-find.md)
 連結成分を管理する
 ## geometry
+### [base](./geometry/base.md)
+
+**TODO**: split
 ## graph
-### [articulation-points](./articulation-points.md)
-### [base](./base.md)
-### [bellman-ford](./bellman-ford.md)
-### [bfs](./bfs.md)
-### [bridges](./bridges.md)
-### [contract](./contract.md)
-### [cycle-detection](./cycle-detection.md)
-### [dijkstra](./dijkstra.md)
-### [kruskal](./kruskal.md)
-### [segment-edge](./segment-edge.md)
-### [strongly-connected-components](./strongly-connected-components.md)
-### [topological-sort](./topological-sort.md)
-### [two-edge-connected-components](./two-edge-connected-components.md)
+### [articulation-points](./graph/articulation-points.md)
+### [base](./graph/base.md)
+### [bellman-ford](./graph/bellman-ford.md)
+### [bfs](./graph/bfs.md)
+### [bridges](./graph/bridges.md)
+### [contract](./graph/contract.md)
+### [cycle-detection](./graph/cycle-detection.md)
+### [dijkstra](./graph/dijkstra.md)
+### [kruskal](./graph/kruskal.md)
+### [segment-edge](./graph/segment-edge.md)
+### [strongly-connected-components](./graph/strongly-connected-components.md)
+### [topological-sort](./graph/topological-sort.md)
+### [two-edge-connected-components](./graph/two-edge-connected-components.md)
 ## heuristic
-### [index-set](./index-set.md)
-### [timer](./timer.md)
-### [xorshift](./xorshift.md)
+### [index-set](./heuristic/index-set.md)
+### [timer](./heuristic/timer.md)
+### [xorshift](./heuristic/xorshift.md)
 ## math
-### [bitwise-and-convolution](./bitwise-and-convolution.md)
-### [bitwise-or-convolution](./bitwise-or-convolution.md)
-### [matrix](./matrix.md)
-### [modint](./modint.md)
-### [zeta-mobius-transform](./zeta-mobius-transform.md)
+### [bitwise-and-convolution](./math/bitwise-and-convolution.md)
+### [bitwise-or-convolution](./math/bitwise-or-convolution.md)
+### [matrix](./math/matrix.md)
+### [modint](./math/modint.md)
+### [zeta-mobius-transform](./math/zeta-mobius-transform.md)
 ## string
-### [](./.md)
-### [lcp-array](./lcp-array.md)
-### [manacher](./manacher.md)
-### [suffix-array](./suffix-array.md)
-### [z-algorithm](./z-algorithm.md)
+### [](./string/.md)
+### [lcp-array](./string/lcp-array.md)
+### [manacher](./string/manacher.md)
+### [suffix-array](./string/suffix-array.md)
+### [z-algorithm](./string/z-algorithm.md)
 ## tree
-### [centroids](./centroids.md)
-### [diameter](./diameter.md)
-### [heavy-light-decomposition](./heavy-light-decomposition.md)
-### [is-tree](./is-tree.md)
+### [centroids](./tree/centroids.md)
+### [diameter](./tree/diameter.md)
+### [heavy-light-decomposition](./tree/heavy-light-decomposition.md)
+### [is-tree](./tree/is-tree.md)
 木かどうか判定する
-### [tree-compressor](./tree-compressor.md)
+### [tree-compressor](./tree/tree-compressor.md)
 ## utility
-### [compressor](./compressor.md)
-### [debug](./debug.md)
-### [inversion_number](./inversion_number.md)
-### [run-length-encoding](./run-length-encoding.md)
+### [compressor](./utility/compressor.md)
+### [debug](./utility/debug.md)
+### [inversion_number](./utility/inversion_number.md)
+### [run-length-encoding](./utility/run-length-encoding.md)

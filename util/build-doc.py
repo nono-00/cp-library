@@ -39,45 +39,46 @@ def create_directory_structure(src_dir, nono_dir):
 
 def create_md_files(src_dir, nono_dir):
     """ src_dir およびそのサブディレクトリ下に default.md を作成します。 """
-    with open(os.path.join(src_dir, 'SUMMARY.md'), 'w') as file1:
-        file1.write('# SUMMARY\n')
-        file1.write('[Home](default.md)\n')
+    with open(os.path.join(src_dir, 'SUMMARY.md'), 'w') as summary:
+        summary.write('# SUMMARY\n')
+        summary.write('[Home](default.md)\n')
 
         # src/default.md の作成
-        with open(os.path.join(src_dir, 'default.md'), 'w') as file:
-            file.write("# nonolib\n")
+        with open(os.path.join(src_dir, 'default.md'), 'w') as default:
+            default.write("# nonolib\n")
             # include 文を書く
             subdirs = [d for d in os.listdir(
                 nono_dir) if os.path.isdir(os.path.join(nono_dir, d))]
             subdirs.sort()
             for subdir in subdirs:
                 subdir_path = os.path.join(nono_dir, subdir)
+                os.makedirs(os.path.join(src_dir, subdir))
                 # H1 タイトルをディレクトリ名で書く
-                file.write(f'## {subdir}\n')
-                file1.write(f'- [{subdir}]()\n')
+                default.write(f'## {subdir}\n')
+                summary.write(f'- [{subdir}]()\n')
                 # nono ディレクトリ下のファイル名を取り出してリストに書く
                 for filename in sorted(os.listdir(subdir_path)):
                     file_path = os.path.join(subdir_path, filename)
                     if os.path.isfile(file_path):
-                        with open(os.path.join(src_dir, filename.split('.')[0] + ".md"), 'w') as file2:
-                            rel_file_path = os.path.join("./../", file_path)
-                            file2.write(f'# {filename.split(".")[0]}\n')
-                            file2.write('```cpp\n')
-                            file2.write(
+                        with open(os.path.join(src_dir, subdir, filename.split('.')[0] + ".md"), 'w') as file:
+                            rel_file_path = os.path.join("./../../", file_path)
+                            file.write(f'# {filename.split(".")[0]}\n')
+                            file.write('```cpp\n')
+                            file.write(
                                 f'{{{{#include {rel_file_path}}}}}\n')
-                            file2.write('```\n')
-                        file.write(
-                            f'### [{filename.split(".")[0]}]({"./" + filename.split(".")[0] + ".md"})\n')
-                        file1.write(
-                            f'    - [{filename.split(".")[0]}]({"./" + filename.split(".")[0] + ".md"})\n')
+                            file.write('```\n')
+                        default.write(
+                            f'### [{filename.split(".")[0]}]({"./" + subdir + "/" + filename.split(".")[0] + ".md"})\n')
+                        summary.write(
+                            f'    - [{filename.split(".")[0]}]({"./" + subdir + "/" + filename.split(".")[0] + ".md"})\n')
                         data = extract_and_convert_to_json(file_path)
                         if "brief" in data:
-                            file.write(data['brief'])
-                            file.write('\n')
+                            default.write(data['brief'])
+                            default.write('\n')
                         if "TODO" in data:
-                            file.write("\n**TODO**: ")
-                            file.write(data['TODO'])
-                            file.write('\n')
+                            default.write("\n**TODO**: ")
+                            default.write(data['TODO'])
+                            default.write('\n')
 
 
 def remove_directory(dir_path):
