@@ -44,6 +44,7 @@ UnionFind with Potential. 可換/非可換どちらでも動く.
 ### [sparse-table](./sparse-table.md)
 静的な区間積クエリを前処理\\( O(n \log n) \\), クエリ \\( O(1) \\)で. だいたいDisjointを使った方が良い
 ### [splay-tree](./splay-tree.md)
+deprecated
 ### [two-stack-deque](./two-stack-deque.md)
 ### [two-stack-queue](./two-stack-queue.md)
 ### [undo-unionfind](./undo-unionfind.md)

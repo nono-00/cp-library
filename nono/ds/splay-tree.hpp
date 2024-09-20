@@ -9,6 +9,7 @@
 
 namespace nono {
 
+///  brief : deprecated
 template <class Key, class T>
 class SplayTree {
     struct Node;
