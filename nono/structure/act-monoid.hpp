@@ -42,13 +42,13 @@ struct RangeAddCountMin {
     //  (min, count)
     struct Value {
         Value(): min(std::nullopt), num(0) {}
-        Value(T val, Count num = 1): min(val), num(num) {}
+        Value(std::optional<T> val, Count num = 1): min(val), num(num) {}
         std::optional<T> min;
         Count num;
     };
     using Act = T;
     static Value op(Value lhs, Value rhs) {
-        if (lhs.min == rhs.min) return {lhs.min, lhs.num + rhs.num};
+        if (lhs.min == rhs.min) return Value{lhs.min, lhs.num + rhs.num};
         if (!lhs.min) return rhs;
         if (!rhs.min) return lhs;
         return lhs.min < rhs.min ? lhs : rhs;
@@ -57,7 +57,7 @@ struct RangeAddCountMin {
         return Value{};
     }
     static Value mapping(Act act, Value value) {
-        if (value.min) return {value.min + act, value.num};
+        if (value.min) return Value{*value.min + act, value.num};
         return value;
     }
     static Act composition(Act lhs, Act rhs) {
@@ -72,13 +72,13 @@ struct RangeAddCountMax {
     //  (min, count)
     struct Value {
         Value(): max(std::nullopt), num(0) {}
-        Value(T val, Count num = 1): max(val), num(num) {}
+        Value(std::optional<T> val, Count num = 1): max(val), num(num) {}
         std::optional<T> max;
         Count num;
     };
     using Act = T;
     static Value op(Value lhs, Value rhs) {
-        if (lhs.max == rhs.max) return {lhs.max, lhs.num + rhs.num};
+        if (lhs.max == rhs.max) return Value{lhs.max, lhs.num + rhs.num};
         if (!lhs.max) return rhs;
         if (!rhs.max) return lhs;
         return lhs.max > rhs.max ? lhs : rhs;
@@ -87,7 +87,7 @@ struct RangeAddCountMax {
         return Value{};
     }
     static Value mapping(Act act, Value value) {
-        if (value.max) return {value.max + act, value.num};
+        if (value.max) return Value{*value.max + act, value.num};
         return value;
     }
     static Act composition(Act lhs, Act rhs) {
@@ -128,8 +128,9 @@ struct Rev {
 };
 template <class T>
 struct RangeAddRangeGcd {
-    struct Value {
-        Value(T v = 0): left(v), right(v), tot(0) {}
+  private:
+    struct Value_ {
+        Value_(T v = 0): left(v), right(v), tot(0) {}
         T left = 0;
         T right = 0;
         T tot = 0;
@@ -137,20 +138,25 @@ struct RangeAddRangeGcd {
             return std::gcd(tot, left);
         }
     };
+
+  public:
+    using Value = std::optional<Value_>;
     using Act = T;
     static Value op(Value lhs, Value rhs) {
-        Value res;
-        res.left = lhs.left;
-        res.right = rhs.right;
-        res.tot = std::gcd(lhs.tot, std::gcd(rhs.tot, std::abs(lhs.right - rhs.left)));
+        if (!lhs) return rhs;
+        if (!rhs) return lhs;
+        Value res{0};
+        res->left = lhs->left;
+        res->right = rhs->right;
+        res->tot = std::gcd(lhs->tot, std::gcd(rhs->tot, std::abs(lhs->right - rhs->left)));
         return res;
     }
     static Value e() {
-        return Value{};
+        return std::nullopt;
     }
     static Value mapping(Act act, Value value) {
-        value.left += act;
-        value.right += act;
+        value->left += act;
+        value->right += act;
         return value;
     }
     static Act composition(Act lhs, Act rhs) {
@@ -172,7 +178,7 @@ struct RangeUpdateRangeGcd {
     }
     static Value mapping(Act act, Value value) {
         if (!act) return value;
-        return act;
+        return *act;
     }
     static Act composition(Act lhs, Act rhs) {
         if (!lhs) return rhs;

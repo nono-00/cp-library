@@ -26,24 +26,24 @@ void solve() {
     for (unsigned i = 0; i < 3; i++) {
         for (unsigned j = 0; j < 3; j++) {
             for (unsigned k = 0; k < 3; k++) {
-                assert(test_associativity<Monoid>(Value{{i, 0}}, Value{{j, 1}}, Value{{k, 2}}));
+                assert(test_value_associativity<Monoid>(Value{{i, 0}}, Value{{j, 1}}, Value{{k, 2}}));
             }
         }
     }
     for (unsigned i = 0; i < 3; i++) {
         for (unsigned j = 0; j < 3; j++) {
-            assert(test_associativity<Monoid>(Value{{i, 0}}, Value{{j, 1}}, std::nullopt));
-            assert(test_associativity<Monoid>(Value{{i, 0}}, std::nullopt, Value{{j, 2}}));
-            assert(test_associativity<Monoid>(std::nullopt, Value{{i, 1}}, Value{{j, 2}}));
+            assert(test_value_associativity<Monoid>(Value{{i, 0}}, Value{{j, 1}}, std::nullopt));
+            assert(test_value_associativity<Monoid>(Value{{i, 0}}, std::nullopt, Value{{j, 2}}));
+            assert(test_value_associativity<Monoid>(std::nullopt, Value{{i, 1}}, Value{{j, 2}}));
         }
     }
     for (unsigned i = 0; i < 3; i++) {
-        assert(test_associativity<Monoid>(Value{{i, 0}}, std::nullopt, std::nullopt));
-        assert(test_associativity<Monoid>(std::nullopt, Value{{i, 1}}, std::nullopt));
-        assert(test_associativity<Monoid>(std::nullopt, std::nullopt, Value{{i, 2}}));
+        assert(test_value_associativity<Monoid>(Value{{i, 0}}, std::nullopt, std::nullopt));
+        assert(test_value_associativity<Monoid>(std::nullopt, Value{{i, 1}}, std::nullopt));
+        assert(test_value_associativity<Monoid>(std::nullopt, std::nullopt, Value{{i, 2}}));
     }
     for (unsigned i = 0; i < 10; i++) {
-        assert(test_identity<Monoid>(Value{{i, 0}}));
+        assert(test_value_identity<Monoid>(Value{{i, 0}}));
     }
 }
 

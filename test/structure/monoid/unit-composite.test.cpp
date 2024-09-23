@@ -19,12 +19,12 @@ namespace nono {
 
 void solve() {
     //  fix
-    assert(test_associativity<Monoid>(Value{1, 0}, Value{0, 0}, Value{10, 20}));
-    assert(test_associativity<Monoid>(Value{10, 20}, Value{20, 50}, Value{30, 1}));
-    assert(test_associativity<Monoid>(Value{30, 10}, Value{30, 40}, Value{50, 0}));
-    assert(test_identity<Monoid>(Value{30, 10}));
-    assert(test_identity<Monoid>(Value{30, 40}));
-    assert(test_identity<Monoid>(Value{50, 0}));
+    assert(test_value_associativity<Monoid>(Value{1, 0}, Value{0, 0}, Value{10, 20}));
+    assert(test_value_associativity<Monoid>(Value{10, 20}, Value{20, 50}, Value{30, 1}));
+    assert(test_value_associativity<Monoid>(Value{30, 10}, Value{30, 40}, Value{50, 0}));
+    assert(test_value_identity<Monoid>(Value{30, 10}));
+    assert(test_value_identity<Monoid>(Value{30, 40}));
+    assert(test_value_identity<Monoid>(Value{50, 0}));
 
     //  random
     std::mt19937 rng(1119);
@@ -33,15 +33,15 @@ void solve() {
         Value a{Mint{rng()}, Mint{rng()}};
         Value b{Mint{rng()}, Mint{rng()}};
         Value c{Mint{rng()}, Mint{rng()}};
-        assert(test_associativity<Monoid>(a, b, c));
-        assert(test_associativity<Monoid>(a, c, b));
-        assert(test_associativity<Monoid>(b, a, c));
-        assert(test_associativity<Monoid>(b, c, a));
-        assert(test_associativity<Monoid>(c, a, b));
-        assert(test_associativity<Monoid>(c, b, a));
-        assert(test_identity<Monoid>(a));
-        assert(test_identity<Monoid>(b));
-        assert(test_identity<Monoid>(c));
+        assert(test_value_associativity<Monoid>(a, b, c));
+        assert(test_value_associativity<Monoid>(a, c, b));
+        assert(test_value_associativity<Monoid>(b, a, c));
+        assert(test_value_associativity<Monoid>(b, c, a));
+        assert(test_value_associativity<Monoid>(c, a, b));
+        assert(test_value_associativity<Monoid>(c, b, a));
+        assert(test_value_identity<Monoid>(a));
+        assert(test_value_identity<Monoid>(b));
+        assert(test_value_identity<Monoid>(c));
     }
 }
 

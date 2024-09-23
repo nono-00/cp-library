@@ -18,11 +18,11 @@ namespace nono {
 
 void solve() {
     //  fix
-    assert(test_associativity<Monoid>(0, 0, 0));
-    assert(test_associativity<Monoid>(10, 20, 30));
-    assert(test_associativity<Monoid>(30, 20, 50));
+    assert(test_value_associativity<Monoid>(0, 0, 0));
+    assert(test_value_associativity<Monoid>(10, 20, 30));
+    assert(test_value_associativity<Monoid>(30, 20, 50));
     for (unsigned i = 0; i < 10; i++) {
-        assert(test_identity<Monoid>(i));
+        assert(test_value_identity<Monoid>(i));
     }
 
     //  random
@@ -33,15 +33,15 @@ void solve() {
         Value a(rng() % lim);
         Value b(rng() % lim);
         Value c(rng() % lim);
-        assert(test_associativity<Monoid>(a, b, c));
-        assert(test_associativity<Monoid>(a, c, b));
-        assert(test_associativity<Monoid>(b, a, c));
-        assert(test_associativity<Monoid>(b, c, a));
-        assert(test_associativity<Monoid>(c, a, b));
-        assert(test_associativity<Monoid>(c, b, a));
-        assert(test_identity<Monoid>(a));
-        assert(test_identity<Monoid>(b));
-        assert(test_identity<Monoid>(c));
+        assert(test_value_associativity<Monoid>(a, b, c));
+        assert(test_value_associativity<Monoid>(a, c, b));
+        assert(test_value_associativity<Monoid>(b, a, c));
+        assert(test_value_associativity<Monoid>(b, c, a));
+        assert(test_value_associativity<Monoid>(c, a, b));
+        assert(test_value_associativity<Monoid>(c, b, a));
+        assert(test_value_identity<Monoid>(a));
+        assert(test_value_identity<Monoid>(b));
+        assert(test_value_identity<Monoid>(c));
     }
 }
 
