@@ -3,26 +3,16 @@
 #include <vector>
 
 #include "nono/ds/segment-tree.hpp"
+#include "nono/structure/monoid.hpp"
 
 namespace nono {
-
-template <class T>
-struct Add {
-    using Value = T;
-    static T op(T lhs, T rhs) {
-        return lhs + rhs;
-    }
-    static T e() {
-        return 0;
-    }
-};
 
 void solve() {
     int n, q;
     std::cin >> n >> q;
     std::vector<long long> a(n);
     for (int i = 0; i < n; i++) std::cin >> a[i];
-    SegmentTree<Add<long long>> segtree(a);
+    SegmentTree<monoid::Add<long long>> segtree(a);
     while (q--) {
         int t;
         std::cin >> t;

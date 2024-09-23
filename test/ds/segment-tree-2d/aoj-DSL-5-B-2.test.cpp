@@ -4,20 +4,10 @@
 #include <vector>
 
 #include "nono/ds/segment-tree-2d.hpp"
+#include "nono/structure/monoid.hpp"
 #include "nono/utility/compressor.hpp"
 
 namespace nono {
-
-template <class T>
-struct Add {
-    using Value = T;
-    static Value op(Value lhs, Value rhs) {
-        return lhs + rhs;
-    }
-    static Value e() {
-        return 0;
-    }
-};
 
 void solve() {
     int n;
@@ -37,7 +27,7 @@ void solve() {
     Compressor y(ys);
     int h = x.size();
     int w = y.size();
-    SegmentTree2D<Add<int>> segtree(h, w);
+    SegmentTree2D<monoid::Add<int>> segtree(h, w);
 
     auto put = [&](int x1, int y1, int diff) {
         x1 = x.compress(x1);

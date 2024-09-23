@@ -3,24 +3,15 @@
 #include <iostream>
 
 #include "nono/ds/dynamic-segment-tree-2d.hpp"
+#include "nono/structure/monoid.hpp"
 
 namespace nono {
-
-template <class T>
-struct Add {
-    using Value = T;
-    static T op(T lhs, T rhs) {
-        return lhs + rhs;
-    }
-    static T e() {
-        return 0;
-    }
-};
 
 void solve() {
     int n;
     std::cin >> n;
-    DynamicSegmentTree2D<Add<int>> segtree(0, 1e5, 0, 1e5);
+    using Monoid = monoid::Add<int>;
+    DynamicSegmentTree2D<Monoid> segtree(0, 1e5, 0, 1e5);
     auto put = [&](int x1, int y1, int diff) {
         auto val = segtree.prod(x1, y1, x1 + 1, y1 + 1);
         segtree.set(x1, y1, val + diff);

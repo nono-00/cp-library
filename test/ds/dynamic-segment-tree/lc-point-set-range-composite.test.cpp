@@ -3,56 +3,35 @@
 
 #include "nono/ds/dynamic-segment-tree.hpp"
 #include "nono/math/modint.hpp"
+#include "nono/structure/monoid.hpp"
 
 namespace nono {
 
-using Mint = nono::Modint998244353;
-
-template <class T>
-struct Line {
-    T slope;
-    T constant;
-
-    Line() = default;
-    Line(T slope, T constant): slope(slope), constant(constant) {}
-
-    T eval(T x) {
-        return x * slope + constant;
-    }
-};
-
-template <class T>
-struct Composite {
-    using Value = Line<T>;
-    static Value op(Value lhs, Value rhs) {
-        return Line<Mint>(lhs.slope * rhs.slope, rhs.slope * lhs.constant + rhs.constant);
-    }
-    static Value e() {
-        return Line<Mint>(1, 0);
-    }
-};
+using Mint = Modint998244353;
 
 void solve() {
-    using namespace nono;
     int n, q;
     std::cin >> n >> q;
-    DynamicSegmentTree<Composite<Mint>> segtree;
-    using Data = Composite<Mint>::Value;
+    using Monoid = monoid::Composite<Mint>;
+    using Value = Monoid::Value;
+    DynamicSegmentTree<Monoid> segtree;
     for (int i = 0; i < n; i++) {
-        int a, b;
+        Mint a, b;
         std::cin >> a >> b;
-        segtree.set(i, Data(a, b));
+        segtree.set(i, Value(a, b));
     }
 
     while (q--) {
         int t;
         std::cin >> t;
         if (t == 0) {
-            int p, c, d;
+            int p;
+            Mint c, d;
             std::cin >> p >> c >> d;
-            segtree.set(p, Data(c, d));
+            segtree.set(p, Value(c, d));
         } else {
-            int l, r, x;
+            int l, r;
+            Mint x;
             std::cin >> l >> r >> x;
             std::cout << segtree.prod(l, r).eval(x) << std::endl;
         }

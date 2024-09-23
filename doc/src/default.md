@@ -104,6 +104,8 @@ Undoが可能なUnionFind
 二辺連結成分分解する. 連結非連結, 単純非単純を問わない.
 ## heuristic
 ### [index-set](./heuristic/index-set.md)
+
+**TODO**: implementation
 ### [timer](./heuristic/timer.md)
 ### [xorshift](./heuristic/xorshift.md)
 ## math
@@ -111,12 +113,20 @@ Undoが可能なUnionFind
 ### [bitwise-or-convolution](./math/bitwise-or-convolution.md)
 ### [matrix](./math/matrix.md)
 ### [modint](./math/modint.md)
+aclベースのmodint. cin, coutによる入出力に対応.
 ### [zeta-mobius-transform](./math/zeta-mobius-transform.md)
 ## string
 ### [lcp-array](./string/lcp-array.md)
 ### [manacher](./string/manacher.md)
 ### [suffix-array](./string/suffix-array.md)
 ### [z-algorithm](./string/z-algorithm.md)
+## structure
+### [act_monoid](./structure/act_monoid.md)
+### [beats_monoid](./structure/beats_monoid.md)
+### [group](./structure/group.md)
+### [monoid-template](./structure/monoid-template.md)
+### [monoid](./structure/monoid.md)
+Monoid全部盛り.
 ## tree
 ### [centroids](./tree/centroids.md)
 ### [diameter](./tree/diameter.md)

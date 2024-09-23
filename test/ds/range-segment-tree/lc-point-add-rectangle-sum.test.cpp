@@ -4,19 +4,9 @@
 #include <vector>
 
 #include "nono/ds/range-segment-tree.hpp"
+#include "nono/structure/monoid.hpp"
 
 namespace nono {
-
-template <class T>
-struct Add {
-    using Value = T;
-    static T op(T lhs, T rhs) {
-        return lhs + rhs;
-    }
-    static T e() {
-        return 0;
-    }
-};
 
 void solve() {
     int n, q;
@@ -50,7 +40,7 @@ void solve() {
         }
     }
 
-    RangeSegmentTree<Add<long long>, int> segtree(points);
+    RangeSegmentTree<monoid::Add<long long>, int> segtree(points);
     for (int i = 0; i < n; i++) {
         auto [x, y] = points[i];
         segtree.set(x, y, segtree.get(x, y) + weight[i]);

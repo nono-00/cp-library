@@ -1,34 +1,24 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/staticrmq"
-#include <algorithm>
 #include <iostream>
-#include <limits>
 #include <vector>
 
 #include "nono/ds/segment-tree.hpp"
+#include "nono/structure/monoid.hpp"
 
 namespace nono {
-
-template <class T>
-struct Min {
-    using Value = T;
-    static T op(T lhs, T rhs) {
-        return std::min(lhs, rhs);
-    }
-    static T e() {
-        return std::numeric_limits<T>::max();
-    }
-};
 
 void solve() {
     int n, q;
     std::cin >> n >> q;
     std::vector<long long> a(n);
     for (int i = 0; i < n; i++) std::cin >> a[i];
-    const SegmentTree<Min<long long>> segtree(a);
+    using Monoid = monoid::Min<long long>;
+    using Value = Monoid::Value;
+    const SegmentTree<monoid::Min<long long>> segtree(std::vector<Value>(a.begin(), a.end()));
     while (q--) {
         int l, r;
         std::cin >> l >> r;
-        std::cout << segtree.prod(l, r) << std::endl;
+        std::cout << segtree.prod(l, r).value() << std::endl;
     }
 }
 

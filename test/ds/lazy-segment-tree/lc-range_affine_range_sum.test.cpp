@@ -1,47 +1,24 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/range_affine_range_sum"
 
 #include <iostream>
-#include <utility>
 #include <vector>
 
 #include "nono/ds/lazy-segment-tree.hpp"
 #include "nono/math/modint.hpp"
+#include "nono/structure/act-monoid.hpp"
 
 namespace nono {
 
-using Mint = nono::Modint998244353;
-
-//  c * ((a * x + b)) + d
-//
-//  c * a * x + c * b + d
-
-struct M {
-    using Value = std::pair<Mint, int>;
-    using Act = std::pair<Mint, Mint>;
-
-    static Value op(Value lhs, Value rhs) {
-        return {lhs.first + rhs.first, lhs.second + rhs.second};
-    }
-    static Value e() {
-        return {0, 0};
-    }
-    static Value mapping(Act lhs, Value rhs) {
-        return {lhs.first * rhs.first + lhs.second * rhs.second, rhs.second};
-    }
-    static Act composition(Act lhs, Act rhs) {
-        return {lhs.first * rhs.first, lhs.first * rhs.second + lhs.second};
-    }
-    static Act id() {
-        return {1, 0};
-    }
-};
-
 void solve() {
+    using Mint = nono::Modint998244353;
+    using Monoid = act_monoid::RangeAffineRangeSum<Mint>;
+    using Value = Monoid::Value;
+    using Act = Monoid::Act;
     int n, q;
     std::cin >> n >> q;
-    std::vector<std::pair<Mint, int>> a(n, {0, 1});
-    for (int i = 0; i < n; i++) std::cin >> a[i].first;
-    LazySegmentTree<M> segtree(a);
+    std::vector<Mint> a(n);
+    for (int i = 0; i < n; i++) std::cin >> a[i];
+    LazySegmentTree<Monoid> segtree(std::vector<Value>(a.begin(), a.end()));
     while (q--) {
         int t;
         std::cin >> t;
@@ -49,11 +26,11 @@ void solve() {
             int l, r;
             Mint b, c;
             std::cin >> l >> r >> b >> c;
-            segtree.apply(l, r, std::pair<Mint, Mint>(b, c));
+            segtree.apply(l, r, Act(b, c));
         } else {
             int l, r;
             std::cin >> l >> r;
-            std::cout << segtree.prod(l, r).first << '\n';
+            std::cout << segtree.prod(l, r).sum << '\n';
         }
     }
 }

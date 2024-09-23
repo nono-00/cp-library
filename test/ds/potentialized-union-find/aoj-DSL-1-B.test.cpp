@@ -2,26 +2,14 @@
 #include <iostream>
 
 #include "nono/ds/potentialized-union-find.hpp"
+#include "nono/structure/group.hpp"
 
 namespace nono {
-
-struct Add {
-    using Value = int;
-    static Value op(Value lhs, Value rhs) {
-        return lhs + rhs;
-    }
-    static Value e() {
-        return 0;
-    }
-    static Value inv(Value value) {
-        return -value;
-    }
-};
 
 void solve() {
     int n, q;
     std::cin >> n >> q;
-    PotentializedUnionFind<Add> puf(n);
+    PotentializedUnionFind<group::Add<int>> puf(n);
 
     while (q--) {
         int t;

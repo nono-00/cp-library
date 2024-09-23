@@ -3,45 +3,28 @@
 
 #include "nono/ds/two-stack-deque.hpp"
 #include "nono/math/modint.hpp"
+#include "nono/structure/monoid.hpp"
 
 namespace nono {
 
-using Mint = nono::Modint<998244353>;
-
-struct Data {
-    Mint coef;
-    Mint constant;
-    Data(Mint coef, Mint constant): coef(coef), constant(constant) {}
-    Mint eval(Mint x) const {
-        return coef * x + constant;
-    }
-};
-
-struct M {
-    using Value = Data;
-    static Data e() {
-        return Data(1, 0);
-    }
-    static Data op(Data rhs, Data lhs) {
-        return Data(lhs.coef * rhs.coef, lhs.coef * rhs.constant + lhs.constant);
-    }
-};
-
 void solve() {
+    using Mint = Modint998244353;
+    using Monoid = monoid::Composite<Mint>;
+    using Value = Monoid::Value;
     int q;
     std::cin >> q;
-    TwoStackDeque<M> que;
+    TwoStackDeque<Monoid> que;
     while (q--) {
         int t;
         std::cin >> t;
         if (t == 0) {
             Mint a, b;
             std::cin >> a >> b;
-            que.push_front(Data(a, b));
+            que.push_front(Value{a, b});
         } else if (t == 1) {
             Mint a, b;
             std::cin >> a >> b;
-            que.push_back(Data(a, b));
+            que.push_back(Value{a, b});
         } else if (t == 2) {
             que.pop_front();
         } else if (t == 3) {

@@ -3,28 +3,15 @@
 
 #include "nono/ds/potentialized-union-find.hpp"
 #include "nono/math/modint.hpp"
+#include "nono/structure/group.hpp"
 
 namespace nono {
 
-using Mint = Modint998244353;
-
-struct Add {
-    using Value = Mint;
-    static Value op(Value lhs, Value rhs) {
-        return lhs + rhs;
-    }
-    static Value e() {
-        return 0;
-    }
-    static Value inv(Value value) {
-        return -1 * value;
-    }
-};
-
 void solve() {
+    using Mint = Modint998244353;
     int n, q;
     std::cin >> n >> q;
-    PotentializedUnionFind<Add> puf(n);
+    PotentializedUnionFind<group::Add<Mint>> puf(n);
 
     while (q--) {
         int t;
