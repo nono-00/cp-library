@@ -19,7 +19,6 @@ struct Min {
         return std::nullopt;
     }
 };
-//  not verified
 template <class T>
 struct Max {
     using Value = std::optional<T>;
@@ -32,7 +31,6 @@ struct Max {
         return std::nullopt;
     }
 };
-//  not verified
 template <class T>
 struct Add {
     using Value = T;
@@ -43,7 +41,6 @@ struct Add {
         return static_cast<Value>(0);
     }
 };
-//  not verified
 template <class T>
 struct Mul {
     using Value = T;
@@ -54,7 +51,6 @@ struct Mul {
         return static_cast<Value>(1);
     }
 };
-//  not verified
 //   ax+b
 template <class T>
 struct Composite {

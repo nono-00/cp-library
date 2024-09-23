@@ -121,12 +121,15 @@ aclベースのmodint. cin, coutによる入出力に対応.
 ### [suffix-array](./string/suffix-array.md)
 ### [z-algorithm](./string/z-algorithm.md)
 ## structure
-### [act_monoid](./structure/act_monoid.md)
-### [beats_monoid](./structure/beats_monoid.md)
+### [act-monoid](./structure/act-monoid.md)
+ActMonoid全部盛り.
+### [beats-monoid](./structure/beats-monoid.md)
 ### [group](./structure/group.md)
 ### [monoid-template](./structure/monoid-template.md)
 ### [monoid](./structure/monoid.md)
 Monoid全部盛り.
+### [test](./structure/test.md)
+結合律などの確認
 ## tree
 ### [centroids](./tree/centroids.md)
 ### [diameter](./tree/diameter.md)
