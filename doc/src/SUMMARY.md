@@ -18,6 +18,8 @@
     - [potentialized-union-find](./ds/potentialized-union-find.md)
     - [range-add-fenwick-tree](./ds/range-add-fenwick-tree.md)
     - [range-segment-tree](./ds/range-segment-tree.md)
+    - [segment-tree](./ds/segment-tree/default.md)
+        - [segment-tree](./ds/segment-tree/segment-tree.md)
     - [segment-tree-2d](./ds/segment-tree-2d.md)
     - [segment-tree-beats](./ds/segment-tree-beats.md)
     - [segment-tree](./ds/segment-tree.md)

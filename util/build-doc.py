@@ -80,6 +80,7 @@ def create_md_file(src_dir, nono_dir, summary, depth):
                                os.path.join(nono_dir, subdir), summary, depth + 1)
                 default.write(
                     f'{{{{#include {os.path.join(subdir, "default.md")}}}}}\n')
+        default.write("___ \n")
 
 
 def create_md_files(src_dir, nono_dir):
