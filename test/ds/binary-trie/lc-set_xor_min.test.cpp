@@ -2,34 +2,54 @@
 
 #include <cassert>
 #include <iostream>
+#include <random>
 
 #include "nono/ds/binary-trie.hpp"
 
 namespace nono {
 
 void solve() {
+    std::mt19937 mt(std::random_device{}());
     int q;
     std::cin >> q;
-    BinaryTrie32 trie;
+    BinaryTrie trie;
     while (q--) {
         int op;
         unsigned x;
         std::cin >> op >> x;
         if (op == 0) {
             if (!trie.contains(x)) {
+                assert(trie.count(x) == 0);
                 trie.insert(x);
+                assert(trie.count(x) == 1);
+                assert(trie.contains(x));
+            } else {
+                assert(trie.count(x) == 1);
             }
         } else if (op == 1) {
             if (trie.contains(x)) {
+                assert(trie.count(x) == 1);
                 trie.erase(x);
+                assert(trie.count(x) == 0);
+                assert(!trie.contains(x));
+            } else {
+                assert(trie.count(x) == 0);
             }
         } else {
-            auto lhs = x ^ trie.min_element(x);
-            trie.all_xor(x);
-            auto rhs = trie.min_element();
-            trie.all_xor(x);
-            assert(lhs == rhs);
-            std::cout << rhs << '\n';
+            assert(!trie.empty());
+            unsigned values[2];
+            values[0] = trie.min(x);
+            trie.apply_xor(x);
+            values[1] = trie.min();
+            trie.apply_xor(x);
+            assert(values[0] == values[1]);
+            std::cout << values[0] << '\n';
+        }
+        if (!trie.empty()) {
+            int k = mt() % (unsigned)trie.size();
+            auto value = trie.kth(k);
+            assert(trie.count_lt(value) == k);
+            assert(k + trie.count_gt(value) + 1 == trie.size());
         }
     }
 }
