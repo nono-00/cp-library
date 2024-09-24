@@ -1,4 +1,3 @@
-#define PROBLEM "https://judge.yosupo.jp/problem/eertree"
 #include <iostream>
 #include <string>
 
@@ -9,19 +8,16 @@ namespace nono {
 void solve() {
     std::string s;
     std::cin >> s;
-    int n = s.size();
     Eertree tree;
     tree.add(std::vector<char>(s.begin(), s.end()));
     int m = tree.size();
-    std::cout << m << '\n';
     auto nodes = tree.nodes();
-    auto node_id = tree.node_id();
+    auto freq = tree.freq();
+    long long ans = 0;
     for (int i = 0; i < m; i++) {
-        std::cout << nodes[i + 2].parent - 1 << ' ' << nodes[i + 2].link - 1 << '\n';
+        ans = std::max(ans, (long long)freq[i + 2] * nodes[i + 2].len);
     }
-    for (int i = 0; i < n; i++) {
-        std::cout << node_id[i] - 1 << " \n"[i + 1 == n];
-    }
+    std::cout << ans << '\n';
 }
 
 }  //  namespace nono
