@@ -1,579 +1,526 @@
 #pragma once
-#include "./../template.hpp"
+
+#include <algorithm>
+#include <array>
+#include <cassert>
+#include <cstdint>
+#include <limits>
+#include <optional>
+
+///  brief : segment-tree-beats用Monoid全部盛り.
+namespace nono {
 namespace beats_monoid {
-template <class U>
-struct chmin_sum {
-    struct info {
-        using T = U;
-        info(T a = numeric_limits<T>::min()) {
-            v[0] = a;
-            v[1] = numeric_limits<T>::min();
-            n = 1;
-            s = a;
-            fail = false;
-        }
-        // v[0]: maximum value, v[1]: second maximum value
-        array<U, 2> v;
-        // n: num of maximum value
-        int n;
-        // s: sum of segment
-        U s;
-        // success or fail to apply
-        bool fail;
-        friend ostream& operator<<(ostream& os, info i) {
-            os << i.s;
-            return os;
-        }
+// not verified
+template <class T, class Count = unsigned>
+struct RangeChminRangeSum {
+    struct Value {
+        Value(): top2({std::numeric_limits<T>::min(), std::numeric_limits<T>::min()}), num(0), sum(0) {}
+        Value(T val, Count num = 1): top2({val, std::numeric_limits<T>::min()}), num(num), sum(val) {}
+        //  v[0]: maximum value, v[1]: second maximum value
+        std::array<T, 2> top2;
+        //  n: num of maximum value
+        Count num;
+        //  s: sum of segment
+        T sum;
     };
-    using T = info;
-    using F = T;
-    static T op(T lhs, T rhs) {
-        T a;
+    using Act = T;
+    static Value op(Value lhs, Value rhs) {
+        Value result;
         int l = 0, r = 0;
-        a.s = lhs.s + rhs.s;
-        a.fail = false;
-        rep(i, 0, 2) {
-            if (lhs.v[l] == rhs.v[r]) {
-                a.v[i] = lhs.v[l];
-                if (i == 0) a.n = lhs.n + rhs.n;
+        result.sum = lhs.sum + rhs.sum;
+        for (int i = 0; i < 2; i++) {
+            if (lhs.top2[l] == rhs.top2[r]) {
+                result.top2[i] = lhs.top2[l];
+                if (i == 0) result.num = lhs.num + rhs.num;
                 l++, r++;
-            } else if (lhs.v[l] < rhs.v[r]) {
-                a.v[i] = rhs.v[r];
-                if (i == 0) a.n = rhs.n;
+            } else if (lhs.top2[l] < rhs.top2[r]) {
+                result.top2[i] = rhs.top2[r];
+                if (i == 0) result.num = rhs.num;
                 r++;
             } else {
-                a.v[i] = lhs.v[l];
-                if (i == 0) a.n = lhs.n;
+                result.top2[i] = lhs.top2[l];
+                if (i == 0) result.num = lhs.num;
                 l++;
             }
         }
-        return a;
+        return result;
     }
-    static T e() {
-        T a;
-        a.v[0] = a.v[1] = numeric_limits<T>::min();
-        a.n = 0;
-        a.s = 0;
-        a.fail = false;
-        return a;
+    static Value e() {
+        return Value{};
     }
-    static T map(F f, T v) {
-        if (f >= v.v[0]) {
-            v.fail = false;
-            return v;
-        } else if (f > v.v[1]) {
-            v.s -= (v.v[0] - f) * v.n;
-            v.v[0] = f;
-            return v;
+    static std::optional<Value> mapping(Act act, Value value) {
+        if (act >= value.top2[0]) {
+            return value;
+        } else if (act > value.top2[1]) {
+            value.sum -= (value.top2[0] - act) * value.num;
+            value.top2[0] = act;
+            return value;
         } else {
-            v.fail = true;
-            return v;
+            return std::nullopt;
         }
     }
-    static F compose(F lhs, F rhs) { return min(lhs, rhs); }
-    static F id() { return numeric_limits<F>::max(); }
+    static Act composition(Act lhs, Act rhs) {
+        return std::min(lhs, rhs);
+    }
+    static Act id() {
+        return std::numeric_limits<T>::max();
+    }
 };
-template <class U>
-struct chmax_sum {
-    struct info {
-        using T = U;
-        info(T a = numeric_limits<T>::max()) {
-            v[0] = a;
-            v[1] = numeric_limits<T>::max();
-            n = 1;
-            s = a;
-            fail = false;
-        }
-        // v[0]: minimum value, v[1]: second minimum value
-        array<U, 2> v;
-        // n: num of minimum value
-        int n;
-        // s: sum of segment
-        U s;
-        // success or fail to apply
-        bool fail;
-        friend ostream& operator<<(ostream& os, info i) {
-            os << i.s;
-            return os;
-        }
+// not verified
+template <class T, class Count = unsigned>
+struct RangeChmaxRangeSum {
+    struct Value {
+        Value(): top2({std::numeric_limits<T>::max(), std::numeric_limits<T>::max()}), num(0), sum(0) {}
+        Value(T val, Count num = 1): top2({val, std::numeric_limits<T>::max()}), num(num), sum(val) {}
+        //  v[0]: minimum value, v[1]: second minimum value
+        std::array<T, 2> top2;
+        //  n: num of minimum value
+        Count num;
+        //  s: sum of segment
+        T sum;
     };
-    using T = info;
-    using F = U;
-    static T op(T lhs, T rhs) {
-        T a;
+    using Act = T;
+    static Value op(Value lhs, Value rhs) {
+        Value result;
         int l = 0, r = 0;
-        a.s = lhs.s + rhs.s;
-        a.fail = false;
-        rep(i, 0, 2) {
-            if (lhs.v[l] == rhs.v[r]) {
-                a.v[i] = lhs.v[l];
-                if (i == 0) a.n = lhs.n + rhs.n;
+        result.sum = lhs.sum + rhs.sum;
+        for (int i = 0; i < 2; i++) {
+            if (lhs.top2[l] == rhs.top2[r]) {
+                result.top2[i] = lhs.top2[l];
+                if (i == 0) result.num = lhs.num + rhs.num;
                 l++, r++;
-            } else if (lhs.v[l] > rhs.v[r]) {
-                a.v[i] = rhs.v[r];
-                if (i == 0) a.n = rhs.n;
+            } else if (lhs.top2[l] > rhs.top2[r]) {
+                result.top2[i] = rhs.top2[r];
+                if (i == 0) result.num = rhs.num;
                 r++;
             } else {
-                a.v[i] = lhs.v[l];
-                if (i == 0) a.n = lhs.n;
+                result.top2[i] = lhs.top2[l];
+                if (i == 0) result.num = lhs.num;
                 l++;
             }
         }
-        return a;
+        return result;
     }
-    static T e() {
-        T a;
-        a.v[0] = a.v[1] = numeric_limits<F>::max();
-        a.n = 0;
-        a.s = 0;
-        a.fail = false;
-        return a;
+    static Value e() {
+        return Value{};
     }
-    static T map(F f, T v) {
-        if (f <= v.v[0]) {
-            v.fail = false;
-            return v;
-        } else if (f < v.v[1]) {
-            v.s += (f - v.v[0]) * v.n;
-            v.v[0] = f;
-            return v;
+    static std::optional<Value> mapping(Act act, Value value) {
+        if (act <= value.top2[0]) {
+            return value;
+        } else if (act < value.top2[1]) {
+            value.sum += (act - value.top2[0]) * value.num;
+            value.top2[0] = act;
+            return value;
         } else {
-            v.fail = true;
-            return v;
+            return std::nullopt;
         }
     }
-    static F compose(F lhs, F rhs) { return max(lhs, rhs); }
-    static F id() { return numeric_limits<F>::min(); }
+    static Act composition(Act lhs, Act rhs) {
+        return std::max(lhs, rhs);
+    }
+    static Act id() {
+        return std::numeric_limits<Act>::min();
+    }
 };
-template <class U>
-struct chmin_chmax_sum {
-    struct ope {
-        using T = U;
-        // a: chmin
-        // b: chmax
-        T a, b;
-        ope(T a, T b): a(a), b(b) {}
-        static ope chmin(T v) { return ope(v, numeric_limits<T>::min()); }
-        static ope chmax(T v) { return ope(numeric_limits<T>::max(), v); }
-    };
-    struct info {
-        using T = U;
-        info(T v = 0) {
-            a[0] = b[0] = v;
-            a[1] = numeric_limits<T>::min();
-            b[1] = numeric_limits<T>::max();
-            n = 1;
-            m = 1;
-            s = v;
-            fail = false;
-        }
-        // a[0]: maximum value, v[1]: second maximum value
-        array<T, 2> a;
-        // b[0]: minimum value, v[1]: second minimum value
-        array<T, 2> b;
-        // n: num of maximum value
-        int n;
-        // m: num of minimum value
-        int m;
-        // s: sum of segment
-        T s;
-        // success or fail to apply
+// not verified
+template <class T, class Count = unsigned>
+struct RangeChminChmaxRangeSum {
+  private:
+    static constexpr T MAX = std::numeric_limits<T>::max();
+    static constexpr T MIN = std::numeric_limits<T>::min();
+
+  public:
+    struct Value {
+        Value(): max_top2({MIN, MIN}), min_top2({MAX, MAX}), num_max(0), num_min(0), sum(0) {}
+        Value(T val = 0, Count num = 1)
+            : max_top2({val, MIN}),
+              min_top2({val, MAX}),
+              num_max(num),
+              num_min(num),
+              sum(val) {}
+        //  a[0]: maximum value, v[1]: second maximum value
+        std::array<T, 2> max_top2;
+        //  b[0]: minimum value, v[1]: second minimum value
+        std::array<T, 2> min_top2;
+        //  n: num of maximum value
+        Count num_max;
+        //  m: num of minimum value
+        Count num_min;
+        //  s: sum of segment
+        T sum;
+        //  success or fail to apply
         bool fail;
-        friend ostream& operator<<(ostream& os, info i) {
-            os << i.s;
-            return os;
+    };
+    struct Act {
+        //  a: chmin
+        //  b: chmax
+        T chmin_, chmax_;
+        Act(T a, T b): chmin_(a), chmax_(b) {}
+        static Act chmin(T val) {
+            return Act{val, MIN};
+        }
+        static Act chmax(T val) {
+            return Act{MAX, val};
         }
     };
-    using T = info;
-    using F = ope;
-    static T op(T lhs, T rhs) {
-        T a;
-        a.s = lhs.s + rhs.s;
-        a.fail = false;
-        { // min
+    static Value op(Value lhs, Value rhs) {
+        Value result;
+        result.sum = lhs.sum + rhs.sum;
+        {  //  min
             int l = 0, r = 0;
-            rep(i, 0, 2) {
-                if (lhs.a[l] == rhs.a[r]) {
-                    a.a[i] = lhs.a[l];
-                    if (i == 0) a.n = lhs.n + rhs.n;
+            for (int i = 0; i < 2; i++) {
+                if (lhs.max_top2[l] == rhs.max_top2[r]) {
+                    result.max_top2[i] = lhs.max_top2[l];
+                    if (i == 0) result.num_max = lhs.num_max + rhs.num_max;
                     l++, r++;
-                } else if (lhs.a[l] < rhs.a[r]) {
-                    a.a[i] = rhs.a[r];
-                    if (i == 0) a.n = rhs.n;
+                } else if (lhs.max_top2[l] < rhs.max_top2[r]) {
+                    result.max_top2[i] = rhs.max_top2[r];
+                    if (i == 0) result.num_max = rhs.num_max;
                     r++;
                 } else {
-                    a.a[i] = lhs.a[l];
-                    if (i == 0) a.n = lhs.n;
+                    result.max_top2[i] = lhs.max_top2[l];
+                    if (i == 0) result.num_max = lhs.num_max;
                     l++;
                 }
             }
         }
-        { // max
+        {  //  max
             int l = 0, r = 0;
-            rep(i, 0, 2) {
-                if (lhs.b[l] == rhs.b[r]) {
-                    a.b[i] = lhs.b[l];
-                    if (i == 0) a.m = lhs.m + rhs.m;
+            for (int i = 0; i < 2; i++) {
+                if (lhs.min_top2[l] == rhs.min_top2[r]) {
+                    result.min_top2[i] = lhs.min_top2[l];
+                    if (i == 0) result.num_min = lhs.num_min + rhs.num_min;
                     l++, r++;
-                } else if (lhs.b[l] > rhs.b[r]) {
-                    a.b[i] = rhs.b[r];
-                    if (i == 0) a.m = rhs.m;
+                } else if (lhs.min_top2[l] > rhs.min_top2[r]) {
+                    result.min_top2[i] = rhs.min_top2[r];
+                    if (i == 0) result.num_min = rhs.num_min;
                     r++;
                 } else {
-                    a.b[i] = lhs.b[l];
-                    if (i == 0) a.m = lhs.m;
+                    result.min_top2[i] = lhs.min_top2[l];
+                    if (i == 0) result.num_min = lhs.num_min;
                     l++;
                 }
             }
         }
-        return a;
+        return result;
     }
-    static T e() {
-        T a;
-        a.a[0] = a.a[1] = numeric_limits<U>::min();
-        a.b[0] = a.b[1] = numeric_limits<U>::max();
-        a.n = 0;
-        a.m = 0;
-        a.s = 0;
-        a.fail = false;
-        return a;
+    static Value e() {
+        return Value{};
     }
-    static T map(F f, T a) {
-        if (f.a <= a.a[1] || f.b >= a.b[1]) {
-            a.fail = true;
-            return a;
+    static std::optional<Value> mapping(Act act, Value value) {
+        if (act.chmin_ <= value.max_top2[1] || act.chmax_ >= value.min_top2[1]) {
+            return std::nullopt;
         }
-        if (a.a[0] > f.a && f.a > a.a[1]) {
-            a.s -= (a.a[0] - f.a) * a.n;
-            if (a.a[0] == a.b[1]) {
-                a.b[1] = f.a;
-            } else if (a.a[0] == a.b[0]) {
-                a.b[0] = f.a;
+        if (value.max_top2[0] > act.chmin_ && act.chmin_ > value.max_top2[1]) {
+            value.sum -= (value.max_top2[0] - act.chmin_) * value.num_max;
+            if (value.max_top2[0] == value.min_top2[1]) {
+                value.min_top2[1] = act.chmin_;
+            } else if (value.max_top2[0] == value.min_top2[0]) {
+                value.min_top2[0] = act.chmin_;
             }
-            a.a[0] = f.a;
+            value.max_top2[0] = act.chmin_;
         }
-        if (f.b >= a.b[1]) {
-            a.fail = true;
-            return a;
+        if (act.chmax_ >= value.min_top2[1]) {
+            return value;
         }
-        if (a.b[0] < f.b && f.b < a.b[1]) {
-            a.s += (f.b - a.b[0]) * a.m;
-            if (a.b[0] == a.a[1]) {
-                a.a[1] = f.b;
-            } else if (a.a[0] == a.b[0]) {
-                a.a[0] = f.b;
+        if (value.min_top2[0] < act.chmax_ && act.chmax_ < value.min_top2[1]) {
+            value.sum += (act.chmax_ - value.min_top2[0]) * value.num_min;
+            if (value.min_top2[0] == value.max_top2[1]) {
+                value.max_top2[1] = act.chmax_;
+            } else if (value.max_top2[0] == value.min_top2[0]) {
+                value.max_top2[0] = act.chmax_;
             }
-            a.b[0] = f.b;
+            value.min_top2[0] = act.chmax_;
         }
-        return a;
+        return value;
     }
-    static F compose(F lhs, F rhs) {
-        if (lhs.a <= rhs.b) return F(lhs.a, lhs.a);
-        if (rhs.a <= lhs.b) return F(lhs.b, lhs.b);
-        return F(min(lhs.a, rhs.a), max(lhs.b, rhs.b));
+    static Act composition(Act lhs, Act rhs) {
+        if (lhs.chmin_ <= rhs.chmax_) return Act{lhs.chmin_, lhs.chmin_};
+        if (rhs.chmin_ <= lhs.chmax_) return Act{lhs.chmax_, lhs.chmax_};
+        return Act{std::min(lhs.chmin_, rhs.chmin_), std::max(lhs.chmax_, rhs.chmax_)};
     }
-    static F id() { return F(numeric_limits<U>::max(), numeric_limits<U>::min()); }
+    static Act id() {
+        return Act{MAX, MIN};
+    }
 };
-template <class U>
-struct chmin_chmax_add_sum {
-    struct ope {
-        using T = U;
-        // a: chmin
-        // b: chmax
-        // c: add
-        T a, b, c;
-        ope() {}
-        ope(T a, T b, T c): a(a), b(b), c(c) {}
-        static ope chmin(T v) { return ope(v, numeric_limits<T>::min(), 0); }
-        static ope chmax(T v) { return ope(numeric_limits<T>::max(), v, 0); }
-        static ope add(T v) { return ope(numeric_limits<T>::max(), numeric_limits<T>::min(), v); }
-    };
-    struct info {
-        using T = U;
-        info(T v = 0) {
-            a[0] = b[0] = v;
-            a[1] = numeric_limits<T>::min();
-            b[1] = numeric_limits<T>::max();
-            n = 1;
-            m = 1;
-            l = 1;
-            s = v;
-            fail = false;
+template <class T, class Count = unsigned>
+struct RangeChminChmaxAddRangeSum {
+  private:
+    static constexpr T MAX = std::numeric_limits<T>::max();
+    static constexpr T MIN = std::numeric_limits<T>::min();
+
+  public:
+    struct Act {
+        T chmin_, chmax_, add_;
+        Act(T a, T b, T c): chmin_(a), chmax_(b), add_(c) {}
+        static Act chmin(T val) {
+            return Act{val, MIN, 0};
         }
-        // a[0]: maximum value, v[1]: second maximum value
-        array<T, 2> a;
-        // b[0]: minimum value, v[1]: second minimum value
-        array<T, 2> b;
-        // n: num of maximum value
-        int n;
-        // m: num of minimum value
-        int m;
-        // l: num of value
-        int l;
-        // s: sum of segment
-        T s;
-        // success or fail to apply
-        bool fail;
-        friend ostream& operator<<(ostream& os, info i) {
-            os << i.s;
-            return os;
+        static Act chmax(T val) {
+            return Act{MAX, val, 0};
+        }
+        static Act add(T val) {
+            return Act{MAX, MIN, val};
         }
     };
-    using T = info;
-    using F = ope;
-    static T op(T lhs, T rhs) {
-        T a;
-        a.s = lhs.s + rhs.s;
-        a.l = lhs.l + rhs.l;
-        a.fail = false;
-        { // min
+    struct Value {
+        Value(): max_top2({MIN, MIN}), min_top2({MAX, MAX}), num_max(0), num_min(0), num(0), sum(0) {}
+        Value(T val, Count num = 1)
+            : max_top2({val, MIN}),
+              min_top2({val, MAX}),
+              num_max(num),
+              num_min(num),
+              num(num),
+              sum(val) {}
+        //  a[0]: maximum value, v[1]: second maximum value
+        std::array<T, 2> max_top2;
+        //  b[0]: minimum value, v[1]: second minimum value
+        std::array<T, 2> min_top2;
+        //  n: num of maximum value
+        int num_max;
+        //  m: num of minimum value
+        int num_min;
+        //  l: num of value
+        int num;
+        //  s: sum of segment
+        T sum;
+    };
+    static Value op(Value lhs, Value rhs) {
+        Value a;
+        a.sum = lhs.sum + rhs.sum;
+        a.num = lhs.num + rhs.num;
+        {  //  min
             int l = 0, r = 0;
-            rep(i, 0, 2) {
-                if (lhs.a[l] == rhs.a[r]) {
-                    a.a[i] = lhs.a[l];
-                    if (i == 0) a.n = lhs.n + rhs.n;
+            for (int i = 0; i < 2; i++) {
+                if (lhs.max_top2[l] == rhs.max_top2[r]) {
+                    a.max_top2[i] = lhs.max_top2[l];
+                    if (i == 0) a.num_max = lhs.num_max + rhs.num_max;
                     l++, r++;
-                } else if (lhs.a[l] < rhs.a[r]) {
-                    a.a[i] = rhs.a[r];
-                    if (i == 0) a.n = rhs.n;
+                } else if (lhs.max_top2[l] < rhs.max_top2[r]) {
+                    a.max_top2[i] = rhs.max_top2[r];
+                    if (i == 0) a.num_max = rhs.num_max;
                     r++;
                 } else {
-                    a.a[i] = lhs.a[l];
-                    if (i == 0) a.n = lhs.n;
+                    a.max_top2[i] = lhs.max_top2[l];
+                    if (i == 0) a.num_max = lhs.num_max;
                     l++;
                 }
             }
         }
-        { // max
+        {  //  max
             int l = 0, r = 0;
-            rep(i, 0, 2) {
-                if (lhs.b[l] == rhs.b[r]) {
-                    a.b[i] = lhs.b[l];
-                    if (i == 0) a.m = lhs.m + rhs.m;
+            for (int i = 0; i < 2; i++) {
+                if (lhs.min_top2[l] == rhs.min_top2[r]) {
+                    a.min_top2[i] = lhs.min_top2[l];
+                    if (i == 0) a.num_min = lhs.num_min + rhs.num_min;
                     l++, r++;
-                } else if (lhs.b[l] > rhs.b[r]) {
-                    a.b[i] = rhs.b[r];
-                    if (i == 0) a.m = rhs.m;
+                } else if (lhs.min_top2[l] > rhs.min_top2[r]) {
+                    a.min_top2[i] = rhs.min_top2[r];
+                    if (i == 0) a.num_min = rhs.num_min;
                     r++;
                 } else {
-                    a.b[i] = lhs.b[l];
-                    if (i == 0) a.m = lhs.m;
+                    a.min_top2[i] = lhs.min_top2[l];
+                    if (i == 0) a.num_min = lhs.num_min;
                     l++;
                 }
             }
         }
         return a;
     }
-    static T e() {
-        T a;
-        a.a[0] = a.a[1] = numeric_limits<U>::min();
-        a.b[0] = a.b[1] = numeric_limits<U>::max();
-        a.n = 0;
-        a.m = 0;
-        a.s = 0;
-        a.l = 0;
-        a.fail = false;
-        return a;
+    static Value e() {
+        return Value{};
     }
-    static T map(F f, T a) {
-        if (f.a <= a.a[1]) {
-            a.fail = true;
-            return a;
+    static std::optional<Value> mapping(Act act, Value value) {
+        if (act.chmin_ <= value.max_top2[1]) {
+            return std::nullopt;
         }
-        if (a.a[0] > f.a && f.a > a.a[1]) {
-            a.s -= (a.a[0] - f.a) * a.n;
-            if (a.a[0] == a.b[1]) {
-                a.b[1] = f.a;
-            } else if (a.a[0] == a.b[0]) {
-                a.b[0] = f.a;
+        if (value.max_top2[0] > act.chmin_ && act.chmin_ > value.max_top2[1]) {
+            value.sum -= (value.max_top2[0] - act.chmin_) * value.num_max;
+            if (value.max_top2[0] == value.min_top2[1]) {
+                value.min_top2[1] = act.chmin_;
+            } else if (value.max_top2[0] == value.min_top2[0]) {
+                value.min_top2[0] = act.chmin_;
             }
-            a.a[0] = f.a;
+            value.max_top2[0] = act.chmin_;
         }
-        if (f.b >= a.b[1]) {
-            a.fail = true;
-            return a;
+        if (act.chmax_ >= value.min_top2[1]) {
+            return std::nullopt;
         }
-        if (a.b[0] < f.b && f.b < a.b[1]) {
-            a.s += (f.b - a.b[0]) * a.m;
-            if (a.b[0] == a.a[1]) {
-                a.a[1] = f.b;
-            } else if (a.a[0] == a.b[0]) {
-                a.a[0] = f.b;
+        if (value.min_top2[0] < act.chmax_ && act.chmax_ < value.min_top2[1]) {
+            value.sum += (act.chmax_ - value.min_top2[0]) * value.num_min;
+            if (value.min_top2[0] == value.max_top2[1]) {
+                value.max_top2[1] = act.chmax_;
+            } else if (value.max_top2[0] == value.min_top2[0]) {
+                value.max_top2[0] = act.chmax_;
             }
-            a.b[0] = f.b;
+            value.min_top2[0] = act.chmax_;
         }
-        a.s += f.c * a.l;
-        rep(i, 0, 2) {
-            if (a.a[i] != numeric_limits<U>::min()) a.a[i] += f.c;
-            if (a.b[i] != numeric_limits<U>::max()) a.b[i] += f.c;
+        value.sum += act.add_ * value.num;
+        for (int i = 0; i < 2; i++) {
+            if (value.max_top2[i] != MIN) value.max_top2[i] += act.add_;
+            if (value.min_top2[i] != MAX) value.min_top2[i] += act.add_;
         }
-        return a;
+        return value;
     }
-    static F compose(F lhs, F rhs) {
-        F mhs;
-        mhs.a = (lhs.a != numeric_limits<U>::max() ? lhs.a - rhs.c : lhs.a);
-        mhs.b = (lhs.b != numeric_limits<U>::min() ? lhs.b - rhs.c : lhs.b);
-        if (rhs.a <= mhs.b) return F(mhs.b, mhs.b, lhs.c + rhs.c);
-        if (mhs.a <= rhs.b) return F(mhs.a, mhs.a, lhs.c + rhs.c);
-        return F(min(rhs.a, mhs.a), max(rhs.b, mhs.b), lhs.c + rhs.c);
+    static Act composition(Act lhs, Act rhs) {
+        T chmin = (lhs.chmin_ != MAX ? lhs.chmin_ - rhs.add_ : lhs.chmin_);
+        T chmax = (lhs.chmax_ != MIN ? lhs.chmax_ - rhs.add_ : lhs.chmax_);
+        if (rhs.chmin_ <= chmax) return Act{chmax, chmax, lhs.add_ + rhs.add_};
+        if (chmin <= rhs.chmax_) return Act{chmin, chmin, lhs.add_ + rhs.add_};
+        return Act{std::min(rhs.chmin_, chmin), std::max(rhs.chmax_, chmax), lhs.add_ + rhs.add_};
     }
-    static F id() { return F(numeric_limits<U>::max(), numeric_limits<U>::min(), 0); }
+    static Act id() {
+        return Act{MAX, MIN, 0};
+    }
 };
-// https://atcoder.jp/contests/abc256/tasks/abc256_h
-struct divide_update_sum {
-    static constexpr ll divide_id = 1;
-    static constexpr ll update_id = -1;
-    struct ope {
-        // a: divide
-        // b: update
-        ll a, b;
-        ope(ll a, ll b): a(a), b(b) {}
-        static ope divide(ll a) { return ope(a, update_id); };
-        static ope update(ll b) { return ope(divide_id, b); };
-        friend bool operator==(ope lhs, ope rhs) { return lhs.a == rhs.a && lhs.b == rhs.b; }
-        friend bool operator!=(ope lhs, ope rhs) { return !(lhs == rhs); }
-    };
-    struct info {
-        info(ll v = 0): a(v), s(v), n(1), same(true), fail(false) {}
-        // a: most left value
-        ll a;
-        // s: sum of segment
-        ll s;
-        // n: length of segment
-        ll n;
-        // same: all i in [l, r) a_i == a
+//  https://atcoder.jp/contests/abc256/tasks/abc256_h
+struct RangeDivideUpdateRangeSum {
+  private:
+    using u64 = std::uint64_t;
+    static constexpr u64 divide_id = 1;
+    static constexpr u64 update_id = -1;
+
+  public:
+    struct Value {
+        Value(): left(0), sum(0), num(1), same(true) {}
+        Value(u64 v): left(v), sum(v), num(1), same(true) {}
+        //  left: most left value
+        u64 left;
+        //  sum: sum of segment
+        u64 sum;
+        //  num: length of segment
+        u64 num;
+        //  same: au64 i in [l, r) a_i == a
         bool same;
         bool fail;
-        friend ostream& operator<<(ostream& os, const info& info) {
-            os << info.s;
-            return os;
-        }
     };
-    using T = info;
-    using F = ope;
-    static T op(T lhs, T rhs) {
-        T r;
-        r.a = lhs.a;
-        r.s = lhs.s + rhs.s;
-        r.n = lhs.n + rhs.n;
-        r.same = lhs.same && rhs.same && lhs.a == rhs.a;
-        r.fail = false;
-        return r;
+    struct Act {
+        //  a: divide
+        //  b: update
+        u64 divide_;
+        std::optional<u64> update_;
+        Act(u64 a, std::optional<u64> b): divide_(a), update_(b) {}
+        static Act divide(u64 a) {
+            return Act{a, std::nullopt};
+        };
+        static Act update(u64 b) {
+            return Act{1, b};
+        };
+    };
+    static Value op(Value lhs, Value rhs) {
+        Value result;
+        result.left = lhs.left;
+        result.sum = lhs.sum + rhs.sum;
+        result.num = lhs.num + rhs.num;
+        result.same = lhs.same && rhs.same && lhs.left == rhs.left;
+        return result;
     }
-    static T e() {
-        T a;
-        a.a = 0;
-        a.s = 0;
-        a.n = 0;
-        a.same = true;
-        a.fail = false;
-        return a;
+    static Value e() {
+        return Value{};
     }
-    static T map(F f, T a) {
-        if (f == id()) return a;
-        if (!a.same) {
-            a.fail = true;
-            return a;
+    static std::optional<Value> mapping(Act act, Value value) {
+        if (!value.same && !act.update_ && act.divide_ != 1) {
+            return std::nullopt;
         }
-        if (f.b != update_id) { a.a = f.b; }
-        a.a /= f.a;
-        a.s = a.a * a.n;
-        return a;
+        if (act.update_) {
+            value.same = true;
+            value.left = act.update_.value();
+        }
+        value.left /= act.divide_;
+        if (value.same) {
+            value.sum = value.left * value.num;
+        }
+        return value;
     }
-    static F compose(F lhs, F rhs) {
-        if (lhs.b != update_id) return lhs;
-        return {min(lhs.a * rhs.a, (ll)1e6), rhs.b};
+    static Act composition(Act lhs, Act rhs) {
+        if (lhs.update_) return lhs;
+        return Act{std::min(lhs.divide_ * rhs.divide_, (u64)std::numeric_limits<unsigned>::max()), rhs.update_};
     }
-    static F id() { return ope(divide_id, update_id); }
+    static Act id() {
+        return Act{1, std::nullopt};
+    }
 };
-// https://codeforces.com/contest/855/problem/F
-template <class U>
-struct chmin_boot_sum {
-    struct ope {
-        using T = U;
-        T a;
-        bool b;
-        ope(T a, bool b): a(a), b(b) {}
-        static ope chmin(T a) { return ope(a, false); }
-        static ope boot() { return ope(numeric_limits<T>::max(), true); }
-    };
-    struct info {
-        using T = U;
-        info(T a = numeric_limits<T>::min()) {
-            v[0] = a;
-            v[1] = numeric_limits<T>::min();
-            n = 1;
-            s = 0;
-            fail = false;
-        }
-        // v[0]: maximum value, v[1]: second maximum value
-        array<U, 2> v;
-        // n: num of maximum value
-        int n;
-        // s: sum of segment
-        U s;
-        // success or fail to apply
+//  https://codeforces.com/contest/855/problem/F
+//  not verified
+template <class T>
+struct RangeChminBootRangeSum {
+  private:
+    static constexpr T MIN = std::numeric_limits<T>::min();
+    static constexpr T MAX = std::numeric_limits<T>::max();
+
+  public:
+    struct Value {
+        Value(): max_top2({MAX, MIN}), num(0), sum(0) {}
+        //  v[0]: maximum value, v[1]: second maximum value
+        std::array<T, 2> max_top2;
+        //  n: num of maximum value
+        int num;
+        //  s: sum of segment
+        T sum;
+        //  success or fail to apply
         bool fail;
-        friend ostream& operator<<(ostream& os, info i) {
-            os << '(' << i.s << ' ' << i.n << ' ' << i.v[0] << ' ' << i.v[1] << ')' << ' ';
-            return os;
+    };
+    struct Act {
+        T chmin_;
+        bool boot_;
+        Act(T a, bool b): chmin_(a), boot_(b) {}
+        static Act chmin(T val) {
+            return Act{val, false};
+        }
+        static Act boot() {
+            return Act{MAX, true};
         }
     };
-    using T = info;
-    using F = ope;
-    static T op(T lhs, T rhs) {
-        T a;
+    static Value op(Value lhs, Value rhs) {
+        Value result;
         int l = 0, r = 0;
-        a.s = lhs.s + rhs.s;
-        a.fail = false;
-        rep(i, 0, 2) {
-            if (lhs.v[l] == rhs.v[r]) {
-                a.v[i] = lhs.v[l];
-                if (i == 0) a.n = lhs.n + rhs.n;
+        result.sum = lhs.sum + rhs.sum;
+        for (int i = 0; i < 2; i++) {
+            if (lhs.max_top2[l] == rhs.max_top2[r]) {
+                result.max_top2[i] = lhs.max_top2[l];
+                if (i == 0) result.num = lhs.num + rhs.num;
                 l++, r++;
-            } else if (lhs.v[l] < rhs.v[r]) {
-                a.v[i] = rhs.v[r];
-                if (i == 0) a.n = rhs.n;
+            } else if (lhs.max_top2[l] < rhs.max_top2[r]) {
+                result.max_top2[i] = rhs.max_top2[r];
+                if (i == 0) result.num = rhs.num;
                 r++;
             } else {
-                a.v[i] = lhs.v[l];
-                if (i == 0) a.n = lhs.n;
+                result.max_top2[i] = lhs.max_top2[l];
+                if (i == 0) result.num = lhs.num;
                 l++;
             }
         }
-        return a;
+        return result;
     }
-    static T e() {
-        T a;
-        a.v[0] = numeric_limits<U>::max();
-        a.v[1] = numeric_limits<U>::min();
-        a.n = 0;
-        a.s = 0;
-        a.fail = false;
-        return a;
+    static Value e() {
+        return Value{};
     }
-    static T map(F f, T v) {
-        if (f.a >= v.v[0]) {
-            if (f.b) {
-                v.n = 1;
-                v.s = v.v[0];
+    static std::optional<Value> mapping(Act act, Value value) {
+        if (act.chmin_ >= value.max_top2[0]) {
+            if (act.boot_) {
+                value.num = 1;
+                value.sum = value.max_top2[0];
             }
-            return v;
-        } else if (f.a > v.v[1]) {
-            v.s -= (v.v[0] - f.a) * v.n;
-            v.v[0] = f.a;
-            if (f.b) {
-                v.n = 1;
-                v.s = v.v[0];
+            return value;
+        } else if (act.chmin_ > value.max_top2[1]) {
+            value.sum -= (value.max_top2[0] - act.chmin_) * value.num;
+            value.max_top2[0] = act.chmin_;
+            if (act.boot_) {
+                value.num = 1;
+                value.sum = value.max_top2[0];
             }
-            return v;
+            return value;
         } else {
-            assert(!f.b);
-            v.fail = true;
-            return v;
+            assert(!act.boot_);
+            return std::nullopt;
         }
     }
-    static F compose(F lhs, F rhs) { return F(min(lhs.a, rhs.a), lhs.b || rhs.b); }
-    static F id() { return F(numeric_limits<U>::max(), false); }
+    static Act composition(Act lhs, Act rhs) {
+        return Act{std::min(lhs.chmin_, rhs.chmin_), lhs.boot_ || rhs.boot_};
+    }
+    static Act id() {
+        return Act{MAX, false};
+    }
 };
-} // namespace beats_monoid
+}  //  namespace beats_monoid
+}  //  namespace nono

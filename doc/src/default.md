@@ -43,8 +43,7 @@ UnionFind with Potential. 可換/非可換どちらでも動く.
 ### [segment-tree-2d](./ds/segment-tree-2d.md)
 一点更新矩形取得 二次元segment tree.
 ### [segment-tree-beats](./ds/segment-tree-beats.md)
-
-**TODO**: implementation
+時々作用がミスるlazy segment tree. だいたいこれ. <https://rsm9.hatenablog.com/entry/2021/02/01/220408>
 ### [segment-tree](./ds/segment-tree.md)
 一点更新 区間取得のsegment tree. <https://atcoder.github.io/ac-library/master/document_ja/segtree.html>
 ### [sparse-table-2d](./ds/sparse-table-2d.md)
@@ -124,6 +123,7 @@ aclベースのmodint. cin, coutによる入出力に対応.
 ### [act-monoid](./structure/act-monoid.md)
 ActMonoid全部盛り.
 ### [beats-monoid](./structure/beats-monoid.md)
+segment-tree-beats用Monoid全部盛り.
 ### [group](./structure/group.md)
 ### [monoid-template](./structure/monoid-template.md)
 ### [monoid](./structure/monoid.md)
