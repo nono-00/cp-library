@@ -115,6 +115,8 @@ Undoが可能なUnionFind
 aclベースのmodint. cin, coutによる入出力に対応.
 ### [zeta-mobius-transform](./math/zeta-mobius-transform.md)
 ## string
+### [eertree](./string/eertree.md)
+回文木. 文字列を突っ込むと連続文字列回文の個数を求めることができる.
 ### [lcp-array](./string/lcp-array.md)
 ### [manacher](./string/manacher.md)
 ### [suffix-array](./string/suffix-array.md)
