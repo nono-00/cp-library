@@ -4,7 +4,6 @@
 #include <cassert>
 #include <functional>
 #include <limits>
-#include <numeric>
 #include <queue>
 #include <utility>
 #include <vector>
@@ -20,10 +19,7 @@ class DijkstraResult {
   public:
     static constexpr T UNREACHABLE = std::numeric_limits<T>::max();
 
-    DijkstraResult(int source, std::vector<T> dist, std::vector<int> parent)
-        : source_(source),
-          dist_(std::move(dist)),
-          parent_(std::move(parent)) {}
+    DijkstraResult(std::vector<T> dist, std::vector<int> parent): dist_(std::move(dist)), parent_(std::move(parent)) {}
 
     //  source -> destの最短距離
     T dist(int dest) const {
@@ -43,10 +39,9 @@ class DijkstraResult {
             return {};
         }
         std::vector<int> result;
-        while (true) {
-            result.push_back(dest);
-            if (dest == source_) break;
-            dest = parent_[dest];
+        for (int pos = dest; pos != -1;) {
+            result.push_back(pos);
+            pos = parent_[pos];
         }
         std::reverse(result.begin(), result.end());
         return result;
@@ -63,15 +58,14 @@ class DijkstraResult {
     }
 
   private:
-    int source_;
     std::vector<T> dist_;
+    //  parent_[i] = -1 => source or unrechable
     std::vector<int> parent_;
 };
 
 }  //  namespace internal
 
 ///  brief : 負辺なしの単一始点最短経路問題を解く. \\( O(|E| \log |E|) \\)
-///  TODO : 負辺なしかどうかassertion
 
 //  brief:
 //  - 負辺無し単一始点最短経路問題を解く
@@ -86,15 +80,16 @@ class DijkstraResult {
 //  - `source` からたどり着くことができるのならば, `source` からの最短経路
 //  - そうでなければ `numeric_limit<T>::max()`
 template <class T>
-internal::DijkstraResult<T> dijkstra(const Graph<T>& graph, int source) {
+internal::DijkstraResult<T> dijkstra(const Graph<T>& graph, std::vector<int> source) {
     using Result = internal::DijkstraResult<T>;
 
     std::vector<T> dist(graph.size(), Result::UNREACHABLE);
-    std::vector<int> parent(graph.size());
-    std::iota(parent.begin(), parent.end(), 0);
+    std::vector<int> parent(graph.size(), -1);
     std::priority_queue<std::pair<T, int>, std::vector<std::pair<T, int>>, std::greater<std::pair<T, int>>> que;
-    dist[source] = 0;
-    que.emplace(dist[source], source);
+    for (auto s: source) {
+        dist[s] = 0;
+        que.emplace(dist[s], s);
+    }
 
     while (!que.empty()) {
         auto [d, u] = que.top();
@@ -109,7 +104,12 @@ internal::DijkstraResult<T> dijkstra(const Graph<T>& graph, int source) {
         }
     }
 
-    return Result(source, std::move(dist), std::move(parent));
+    return Result(std::move(dist), std::move(parent));
+}
+
+template <class T>
+internal::DijkstraResult<T> dijkstra(const Graph<T>& graph, int source) {
+    return dijkstra(graph, std::vector<int>{source});
 }
 
 }  //  namespace nono

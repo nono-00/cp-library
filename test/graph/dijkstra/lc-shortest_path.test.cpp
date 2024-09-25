@@ -20,7 +20,6 @@ void solve() {
     }
     auto graph = to_directed_graph(n, edges);
     auto result = dijkstra(graph, s);
-
     if (result.invalid(t)) {
         std::cout << -1 << '\n';
         return;
