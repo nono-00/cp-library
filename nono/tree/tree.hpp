@@ -11,6 +11,7 @@
 
 namespace nono {
 
+///  brief : 機能盛り盛りTree構造体. lca, la, jump, dist, depth, height, etc. Graphと同じように隣接リストとしても使える.
 template <class T>
 class Tree: public Graph<T> {
   public:
