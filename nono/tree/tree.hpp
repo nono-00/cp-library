@@ -43,7 +43,14 @@ class Tree: public Graph<T> {
     }
 
     //  lhsとrhsの距離
-    T dist(int lhs, int rhs) {
+    int dist(int lhs, int rhs) {
+        assert(0 <= lhs && lhs < n_);
+        assert(0 <= rhs && rhs < n_);
+        return depth_[lhs] + depth_[rhs] - 2 * depth_[lca(lhs, rhs)];
+    }
+
+    //  lhsとrhsの距離
+    T weighted_dist(int lhs, int rhs) {
         assert(0 <= lhs && lhs < n_);
         assert(0 <= rhs && rhs < n_);
         return weighted_depth_[lhs] + weighted_depth_[rhs] - 2 * weighted_depth_[lca(lhs, rhs)];
@@ -78,16 +85,30 @@ class Tree: public Graph<T> {
     }
 
     //  xの深さ
-    T depth(int x) {
+    int depth(int x) {
         assert(0 <= x && x < n_);
+        return depth_[x];
+    }
+
+    //  xの深さ
+    T weighted_depth(int x) {
+        assert(0 <= x && x < n_);
+        return weighted_depth_[x];
     }
 
     //  xの高さ
-    T height(int x) {
+    int height(int x) {
+        assert(0 <= x && x < n_);
+        return height_[x];
+    }
+
+    //  xの高さ
+    T weighted_height(int x) {
         assert(0 <= x && x < n_);
         return weighted_height_[x];
     }
 
+    //  x含む部分木内の頂点数
     int subtree(int x) {
         assert(0 <= x && x < n_);
         return out_[x] - in_[x];
