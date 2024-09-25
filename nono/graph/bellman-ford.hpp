@@ -18,9 +18,8 @@ class BellmanFordResult {
     static constexpr T UNREACHABLE = std::numeric_limits<T>::max();
     static constexpr T INVALID = std::numeric_limits<T>::min();
 
-    BellmanFordResult(int source, std::vector<T> dist, std::vector<int> parent, bool has_negative_cycle)
-        : source_(source),
-          dist_(std::move(dist)),
+    BellmanFordResult(std::vector<T> dist, std::vector<int> parent, bool has_negative_cycle)
+        : dist_(std::move(dist)),
           parent_(std::move(parent)),
           has_negative_cycle_(has_negative_cycle) {}
 
@@ -42,10 +41,9 @@ class BellmanFordResult {
             return {};
         }
         std::vector<int> result;
-        while (true) {
-            result.push_back(dest);
-            if (dest == source_) break;
-            dest = parent_[dest];
+        for (int pos = dest; pos != -1;) {
+            result.push_back(pos);
+            pos = parent_[pos];
         }
         std::reverse(result.begin(), result.end());
         return result;
@@ -62,7 +60,6 @@ class BellmanFordResult {
     }
 
   private:
-    int source_;
     std::vector<T> dist_;
     std::vector<int> parent_;
     bool has_negative_cycle_;
@@ -75,13 +72,16 @@ class BellmanFordResult {
 //  最短距離が確定しない頂点はstd::numeric_limits<T>::min()
 //  辿り着けない頂点はstd::numeric_limits<T>::max()
 template <class T>
-internal::BellmanFordResult<T> bellman_ford(int n, const std::vector<EdgeBase<T>>& edges, int source) {
+internal::BellmanFordResult<T> bellman_ford(int n, const std::vector<EdgeBase<T>>& edges,
+                                            const std::vector<int>& source) {
     using Result = internal::BellmanFordResult<T>;
     constexpr T INF = std::numeric_limits<T>::max();
-    assert(0 <= source && source < n);
     std::vector<T> dist(n, Result::UNREACHABLE);
-    std::vector<int> parent(n, source);
-    dist[source] = 0;
+    std::vector<int> parent(n, -1);
+    for (auto s: source) {
+        assert(0 <= s && s < n);
+        dist[s] = 0;
+    }
 
     for (int i = 0; i + 1 < n; i++) {
         bool update = false;
@@ -109,7 +109,12 @@ internal::BellmanFordResult<T> bellman_ford(int n, const std::vector<EdgeBase<T>
         has_negative_cycle = true;
     }
 
-    return Result(source, std::move(dist), std::move(parent), has_negative_cycle);
+    return Result(std::move(dist), std::move(parent), has_negative_cycle);
+}
+
+template <class T>
+internal::BellmanFordResult<T> bellman_ford(int n, const std::vector<EdgeBase<T>>& edges, int source) {
+    return bellman_ford(n, edges, std::vector<int>{source});
 }
 
 }  //  namespace nono
