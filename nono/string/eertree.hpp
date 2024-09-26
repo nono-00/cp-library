@@ -1,9 +1,7 @@
 #pragma once
 
-#include <algorithm>
 #include <map>
 #include <numeric>
-#include <utility>
 #include <vector>
 
 ///  brief : 回文木. nodeへのアクセス時に-1しないと壊れるかも？
