@@ -1,11 +1,12 @@
 import os
 import shutil
-import json
-import re
 
 # 定数の定義
 DOC_SRC_DIR = '../doc/src'
 NONO_DIR = '../nono'
+
+DEST = '../doc/src/'
+SRC = '../nono/'
 
 
 def extract_and_convert_to_json(input_file):
@@ -37,48 +38,70 @@ def create_directory_structure(src_dir, nono_dir):
         os.makedirs(src_dir)
 
 
-def create_md_files(src_dir, nono_dir):
-    """ src_dir およびそのサブディレクトリ下に default.md を作成します。 """
-    with open(os.path.join(src_dir, 'SUMMARY.md'), 'w') as summary:
-        summary.write('# SUMMARY\n')
-        summary.write('[Home](default.md)\n')
+def create_header(header, src, dest):
+    return f'{header}({os.path.relpath(src, start=dest)})\n'
 
-        # src/default.md の作成
-        with open(os.path.join(src_dir, 'default.md'), 'w') as default:
-            default.write("# nonolib\n")
-            # include 文を書く
-            subdirs = [d for d in os.listdir(
-                nono_dir) if os.path.isdir(os.path.join(nono_dir, d))]
-            subdirs.sort()
-            for subdir in subdirs:
-                subdir_path = os.path.join(nono_dir, subdir)
-                os.makedirs(os.path.join(src_dir, subdir))
-                # H1 タイトルをディレクトリ名で書く
-                default.write(f'## {subdir}\n')
-                summary.write(f'- [{subdir}]()\n')
-                # nono ディレクトリ下のファイル名を取り出してリストに書く
-                for filename in sorted(os.listdir(subdir_path)):
-                    file_path = os.path.join(subdir_path, filename)
-                    if os.path.isfile(file_path):
-                        with open(os.path.join(src_dir, subdir, filename.split('.')[0] + ".md"), 'w') as file:
-                            rel_file_path = os.path.join("./../../", file_path)
-                            file.write(f'# {filename.split(".")[0]}\n')
-                            file.write('```cpp\n')
-                            file.write(
-                                f'{{{{#include {rel_file_path}}}}}\n')
-                            file.write('```\n')
-                        default.write(
-                            f'### [{filename.split(".")[0]}]({"./" + subdir + "/" + filename.split(".")[0] + ".md"})\n')
-                        summary.write(
-                            f'    - [{filename.split(".")[0]}]({"./" + subdir + "/" + filename.split(".")[0] + ".md"})\n')
-                        data = extract_and_convert_to_json(file_path)
-                        if "brief" in data:
-                            default.write(data['brief'])
-                            default.write('\n')
-                        if "TODO" in data:
-                            default.write("\n**TODO**: ")
-                            default.write(data['TODO'])
-                            default.write('\n')
+
+def create_file(src_dir, dest_dir, name, base):
+    assert os.path.exists(os.path.join(src_dir, name))
+    src_file = os.path.join(src_dir, name)
+    with open(os.path.join(dest_dir, base + ".md"), 'w') as file:
+        file.write(f'# {base}\n')
+        file.write('```cpp\n')
+        file.write(
+            f'{{{{#include {os.path.relpath(src_file, start=dest_dir)}}}}}\n')
+        file.write('```\n')
+    return extract_and_convert_to_json(src_file)
+
+
+def create_dir(src_dir, dest_dir, summary, summary_header, depth, defaults, default_header):
+    assert os.path.exists(src_dir)
+    assert os.path.exists(dest_dir)
+    summary.write(summary_header)
+    default_path = os.path.join(dest_dir, 'default.md')
+    with open(default_path, 'w') as default:
+        defaults.append((default, dest_dir))
+
+        for (file, path) in defaults:
+            file.write(create_header(default_header, default_path, path))
+
+        for name in sorted(os.listdir(src_dir)):
+            if os.path.isdir(os.path.join(src_dir, name)):
+                next_src_dir = os.path.join(src_dir, name)
+                next_dest_dir = os.path.join(dest_dir, name)
+                next_summary_header = f'{"    " * depth}- [{name}]({os.path.relpath(os.path.join(dest_dir, name, "default.md"), start=DEST)})\n'
+                next_depth = depth + 1
+                next_default_header = f'## [{os.path.relpath(next_dest_dir, start=DEST)}]'
+                os.makedirs(next_dest_dir)
+                create_dir(next_src_dir, next_dest_dir, summary,
+                           next_summary_header, next_depth, defaults, next_default_header)
+            else:
+                base = '.'.join(name.split('.')[:-1])
+                dest_file = os.path.join(dest_dir, base + ".md")
+                data = create_file(src_dir, dest_dir, name, base)
+                for (file, path) in defaults:
+                    file.write(
+                        f'### [{base}]({os.path.relpath(dest_file, start=path)})\n')
+                    if "brief" in data:
+                        file.write(data['brief'])
+                        file.write('\n')
+                    if "TODO" in data:
+                        file.write("\n**TODO**: ")
+                        file.write(data['TODO'])
+                        file.write('\n')
+                summary.write(
+                    f'{"    " * depth}- [{base}]({os.path.relpath(os.path.join(dest_dir, base + ".md"), start=DEST)})\n')
+        for (file, path) in defaults:
+            file.write("\n___\n")
+        defaults.pop(-1)
+
+
+def create_md_files(dest_dir, src_dir):
+    """ src_dir およびそのサブディレクトリ下に default.md を作成します。 """
+    with open(os.path.join(dest_dir, 'SUMMARY.md'), 'w') as summary:
+        summary.write('# SUMMARY\n')
+        create_dir(src_dir, dest_dir, summary,
+                   '[Home](default.md)\n', 0, [], '# [nonolib]')
 
 
 def remove_directory(dir_path):
@@ -89,10 +112,10 @@ def remove_directory(dir_path):
 
 if __name__ == "__main__":
     # 既存のディレクトリを削除
-    remove_directory(DOC_SRC_DIR)
+    remove_directory(DEST)
 
     # ディレクトリの作成
-    create_directory_structure(DOC_SRC_DIR, NONO_DIR)
+    create_directory_structure(DEST, SRC)
 
     # markdown ファイルの作成
-    create_md_files(DOC_SRC_DIR, NONO_DIR)
+    create_md_files(DEST, SRC)
