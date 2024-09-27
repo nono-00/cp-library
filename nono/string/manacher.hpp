@@ -1,42 +1,72 @@
 #pragma once
 
+#include <cassert>
+#include <iterator>
+#include <optional>
 #include <ranges>
-#include <string>
 #include <vector>
 
 namespace nono {
 
-//  brief:
-//  - manacher
-//  - 列に対して、ある文字を中心とする回文の最大半径を求める
+namespace internal {
+
+struct ManacherResult {
+  public:
+    ManacherResult(int n, std::vector<int> rad): n_(n), rad_(rad) {}
+
+    //  奇数長
+    //  s[i]をcenterとする回文半径
+    //  回文の長さが欲しい場合は2 * radius(i) - 1
+    int radius(int i) {
+        assert(0 <= i && i < n_);
+        return rad_[2 * i + 1] / 2;
+    }
+
+    //  偶数長
+    //  s[i], s[i + 1]を中心とした回文半径
+    //  回文の長さが欲しい場合は2 * radius(i)
+    int radius(int i, int j) {
+        assert(0 <= i && i < n_);
+        assert(0 <= j && j < n_);
+        assert(i + 1 == j);
+        return (rad_[2 * j] - 1) / 2;
+    }
+
+    std::vector<int> raw() const {
+        return rad_;
+    }
+
+  private:
+    int n_;
+    std::vector<int> rad_;
+};
+
+}  //  namespace internal
+
+///  brief : manacher. 回文半径を求める. 偶奇両対応.
 //
 //  complexity:
 //  - O(|S|)
-//
-//  note:
-//  - 偶数長の文字列を求めたい場合は
-//  - 適当な文字を間に挟む
 template <std::ranges::random_access_range R>
-std::vector<int> manacher(const R& sequence) {
-    int size = std::size(sequence);
-    std::vector<int> result(size);
-
-    int i = 0;
-    int j = 1;
-    while (i < size) {
-        while (i + j < size && i - j >= 0 && sequence[i + j] == sequence[i - j]) j++;
-        result[i] = j;
-
-        int k = 1;
-        while (i + k < size && i - k >= 0 && k + result[i - k] < result[i]) {
-            result[i + k] = result[i - k];
-            k++;
-        }
-        i += k;
-        j -= k;
+internal::ManacherResult manacher(const R& seq) {
+    std::vector<std::optional<typename R::value_type>> dummy;
+    for (auto v: seq) {
+        dummy.push_back(std::nullopt);
+        dummy.push_back(v);
     }
+    dummy.push_back(std::nullopt);
 
-    return result;
+    int n = dummy.size();
+    //  result[i]: s[i]を中心とした回文の最大半径
+    std::vector<int> result(n);
+    for (int i = 0, r = 0; i < n;) {
+        while (0 <= 2 * i - r && r < n && dummy[r] == dummy[2 * i - r]) r++;
+        result[i] = r - i;
+        int j = i + 1;
+        while (0 <= 2 * i - j && j < n && j + result[2 * i - j] < r) result[j] = result[2 * i - j], j++;
+        i = j;
+    }
+    return {std::ssize(seq), result};
 }
 
 }  //  namespace nono

@@ -9,25 +9,16 @@ namespace nono {
 void solve() {
     std::string s;
     std::cin >> s;
-    std::string t;
-    for (auto c: s) {
-        t.push_back(c);
-        t.push_back('#');
-    }
-    t.pop_back();
-
-    const auto res = manacher(t);
-    for (int i = 0, size = res.size(); i < size; i++) {
-        if (i % 2 == 0) {
-            std::cout << 2 * ((res[i] - 1) / 2) + 1;
+    int n = s.size();
+    auto result = manacher(s);
+    for (int i = 0; i < n; i++) {
+        std::cout << 2 * result.radius(i) - 1;
+        if (i + 1 < n) {
+            std::cout << ' ' << 2 * result.radius(i, i + 1) << ' ';
         } else {
-            std::cout << 2 * ((res[i]) / 2);
-        }
-        if (i + 1 != size) {
-            std::cout << ' ';
+            std::cout << '\n';
         }
     }
-    std::cout << '\n';
 }
 
 }  //  namespace nono
