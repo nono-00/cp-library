@@ -17,7 +17,7 @@
 
 namespace nono {
 
-///  brief : suffix automaton. よくわかっていない. 部分文字列の種類数をincrementalに処理できる.
+///  brief : suffix automaton. 部分文字列の種類数をincrementalに処理できたりする. graphvizでの出力に対応.
 template <class T = char>
 class SuffixAutomaton {
     struct Node {
@@ -134,10 +134,10 @@ class SuffixAutomaton {
         dfs(dfs, 0, "");
         Graph graph(edges.begin(), edges.end(), propertys.begin(), nodes_.size());
         boost::write_graphviz(file, graph, boost::make_label_writer(labels.data()), PropertyWriter(graph));
-        std::cerr << "$ dot -Tpng test.dot -o test.png" << std::endl;
+        std::cerr << "$ dot -Tpng test.dot -o test.png && open test.png" << std::endl;
     }
 #else
-    void write(std::string filename) {}
+    void write(std::string filename = "test.dot") {}
 #endif
 
   private:
