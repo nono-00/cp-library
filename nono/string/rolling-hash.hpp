@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace nono {
-///  brief : ロリハ. based on https://ei1333.github.io/library/string/rolling-hash.hpp
+///  brief : ロリハ. based on <https://ei1333.github.io/library/string/rolling-hash.hpp>
 template <uint64_t THRESHOLD = 10000000>
 struct RollingHash {
     static constexpr unsigned long long mod = (1ull << 61ull) - 1;
