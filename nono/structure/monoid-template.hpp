@@ -1,30 +1,29 @@
-template <class U>
+/// brief : monoid template. 使うことなさそう.
+template <class T>
 struct Monoid {
-    using T = U;
-    static T op(T lhs, T rhs);
-    static T e();
+    using Value = T;
+    static Value op(Value lhs, Value rhs);
+    static Value e();
 };
-template <class U>
+template <class T>
 struct ActMonoid {
-    using T = U;
-    using F = U;
-    static T op(T lhs, T rhs);
-    static T e();
-    static T mapping(F lhs, T rhs);
+    using Value = T;
+    using Act = T;
+    static Value op(Value lhs, Value rhs);
+    static Value e();
+    static Value mapping(Act lhs, Value rhs);
     //  rhsは事前に適用されていたやつ
     //  lhsがこれから適用するやつ
-    static F compososition(F lhs, F rhs);
-    static F id();
+    static Act compososition(Act lhs, Act rhs);
+    static Act id();
 };
 template <class U>
 struct BeatMonoid {
-    struct ope;
-    struct info;
-    using T = info;
-    using F = ope;
-    static T op(T lhs, T rhs);
-    static T e();
-    static T map(F lhs, T rhs);
-    static F compose(F lhs, F rhs);
-    static F id();
+    struct Value;
+    struct Act;
+    static Value op(Value lhs, Value rhs);
+    static Value e();
+    static Value mapping(Act lhs, Value rhs);
+    static Act composition(Act lhs, Act rhs);
+    static Act id();
 };

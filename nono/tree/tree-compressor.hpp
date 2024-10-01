@@ -21,8 +21,7 @@ struct TreeCompressResult {
 
 }  //  namespace internal
 
-//  "指定された頂点たちの最小共通祖先関係を保って木を圧縮してできる補助的な木"
-//  を作るやつ
+///  brief : "指定された頂点たちの最小共通祖先関係を保って木を圧縮してできる補助的な木" を作るやつ
 template <class T>
 class TreeCompressor {
     using Result = internal::TreeCompressResult<T>;

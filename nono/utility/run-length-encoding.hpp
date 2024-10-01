@@ -3,6 +3,8 @@
 #include <ranges>
 #include <vector>
 
+/// brief : ランレングス圧縮. 
+/// TODO : 配置場所が不適切?
 namespace nono {
 
 namespace internal {

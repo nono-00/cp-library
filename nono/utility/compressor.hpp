@@ -7,8 +7,7 @@
 
 namespace nono {
 
-//  brief:
-//  - 座標圧縮.
+///  brief : 座標圧縮.
 //
 template <class T>
 class Compressor {

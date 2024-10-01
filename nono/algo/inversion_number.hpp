@@ -1,9 +1,13 @@
 #pragma once
 
+#include <vector>
+
 #include "nono/ds/fenwick-tree.hpp"
 #include "nono/utility/compressor.hpp"
 
 namespace nono {
+
+/// brief : 転倒数. 
 
 //  brief:
 //  - 反転数

@@ -13,6 +13,9 @@ namespace nono {
 
 namespace internal {
 
+/// brief : 木の直径.
+/// TODO : verify
+
 //  diameter(graph)の結果
 template <class T>
 class DiameterResult {

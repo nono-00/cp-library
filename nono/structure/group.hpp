@@ -2,6 +2,8 @@
 
 namespace nono {
 
+
+/// brief : 群全部盛り.
 namespace group {
 
 template <class T>

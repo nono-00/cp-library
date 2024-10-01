@@ -6,6 +6,8 @@
 
 namespace nono {
 
+/// brief : 行列ライブラリ. 行列積, 行列累乗くらいの機能しかない.
+
 template <typename T>
 class Matrix {
   public:

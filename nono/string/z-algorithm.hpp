@@ -5,6 +5,8 @@
 
 namespace nono {
 
+/// brief : Z algo. `result[i]:` `seq`と`seq[i:]`のprefixがどれだけ一致しているか?
+
 template <std::ranges::random_access_range R>
 std::vector<int> z_algorithm(const R& sequence) {
     int n = std::size(sequence);
