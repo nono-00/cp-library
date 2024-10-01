@@ -2,24 +2,11 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/data-structure/fenwick-tree.hpp"
+#include "nono/ds/fenwick-tree.hpp"
 #include "nono/graph/base.hpp"
 #include "nono/tree/heavy-light-decomposition.hpp"
 
 namespace nono {
-
-struct Add {
-    using value_type = long long;
-    static long long op(long long lhs, long rhs) {
-        return lhs + rhs;
-    }
-    static long long e() {
-        return 0;
-    }
-    static long long inv(long long value) {
-        return -value;
-    }
-};
 
 void solve() {
     int n, q;
@@ -33,10 +20,10 @@ void solve() {
         std::cin >> u >> v;
         edges.emplace_back(u, v);
     }
-    FenwickTree<Add> fen(n);
+    FenwickTree<long long> fen(n);
     HeavyLightDecomposition hld(to_undirected_graph(n, edges));
     for (int i = 0; i < n; i++) {
-        fen.apply(hld.vertex(i), a[i]);
+        fen.add(hld.vertex(i), a[i]);
     }
     while (q--) {
         int t;
@@ -46,13 +33,13 @@ void solve() {
             long long x;
             std::cin >> p >> x;
             int e = hld.vertex(p);
-            fen.apply(e, x);
+            fen.add(e, x);
         } else {
             int u, v;
             std::cin >> u >> v;
             long long ans = 0;
             for (auto&& [l, r]: hld.vertices_for_path(u, v)) {
-                ans += fen.prod(l, r);
+                ans += fen.sum(l, r);
             }
             std::cout << ans << '\n';
         }

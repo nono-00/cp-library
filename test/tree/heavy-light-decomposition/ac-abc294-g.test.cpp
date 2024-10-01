@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/data-structure/fenwick-tree.hpp"
+#include "nono/ds/fenwick-tree.hpp"
 #include "nono/graph/base.hpp"
 #include "nono/tree/heavy-light-decomposition.hpp"
 

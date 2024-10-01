@@ -1,7 +1,9 @@
 #pragma once
 
+#include <limits>
 #include <queue>
 #include <vector>
+#include <algorithm>
 
 #include "nono/graph/base.hpp"
 
@@ -65,6 +67,7 @@ template <class T>
 internal::BfsResult<T> bfs(const Graph<T>& graph, const std::vector<int>& source) {
     using Result = internal::BfsResult<T>;
     std::vector<T> dist(graph.size(), Result::UNREACHABLE);
+    std::vector<int> parent(graph.size(), -1);
     std::queue<int> que;
     for (auto s: source) {
         dist[s] = 0;
@@ -77,12 +80,13 @@ internal::BfsResult<T> bfs(const Graph<T>& graph, const std::vector<int>& source
         for (const auto& e: graph[u]) {
             if (dist[e.to] == Result::UNREACHABLE) {
                 dist[e.to] = dist[u] + e.weight;
+                parent[e.to] = u;
                 que.push(e.to);
             }
         }
     }
 
-    return dist;
+    return Result{dist, parent};
 }
 
 template <class T>

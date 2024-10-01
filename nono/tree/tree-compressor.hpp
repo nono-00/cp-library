@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-#include "nono/data-structure/sparse-table.hpp"
+#include "nono/ds/sparse-table.hpp"
 #include "nono/graph/base.hpp"
 #include "nono/tree/is-tree.hpp"
 
@@ -28,11 +28,11 @@ class TreeCompressor {
     using Result = internal::TreeCompressResult<T>;
 
     struct Min_ {
-        using value_type = std::pair<int, int>;
-        static value_type op(value_type lhs, value_type rhs) {
+        using Value = std::pair<int, int>;
+        static Value op(Value lhs, Value rhs) {
             return std::min(lhs, rhs);
         }
-        static value_type e() {
+        static Value e() {
             return {1e9, 1e9};
         }
     };

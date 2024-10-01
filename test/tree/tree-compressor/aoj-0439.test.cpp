@@ -26,7 +26,7 @@ void solve() {
     }
     const auto g = to_undirected_graph(n, edges);
     TreeCompressor tree_compressor(g);
-    auto depth = bfs(g, 0);
+    auto depth = bfs(g, 0).raw();
 
     std::vector<std::vector<int>> vertexs(n);
     for (int i = 0; i < n; i++) {
