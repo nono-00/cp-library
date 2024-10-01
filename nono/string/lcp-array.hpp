@@ -1,56 +1,46 @@
 #pragma once
 
+#include <cassert>
 #include <string>
 #include <vector>
 
-#include "nono/string/suffix-array.hpp"
-
 namespace nono {
 
-//  brief:
-//  - Longest Common Prefix Array
-//
-//  details:
-//  - LCPArray[i]: SuffixArray[i], SuffixArray[i + 1]に共通する
-//  - 最大のprefixの長さ
-//
-//  depend:
-//  - Suffix Array
-//
-//  see:
-//  - 蟻本p.339
-class LCPArray: public std::vector<int> {
-  public:
-    //  brief:
-    //  - コンストラクタ
-    //
-    //  complexity:
-    //  - O(N)
-    //  - Suffix Arrayの構築込みだとO(N (logN) ^ 2)
-    LCPArray() = default;
-    LCPArray(const std::string& str) {
-        this->operator=(LCPArray(str, SuffixArray(str)));
-    }
-    LCPArray(const std::string& str, const SuffixArray& sa) {
-        int n = str.size();
-        std::vector<int> data(n);
-        std::vector<int> rank(n + 1);
-        for (int i = 0; i <= n; i++) {
-            rank[sa[i]] = i;
-        }
+/// brief : lcp array. based on <https://atcoder.github.io/ac-library/master/document_ja/string.html>
 
-        data[0] = 0;
-        int h = 0;
-        for (int i = 0; i < n; i++) {
-            int j = sa[rank[i] - 1];
-            if (h > 0) h--;
-            for (; i + h < n && j + h < n; h++) {
-                if (str[i + h] != str[j + h]) break;
-            }
-            data[rank[i] - 1] = h;
-        }
-        this->std::vector<int>::operator=(std::move(data));
+//  Reference:
+//  T. Kasai, G. Lee, H. Arimura, S. Arikawa, and K. Park,
+//  Linear-Time Longest-Common-Prefix Computation in Suffix Arrays and Its
+//  Applications
+template <class T>
+std::vector<int> lcp_array(const std::vector<T>& s, const std::vector<int>& sa) {
+    int n = int(s.size());
+    assert(n >= 1);
+    std::vector<int> rnk(n);
+    for (int i = 0; i < n; i++) {
+        rnk[sa[i]] = i;
     }
-};
+    std::vector<int> lcp(n - 1);
+    int h = 0;
+    for (int i = 0; i < n; i++) {
+        if (h > 0) h--;
+        if (rnk[i] == 0) continue;
+        int j = sa[rnk[i] - 1];
+        for (; j + h < n && i + h < n; h++) {
+            if (s[j + h] != s[i + h]) break;
+        }
+        lcp[rnk[i] - 1] = h;
+    }
+    return lcp;
+}
+
+std::vector<int> lcp_array(const std::string& s, const std::vector<int>& sa) {
+    int n = int(s.size());
+    std::vector<int> s2(n);
+    for (int i = 0; i < n; i++) {
+        s2[i] = s[i];
+    }
+    return lcp_array(s2, sa);
+}
 
 }  //  namespace nono

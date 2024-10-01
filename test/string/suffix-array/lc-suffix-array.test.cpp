@@ -9,10 +9,10 @@ namespace nono {
 void solve() {
     std::string s;
     std::cin >> s;
-    SuffixArray sa(s);
-    int n = sa.size();
-    for (int i = 1; i < n; i++) {
-        std::cout << sa[i] << (i + 1 < n ? ' ' : '\n');
+    int n = s.size();
+    auto sa = suffix_array(s);
+    for (int i = 0; i < n; i++) {
+        std::cout << sa[i] << " \n"[i + 1 == n];
     }
 }
 

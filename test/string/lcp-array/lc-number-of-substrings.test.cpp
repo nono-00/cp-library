@@ -10,12 +10,11 @@ namespace nono {
 void solve() {
     std::string s;
     std::cin >> s;
-
-    SuffixArray sa(s);
-    LCPArray lcp(s, sa);
-
-    long long ans = 0;
-    for (int i = 1; i < (int)sa.size(); i++) {
+    int n = s.size();
+    auto sa = suffix_array(s);
+    auto lcp = lcp_array(s, sa);
+    long long ans = n - sa[0];
+    for (int i = 1; i < n; i++) {
         ans += (int)s.size() - sa[i] - lcp[i - 1];
     }
     std::cout << ans << std::endl;
