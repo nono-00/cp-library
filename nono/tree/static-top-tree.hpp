@@ -6,6 +6,7 @@
 #include "nono/graph/base.hpp"
 #include "nono/tree/rooted-tree.hpp"
 
+///  brief : static top tree. to_static_top_tree で作れる. 
 namespace nono {
 
 //  real vertex := 元の木に存在する頂点. 値を持っていたりいなかったり.
@@ -71,111 +72,56 @@ namespace nono {
 //      graph[u][1:] の各頂点に対して compress して (compress vertex, size) 配列を管理する
 //      これらを merge する.
 //
-//
-template <class M>
-class StaticTopTree {
-    using Value = M::Value;
-    using Path = M::Act;
 
-    struct Cluster {
-        Cluster(Value value, Path path, bool reset = false): value(value), path(path), reset(reset) {}
-        Value value;
-        Path path;
-        bool reset = false;
-    };
+namespace static_top_tree {
 
-    //  rhs <- lhs <- ... <- root
-    //  lhs が上
-    static Cluster op(Cluster lhs, Cluster rhs) {
-        return Cluster{M::op(lhs.value, M::mapping(lhs.path, rhs.value)),
-                       lhs.reset ? lhs.path : M::composition(lhs.path, rhs.path)};
-    }
+enum class NodeType {
+    Vertex,
+    AddVertex,
+    AddEdge,
+    Compress,
+    Rake
+};
+
+struct Node {
+    NodeType type;
+    int left;
+    int right;
+    int parent;
+};
+
+}  //  namespace static_top_tree
+
+struct StaticTopTree {
+    int root;
+    std::vector<static_top_tree::Node> nodes;
+    std::vector<int> vertexs;
+    std::vector<int> edges;
+};
+
+namespace internal {
+
+template <class T>
+class StaticTopTreeBuilder {
+    using Node = static_top_tree::Node;
+    using NodeType = static_top_tree::NodeType;
 
   public:
-    StaticTopTree() {}
-    StaticTopTree(int n, const std::vector<EdgeBase<Path>>& edges, int root = 0)
-        : StaticTopTree(n, edges, std::vector<Value>(n, M::e()), root) {}
-    StaticTopTree(int n, const std::vector<EdgeBase<Path>>& edges, const std::vector<Value>& values, int root = 0)
+    StaticTopTreeBuilder(int n, const std::vector<EdgeBase<T>>& edges, int root = 0)
         : n_(n),
-          nodes_(n + 1, {M::e(), M::id(), false}),
-          left_(n + 1, -1),
-          right_(n + 1, -1),
-          parent_(n + 1, -1),
-          to_(n - 1, -1),
           graph_(to_rooted_tree(n, edges, root)),
-          values_(values) {
-        for (int i = 0; i < n_; i++) nodes_[i].value = values_[i];
-        nodes_[n_].reset = true;
+          vertexs_(n),
+          edges_(n - 1) {
+        assert(is_tree(to_undirected_graph(n, edges)));
         dfs(root);
         root_ = compress(root).first;
     }
 
-    Value all_prod() {
-        return nodes_[root_].value;
-    }
-
-    void set_vertex(int u, Value value) {
-        nodes_[u].value = M::mapping(nodes_[u].path, values_[u] = value);
-        update(u);
-    }
-
-    void set_edge(int i, Path edge) {
-        nodes_[to_[i]].path = edge;
-        nodes_[to_[i]].value = M::mapping(edge, values_[to_[i]]);
-        update(to_[i]);
-    }
-
-    //  (sst vertex, size)
-    std::pair<int, int> compress(int u) {
-        std::vector<std::pair<int, int>> seq;
-        while (true) {  //  葉では無い間rakeし続ける
-            seq.emplace_back(rake(u));
-            if (graph_[u].empty()) break;
-            u = graph_[u][0].to;
-        }
-        return add({n_, 0}, merge(seq));
-    }
-
-    std::pair<int, int> rake(int u) {
-        if (graph_[u].size() <= 1) return {u, 1};
-        std::vector<std::pair<int, int>> seq;
-        seq.push_back({u, 1});
-        for (int i = 0; auto e: graph_[u]) {
-            if (i != 0) seq.emplace_back(compress(e.to));
-            i++;
-        }
-        return merge(seq);
-    }
-
-    std::pair<int, int> add(std::pair<int, int> lhs, std::pair<int, int> rhs) {
-        int id = nodes_.size();
-        nodes_.emplace_back(op(nodes_[lhs.first], nodes_[rhs.first]));
-        parent_.push_back(-1);
-        left_.push_back(-1);
-        right_.push_back(-1);
-        parent_[lhs.first] = parent_[rhs.first] = id;
-        left_[id] = lhs.first;
-        right_[id] = rhs.first;
-        return {id, lhs.second + rhs.second};
-    }
-
-    std::pair<int, int> merge(const std::vector<std::pair<int, int>>& seq) {
-        if (seq.size() == 1) return seq.front();
-        std::vector<std::pair<int, int>> lseq, rseq;
-        int u = 0;
-        for (auto& [_, s]: seq) u += s;
-        for (auto& [i, s]: seq) (u > s ? lseq : rseq).emplace_back(i, s), u -= s * 2;
-        return add(merge(lseq), merge(rseq));
+    StaticTopTree static_top_tree() {
+        return StaticTopTree{root_, nodes_, vertexs_, edges_};
     }
 
   private:
-    void update(int i) {
-        while (i != root_) {
-            i = parent_[i];
-            nodes_[i] = op(nodes_[left_[i]], nodes_[right_[i]]);
-        }
-    }
-
     int dfs(int u) {
         int size_sum = 1;
         int max_size = 0;
@@ -183,9 +129,6 @@ class StaticTopTree {
         auto&& adj = graph_[u];
         for (int i = 0; i < std::ssize(adj); i++) {
             const auto& e = adj[i];
-            nodes_[e.to].path = e.weight;
-            nodes_[e.to].value = M::mapping(e.weight, nodes_[e.to].value);
-            to_[e.id] = e.to;
             int size = dfs(e.to);
             size_sum += size;
             if (max_size < size) {
@@ -199,15 +142,99 @@ class StaticTopTree {
         return size_sum;
     }
 
+    //  (sst vertex, size)
+    //  最後に path を clear するために {n_, 0} を add する
+    std::pair<int, int> compress_merge(const std::vector<std::pair<int, std::pair<int, int>>>& seq) {
+        if (seq.size() == 1) return seq.front().second;
+        std::vector<std::pair<int, std::pair<int, int>>> lseq, rseq;
+        int u = 0;
+        for (auto& [_, p]: seq) u += p.second;
+        for (auto& [i, p]: seq) (u > p.second ? lseq : rseq).emplace_back(i, p), u -= p.second * 2;
+        auto lhs = compress_merge(lseq);
+        auto rhs = compress_merge(rseq);
+        auto result = add(lhs.first, rhs.first, NodeType::Compress);
+        edges_[rseq.front().first] = result;
+        return {result, lhs.second + rhs.second};
+    }
+
+    std::pair<int, int> compress(int u) {
+        std::vector<std::pair<int, std::pair<int, int>>> seq;
+        int i = -1;
+        while (true) {  //  葉では無い間rakeし続ける
+            seq.emplace_back(i, add_vertex(u));
+            if (graph_[u].empty()) break;
+            i = graph_[u][0].id;
+            u = graph_[u][0].to;
+        }
+        return compress_merge(seq);
+    }
+
+    std::pair<int, int> add_vertex(int u) {
+        if (graph_[u].size() <= 1) return vertex(u);
+        auto light = rake(u);
+        auto result = add(light.first, -1, NodeType::AddVertex);
+        vertexs_[u] = result;
+        return {result, 1 + light.second};
+    }
+
+    std::pair<int, int> vertex(int u) {
+        auto result = add(-1, -1, NodeType::Vertex);
+        vertexs_[u] = result;
+        return {result, 1};
+    }
+
+    std::pair<int, int> add_edge(int u, int i) {
+        auto comp = compress(u);
+        auto result = add(comp.first, -1, NodeType::AddEdge);
+        edges_[i] = result;
+        return {result, comp.second};
+    }
+
+    std::pair<int, int> rake_merge(const std::vector<std::pair<int, int>>& seq) {
+        if (seq.size() == 1) return seq.front();
+        std::vector<std::pair<int, int>> lseq, rseq;
+        int u = 0;
+        for (auto& [_, s]: seq) u += s;
+        for (auto& [i, s]: seq) (u > s ? lseq : rseq).emplace_back(i, s), u -= s * 2;
+        auto lhs = rake_merge(lseq);
+        auto rhs = rake_merge(rseq);
+        return {add(lhs.first, rhs.first, NodeType::Rake), lhs.second + rhs.second};
+    }
+
+    std::pair<int, int> rake(int u) {
+        std::vector<std::pair<int, int>> seq;
+        for (int i = 0; auto e: graph_[u]) {
+            if (i != 0) seq.emplace_back(add_edge(e.to, e.id));
+            i++;
+        }
+        return rake_merge(seq);
+    }
+
+    int add(int left, int right, NodeType type) {
+        int id = nodes_.size();
+        if (left != -1) {
+            nodes_[left].parent = id;
+        }
+        if (right != -1) {
+            nodes_[right].parent = id;
+        }
+        nodes_.push_back({type, left, right, -1});
+        return id;
+    }
+
     int n_;
+    Graph<T> graph_;
+    std::vector<Node> nodes_;
+    std::vector<int> vertexs_;
+    std::vector<int> edges_;
     int root_;
-    std::vector<Cluster> nodes_;
-    std::vector<int> left_;
-    std::vector<int> right_;
-    std::vector<int> parent_;
-    std::vector<int> to_;
-    Graph<Path> graph_;
-    std::vector<Value> values_;
 };
+
+}  //  namespace internal
+
+template <class T>
+StaticTopTree to_static_top_tree(int n, const std::vector<T>& edges, int root = 0) {
+    return internal::StaticTopTreeBuilder(n, edges, root).static_top_tree();
+}
 
 }  //  namespace nono
