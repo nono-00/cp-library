@@ -10,7 +10,7 @@ namespace nono {
 template <class T>
 bool is_bipartite(const Graph<T>& graph) {
     int n = graph.size();
-    std::vector<short> color(n, -1)
+    std::vector<short> color(n, -1);
     auto dfs = [&](auto&& self, int u) -> bool {
         assert(color[u] != -1);
         for (auto e: graph[u]) {
