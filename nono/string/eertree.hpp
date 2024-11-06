@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <limits>
 #include <map>
 #include <numeric>
@@ -64,14 +65,11 @@ class Eertree {
     std::vector<int> freq() {
         std::vector<int> ids(nodes_.size());
         std::iota(ids.begin(), ids.end(), 0);
-        sort(ids.begin(), ids.end(), [&](int lhs, int rhs) { return nodes_[lhs + 1].len > nodes_[rhs + 1].len; });
+        std::sort(ids.begin(), ids.end(), [&](int lhs, int rhs) { return nodes_[lhs].len > nodes_[rhs].len; });
         std::vector<int> result(nodes_.size());
         for (auto id: node_id_) result[id]++;
         for (auto id: ids) {
-            if (id <= 1) continue;
-            if (nodes_[id].link >= 0) {
-                result[nodes_[id].link] += result[id];
-            }
+            result[nodes_[id].link] += result[id];
         }
         return result;
     }
