@@ -2,8 +2,10 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <cassert>
 
 #include "nono/graph/bipartite-matching.hpp"
+#include "nono/graph/is-bipartite.hpp"
 
 namespace nono {
 
@@ -15,6 +17,12 @@ void solve() {
     auto result = bipartite_matching(l, r, edges);
     std::cout << result.size() << '\n';
     for (auto i: result) std::cout << edges[i].first << ' ' << edges[i].second << '\n';
+    std::vector<Edge> nono_edges(m);
+    for (int i = 0; i < m; i++) {
+        nono_edges[i].from = edges[i].first;
+        nono_edges[i].to = edges[i].second + l;
+    }
+    assert(is_bipartite(to_undirected_graph(l + r, nono_edges)));
 }
 
 }  //  namespace nono
