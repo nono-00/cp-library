@@ -143,7 +143,6 @@ class StaticTopTreeBuilder {
     }
 
     //  (sst vertex, size)
-    //  最後に path を clear するために {n_, 0} を add する
     std::pair<int, int> compress_merge(const std::vector<std::pair<int, std::pair<int, int>>>& seq) {
         if (seq.size() == 1) return seq.front().second;
         std::vector<std::pair<int, std::pair<int, int>>> lseq, rseq;
