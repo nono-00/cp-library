@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "nono/ds/csr-array.hpp"
+#include "nono/graph/base.hpp"
+#include "nono/graph/is-bipartite.hpp"
 
 ///  brief : 二部マッチング. かなり速い. 多重辺があっても動くはず.
 namespace nono {
@@ -81,6 +83,42 @@ std::vector<int> bipartite_matching(int left, int right, std::vector<std::pair<i
         }
     }
     return result;
+}
+
+template <class T>
+std::vector<int> bipartite_matching(const Graph<T>& graph) {
+    assert(is_bipartite(graph));
+    int n = graph.size();
+    int m = graph.edge_size();
+    std::vector<int> mapping(n, -1);
+    std::vector<bool> is_lefts(n);
+    int left = 0, right = 0;
+    auto dfs = [&](auto&& self, int u, bool is_left = true) -> void {
+        is_lefts[u] = is_left;
+        if (is_left) {
+            mapping[u] = left++;
+        } else {
+            mapping[u] = right++;
+        }
+        for (auto e: graph[u]) {
+            if (mapping[e.to] == -1) {
+                self(self, e.to, is_left ^ true);
+            }
+        }
+    };
+    for (int i = 0; i < n; i++) {
+        if (mapping[i] == -1) {
+            dfs(dfs, i);
+        }
+    }
+    std::vector<std::pair<int, int>> edges(m);
+    for (int u = 0; u < n; u++) {
+        if (!is_lefts[u]) continue;
+        for (auto e: graph[u]) {
+            edges[e.id] = {mapping[u], mapping[e.to]};
+        }
+    }
+    return bipartite_matching(left, right, edges);
 }
 
 }  //  namespace nono
