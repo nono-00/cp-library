@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "nono/string/suffix-automaton.hpp"
+#include "../../../nono/string/suffix-automaton.hpp"
 
 namespace nono {
 

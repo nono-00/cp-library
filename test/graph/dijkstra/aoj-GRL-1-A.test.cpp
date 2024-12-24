@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/graph/dijkstra.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/graph/dijkstra.hpp"
 
 namespace nono {
 

@@ -3,10 +3,10 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/math/modint.hpp"
-#include "nono/structure/act-monoid.hpp"
-#include "nono/tree/static-top-tree.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/math/modint.hpp"
+#include "../../../nono/structure/act-monoid.hpp"
+#include "../../../nono/tree/static-top-tree.hpp"
 
 namespace nono {
 
@@ -34,7 +34,6 @@ struct Monoid {
 };
 
 void solve() {
-    using Mint = Modint998244353;
     using Value = Monoid::Value;
     using Path = Monoid::Act;
     int n, q;

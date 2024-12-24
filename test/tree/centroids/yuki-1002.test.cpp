@@ -5,8 +5,8 @@
 #include <utility>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/tree/centroids.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/tree/centroids.hpp"
 
 namespace nono {
 

@@ -3,7 +3,7 @@
 #include <vector>
 #include <iterator>
 
-#include "math/zeta-mobius-transform.hpp"
+#include "./zeta-mobius-transform.hpp"
 
 namespace nono {
 

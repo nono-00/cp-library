@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/utility/compressor.hpp"
+#include "../../../nono/utility/compressor.hpp"
 
 namespace nono {
 

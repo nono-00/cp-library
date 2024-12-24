@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/tree/heavy-light-decomposition.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/tree/heavy-light-decomposition.hpp"
 
 namespace nono {
 

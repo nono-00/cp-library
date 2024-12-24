@@ -2,8 +2,8 @@
 #include <string>
 #include <vector>
 
-#include "nono/math/modint.hpp"
-#include "nono/string/eertree.hpp"
+#include "../../../nono/math/modint.hpp"
+#include "../../../nono/string/eertree.hpp"
 
 namespace nono {
 

@@ -3,7 +3,7 @@
 #include <vector>
 #include <cassert>
 
-#include "nono/graph/base.hpp"
+#include "./base.hpp"
 
 namespace nono {
 

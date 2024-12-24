@@ -2,9 +2,9 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/segment-edge.hpp"
-#include "nono/utility/compressor.hpp"
-#include "nono/graph/strongly-connected-components.hpp"
+#include "../../../nono/graph/segment-edge.hpp"
+#include "../../../nono/utility/compressor.hpp"
+#include "../../../nono/graph/strongly-connected-components.hpp"
 
 namespace nono {
 

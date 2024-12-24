@@ -5,9 +5,9 @@
 #include <utility>
 #include <vector>
 
-#include "nono/ds/sparse-table.hpp"
-#include "nono/graph/base.hpp"
-#include "nono/tree/is-tree.hpp"
+#include "../ds/sparse-table.hpp"
+#include "../graph/base.hpp"
+#include "./is-tree.hpp"
 
 namespace nono {
 

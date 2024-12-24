@@ -3,9 +3,9 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/graph/contract.hpp"
-#include "nono/graph/strongly-connected-components.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/graph/contract.hpp"
+#include "../../../nono/graph/strongly-connected-components.hpp"
 
 namespace nono {
 

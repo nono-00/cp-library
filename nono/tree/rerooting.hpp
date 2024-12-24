@@ -3,8 +3,8 @@
 #include <cassert>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/tree/is-tree.hpp"
+#include "../graph/base.hpp"
+#include "./is-tree.hpp"
 
 namespace nono {
 

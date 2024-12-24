@@ -3,10 +3,10 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/graph/contract.hpp"
-#include "nono/graph/two-edge-connected-components.hpp"
-#include "nono/tree/is-tree.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/graph/contract.hpp"
+#include "../../../nono/graph/two-edge-connected-components.hpp"
+#include "../../../nono/tree/is-tree.hpp"
 
 namespace nono {
 

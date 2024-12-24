@@ -3,7 +3,7 @@
 #include <iostream>
 #include <random>
 
-#include "nono/structure/act-monoid.hpp"
+#include "../../../nono/structure/act-monoid.hpp"
 
 using Monoid = nono::act_monoid::RangeAddCountMax<unsigned>;
 using Value = Monoid::Value;

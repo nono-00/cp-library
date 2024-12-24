@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/ds/disjoint-sparse-table.hpp"
-#include "nono/structure/monoid.hpp"
+#include "../../../nono/ds/disjoint-sparse-table.hpp"
+#include "../../../nono/structure/monoid.hpp"
 
 namespace nono {
 

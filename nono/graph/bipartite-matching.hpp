@@ -7,9 +7,9 @@
 #include <utility>
 #include <vector>
 
-#include "nono/ds/csr-array.hpp"
-#include "nono/graph/base.hpp"
-#include "nono/graph/is-bipartite.hpp"
+#include "../ds/csr-array.hpp"
+#include "./base.hpp"
+#include "./is-bipartite.hpp"
 
 ///  brief : 二部マッチング. かなり速い. 多重辺があっても動くはず.
 namespace nono {

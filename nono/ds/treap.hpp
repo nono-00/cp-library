@@ -2,9 +2,9 @@
 
 /// TODO : implementation
 
-#include "../monoid/monoid.hpp"
-#include "../template.hpp"
-#include "../xorshift.hpp"
+// #include "../monoid/monoid.hpp"
+// #include "../template.hpp"
+// #include "../xorshift.hpp"
 // 根のpが最も小さい
 namespace treap_node {
 template <class M>

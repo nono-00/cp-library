@@ -4,8 +4,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/graph/bellman-ford.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/graph/bellman-ford.hpp"
 
 namespace nono {
 

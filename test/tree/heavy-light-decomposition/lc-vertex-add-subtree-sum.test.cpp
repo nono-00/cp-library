@@ -2,9 +2,9 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/ds/fenwick-tree.hpp"
-#include "nono/graph/base.hpp"
-#include "nono/tree/heavy-light-decomposition.hpp"
+#include "../../../nono/ds/fenwick-tree.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/tree/heavy-light-decomposition.hpp"
 
 namespace nono {
 

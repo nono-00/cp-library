@@ -5,7 +5,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "nono/graph/base.hpp"
+#include "./base.hpp"
 
 namespace nono {
 

@@ -3,8 +3,8 @@
 #include <utility>
 #include <vector>
 
-#include "nono/ds/fenwick-tree.hpp"
-#include "nono/utility/compressor.hpp"
+#include "../ds/fenwick-tree.hpp"
+#include "../utility/compressor.hpp"
 
 namespace nono {
 

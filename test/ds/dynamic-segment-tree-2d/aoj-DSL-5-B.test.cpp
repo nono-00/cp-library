@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <iostream>
 
-#include "nono/ds/dynamic-segment-tree-2d.hpp"
-#include "nono/structure/monoid.hpp"
+#include "../../../nono/ds/dynamic-segment-tree-2d.hpp"
+#include "../../../nono/structure/monoid.hpp"
 
 namespace nono {
 

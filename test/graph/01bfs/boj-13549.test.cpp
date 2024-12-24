@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/01bfs.hpp"
-#include "nono/graph/base.hpp"
+#include "../../../nono/graph/01bfs.hpp"
+#include "../../../nono/graph/base.hpp"
 
 namespace nono {
 

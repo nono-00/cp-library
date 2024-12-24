@@ -4,8 +4,8 @@
 #include <iterator>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/graph/strongly-connected-components.hpp"
+#include "../graph/base.hpp"
+#include "../graph/strongly-connected-components.hpp"
 
 namespace nono {
 

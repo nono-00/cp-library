@@ -4,10 +4,10 @@
 #include <utility>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/tree/centroids.hpp"
-#include "nono/tree/diameter.hpp"
-#include "nono/tree/is-tree.hpp"
+#include "../graph/base.hpp"
+#include "./centroids.hpp"
+#include "./diameter.hpp"
+#include "./is-tree.hpp"
 
 namespace nono {
 

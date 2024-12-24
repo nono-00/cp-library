@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/ds/splay-tree.hpp"
+#include "../../../nono/ds/splay-tree.hpp"
 
 namespace nono {
 

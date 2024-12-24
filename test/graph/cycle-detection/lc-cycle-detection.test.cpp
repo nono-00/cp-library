@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/cycle-detection.hpp"
-#include "nono/graph/base.hpp"
+#include "../../../nono/graph/cycle-detection.hpp"
+#include "../../../nono/graph/base.hpp"
 
 namespace nono {
 

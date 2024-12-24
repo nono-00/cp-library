@@ -3,7 +3,7 @@
 #include <cassert>
 #include <vector>
 
-#include "nono/ds/segment-tree.hpp"
+#include "../ds/segment-tree.hpp"
 
 namespace nono {
 

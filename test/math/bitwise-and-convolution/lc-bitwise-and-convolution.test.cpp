@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/math/bitwise-and-convolution.hpp"
-#include "nono/math/modint.hpp"
+#include "../../../nono/math/bitwise-and-convolution.hpp"
+#include "../../../nono/math/modint.hpp"
 
 namespace nono {
 

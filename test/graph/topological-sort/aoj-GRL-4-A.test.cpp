@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/graph/topological-sort.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/graph/topological-sort.hpp"
 
 namespace nono {
 

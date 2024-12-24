@@ -1,7 +1,7 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/static_range_sum"
 #include <iostream>
 
-#include "nono/ds/fenwick-tree.hpp"
+#include "../../../nono/ds/fenwick-tree.hpp"
 
 namespace nono {
 

@@ -2,9 +2,9 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/math/modint.hpp"
-#include "nono/tree/dynamic-tree-dp.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/math/modint.hpp"
+#include "../../../nono/tree/dynamic-tree-dp.hpp"
 
 namespace nono {
 

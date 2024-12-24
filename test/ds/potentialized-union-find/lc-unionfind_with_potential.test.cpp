@@ -1,9 +1,9 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/unionfind_with_potential"
 #include <iostream>
 
-#include "nono/ds/potentialized-union-find.hpp"
-#include "nono/math/modint.hpp"
-#include "nono/structure/group.hpp"
+#include "../../../nono/ds/potentialized-union-find.hpp"
+#include "../../../nono/math/modint.hpp"
+#include "../../../nono/structure/group.hpp"
 
 namespace nono {
 

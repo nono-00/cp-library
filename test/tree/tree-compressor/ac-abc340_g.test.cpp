@@ -2,9 +2,9 @@
 #define PROBLEM "https://atcoder.jp/contests/abc340/tasks/abc340_g"
 #include <bits/stdc++.h>
 
-#include "nono/graph/base.hpp"
-#include "nono/math/modint.hpp"
-#include "nono/tree/tree-compressor.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/math/modint.hpp"
+#include "../../../nono/tree/tree-compressor.hpp"
 
 namespace nono {
 

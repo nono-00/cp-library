@@ -3,8 +3,8 @@
 #include <utility>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/tree/rooted-tree.hpp"
+#include "../graph/base.hpp"
+#include "./rooted-tree.hpp"
 
 ///  brief : static top tree. to_static_top_tree で作れる. 
 namespace nono {

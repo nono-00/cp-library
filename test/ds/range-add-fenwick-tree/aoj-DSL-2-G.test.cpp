@@ -1,7 +1,7 @@
 #define PROBLEM "https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_G"
 #include <iostream>
 
-#include "nono/ds/range-add-fenwick-tree.hpp"
+#include "../../../nono/ds/range-add-fenwick-tree.hpp"
 
 namespace nono {
 

@@ -3,8 +3,8 @@
 #include <iostream>
 #include <string>
 
-#include "nono/algo/binary-search.hpp"
-#include "nono/string/rolling-hash.hpp"
+#include "../../../nono/algo/binary-search.hpp"
+#include "../../../nono/string/rolling-hash.hpp"
 
 namespace nono {
 

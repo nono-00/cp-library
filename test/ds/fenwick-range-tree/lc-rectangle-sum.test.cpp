@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/ds/fenwick-range-tree.hpp"
+#include "../../../nono/ds/fenwick-range-tree.hpp"
 
 namespace nono {
 

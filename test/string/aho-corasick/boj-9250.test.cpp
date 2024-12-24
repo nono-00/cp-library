@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "nono/string/aho-corasick.hpp"
+#include "../../../nono/string/aho-corasick.hpp"
 
 namespace nono {
 

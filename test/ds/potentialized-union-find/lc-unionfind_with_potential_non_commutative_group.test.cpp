@@ -3,8 +3,8 @@
 #include <iostream>
 #include <utility>
 
-#include "nono/ds/potentialized-union-find.hpp"
-#include "nono/math/modint.hpp"
+#include "../../../nono/ds/potentialized-union-find.hpp"
+#include "../../../nono/math/modint.hpp"
 
 namespace nono {
 

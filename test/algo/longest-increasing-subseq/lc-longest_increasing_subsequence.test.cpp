@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/algo/longest-increasing-subseq.hpp"
+#include "../../../nono/algo/longest-increasing-subseq.hpp"
 
 namespace nono {
 

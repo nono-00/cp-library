@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "nono/string/eertree.hpp"
+#include "../../../nono/string/eertree.hpp"
 
 namespace nono {
 

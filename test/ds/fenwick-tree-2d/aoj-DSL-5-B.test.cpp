@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <iostream>
 
-#include "nono/ds/fenwick-tree-2d.hpp"
+#include "../../../nono/ds/fenwick-tree-2d.hpp"
 
 namespace nono {
 

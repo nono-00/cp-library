@@ -3,9 +3,9 @@
 #include <utility>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/math/modint.hpp"
-#include "nono/tree/rerooting.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/math/modint.hpp"
+#include "../../../nono/tree/rerooting.hpp"
 
 namespace nono {
 

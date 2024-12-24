@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/ds/segment-tree-beats.hpp"
-#include "nono/structure/beats-monoid.hpp"
+#include "../../../nono/ds/segment-tree-beats.hpp"
+#include "../../../nono/structure/beats-monoid.hpp"
 
 namespace nono {
 

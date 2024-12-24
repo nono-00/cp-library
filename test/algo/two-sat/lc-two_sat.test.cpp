@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/algo/two-sat.hpp"
+#include "../../../nono/algo/two-sat.hpp"
 
 namespace nono {
 

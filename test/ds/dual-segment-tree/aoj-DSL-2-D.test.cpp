@@ -2,7 +2,7 @@
 #include <iostream>
 #include <limits>
 
-#include "nono/ds/dual-segment-tree.hpp"
+#include "../../../nono/ds/dual-segment-tree.hpp"
 
 namespace nono {
 

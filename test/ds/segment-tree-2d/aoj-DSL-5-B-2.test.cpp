@@ -3,9 +3,9 @@
 #include <tuple>
 #include <vector>
 
-#include "nono/ds/segment-tree-2d.hpp"
-#include "nono/structure/monoid.hpp"
-#include "nono/utility/compressor.hpp"
+#include "../../../nono/ds/segment-tree-2d.hpp"
+#include "../../../nono/structure/monoid.hpp"
+#include "../../../nono/utility/compressor.hpp"
 
 namespace nono {
 

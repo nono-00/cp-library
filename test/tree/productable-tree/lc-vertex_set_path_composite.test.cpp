@@ -2,9 +2,9 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/math/modint.hpp"
-#include "nono/structure/monoid.hpp"
-#include "nono/tree/productable-tree.hpp"
+#include "../../../nono/math/modint.hpp"
+#include "../../../nono/structure/monoid.hpp"
+#include "../../../nono/tree/productable-tree.hpp"
 
 namespace nono {
 

@@ -4,7 +4,7 @@
 #include <cassert>
 #include <iostream>
 
-#include "nono/ds/binary-trie.hpp"
+#include "../../../nono/ds/binary-trie.hpp"
 
 namespace nono {
 
@@ -20,9 +20,9 @@ void solve() {
             trie.insert(x);
         } else {
             x--;
-            auto ans = trie.kth_element(x);
+            auto ans = trie.kth(x);
             std::cout << ans << '\n';
-            assert(trie.lower_bound(ans) == (int)x);
+            assert(trie.count_lt(ans) == (int)x);
             trie.erase(ans);
         }
     }

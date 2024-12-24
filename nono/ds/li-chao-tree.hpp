@@ -2,7 +2,7 @@
 
 /// TODO : implementation
 
-#include "../template.hpp"
+// #include "../template.hpp"
 // https://atcoder.jp/contests/dp/tasks/dp_z
 // minだけできる
 template <class T>

@@ -5,8 +5,8 @@
 #include <utility>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/tree/is-tree.hpp"
+#include "../graph/base.hpp"
+#include "./is-tree.hpp"
 
 /// brief : HL分解. 重軽分解. `Tree`とか`ProductableTree`を使った方が良い.
 namespace nono {

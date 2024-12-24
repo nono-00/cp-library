@@ -1,9 +1,9 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/point_set_range_composite"
 #include <iostream>
 
-#include "nono/ds/dynamic-segment-tree.hpp"
-#include "nono/math/modint.hpp"
-#include "nono/structure/monoid.hpp"
+#include "../../../nono/ds/dynamic-segment-tree.hpp"
+#include "../../../nono/math/modint.hpp"
+#include "../../../nono/structure/monoid.hpp"
 
 namespace nono {
 

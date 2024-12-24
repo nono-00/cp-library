@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/graph/two-edge-connected-components.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/graph/two-edge-connected-components.hpp"
 
 namespace nono {
 

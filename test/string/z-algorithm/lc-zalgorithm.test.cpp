@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "nono/string/z-algorithm.hpp"
+#include "../../../nono/string/z-algorithm.hpp"
 
 namespace nono {
 

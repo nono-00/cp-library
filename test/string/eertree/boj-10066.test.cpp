@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "nono/string/eertree.hpp"
+#include "../../../nono/string/eertree.hpp"
 
 namespace nono {
 

@@ -1,9 +1,9 @@
 #define PROBLEM "https://judge.yosupo.jp/problem/queue_operate_all_composite"
 #include <iostream>
 
-#include "nono/ds/two-stack-queue.hpp"
-#include "nono/math/modint.hpp"
-#include "nono/structure/monoid.hpp"
+#include "../../../nono/ds/two-stack-queue.hpp"
+#include "../../../nono/math/modint.hpp"
+#include "../../../nono/structure/monoid.hpp"
 
 namespace nono {
 

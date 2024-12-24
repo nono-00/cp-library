@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/graph/kruskal.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/graph/kruskal.hpp"
 
 namespace nono {
 

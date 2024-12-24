@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/tree/static-top-tree.hpp"
+#include "../graph/base.hpp"
+#include "./static-top-tree.hpp"
 
 namespace nono {
 

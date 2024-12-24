@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "nono/string/manacher.hpp"
+#include "../../../nono/string/manacher.hpp"
 
 namespace nono {
 

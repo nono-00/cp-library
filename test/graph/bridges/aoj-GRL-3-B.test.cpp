@@ -4,8 +4,8 @@
 #include <utility>
 #include <vector>
 
-#include "nono/graph/base.hpp"
-#include "nono/graph/bridges.hpp"
+#include "../../../nono/graph/base.hpp"
+#include "../../../nono/graph/bridges.hpp"
 
 namespace nono {
 

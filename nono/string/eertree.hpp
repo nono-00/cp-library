@@ -61,6 +61,7 @@ class Eertree {
     }
 
     //  freq[i]: node[i]に対応する連続文字列回文が何度出現するか
+    //  sortしているので遅い
     //  verified: https://www.acmicpc.net/problem/10066
     std::vector<int> freq() {
         std::vector<int> ids(nodes_.size());

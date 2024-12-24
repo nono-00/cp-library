@@ -4,7 +4,7 @@
 #include <cassert>
 #include <vector>
 
-#include "nono/ds/sparse-table.hpp"
+#include "../ds/sparse-table.hpp"
 
 namespace nono {
 

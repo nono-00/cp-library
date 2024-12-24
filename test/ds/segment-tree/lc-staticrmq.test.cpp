@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/ds/segment-tree.hpp"
-#include "nono/structure/monoid.hpp"
+#include "../../../nono/ds/segment-tree.hpp"
+#include "../../../nono/structure/monoid.hpp"
 
 namespace nono {
 
@@ -18,7 +18,7 @@ void solve() {
     while (q--) {
         int l, r;
         std::cin >> l >> r;
-        std::cout << segtree.prod(l, r).value() << std::endl;
+        std::cout << segtree.prod(l, r) << std::endl;
     }
 }
 

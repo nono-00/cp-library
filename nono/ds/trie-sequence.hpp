@@ -1,8 +1,8 @@
 #pragma once
 /// TODO : implementation
-#include "../monoid.hpp"
-#include "../template.hpp"
-#include "./segment_tree.hpp"
+// #include "../monoid.hpp"
+// #include "../template.hpp"
+// #include "./segment_tree.hpp"
 // https://judge.yosupo.jp/problem/point_set_range_sort_range_composite
 // trie列を管理する
 // ソートのキーとなる値はdistinct

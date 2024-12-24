@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/ds/sparse-table.hpp"
-#include "nono/structure/monoid.hpp"
+#include "../../../nono/ds/sparse-table.hpp"
+#include "../../../nono/structure/monoid.hpp"
 
 namespace nono {
 
@@ -19,7 +19,7 @@ void solve() {
     for (int i = 0; i < q; i++) {
         int l, r;
         std::cin >> l >> r;
-        std::cout << sparse.prod(l, r).value() << '\n';
+        std::cout << sparse.prod(l, r) << '\n';
     }
 }
 

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <random>
 
-#include "nono/ds/binary-trie.hpp"
+#include "../../../nono/ds/binary-trie.hpp"
 
 namespace nono {
 

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "nono/ds/dynamic-li-chao-tree.hpp"
+#include "../../../nono/ds/dynamic-li-chao-tree.hpp"
 
 namespace nono {
 

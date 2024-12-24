@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/algo/mo.hpp"
+#include "../../../nono/algo/mo.hpp"
 
 namespace nono {
 

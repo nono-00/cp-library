@@ -4,8 +4,8 @@
 #include <utility>
 #include <vector>
 
-#include "nono/ds/undo-unionfind.hpp"
-#include "nono/graph/base.hpp"
+#include "../../../nono/ds/undo-unionfind.hpp"
+#include "../../../nono/graph/base.hpp"
 
 namespace nono {
 

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "nono/string/suffix-array.hpp"
+#include "../../../nono/string/suffix-array.hpp"
 
 namespace nono {
 

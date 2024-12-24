@@ -3,12 +3,12 @@
 #include <utility>
 #include <vector>
 
-#include "nono/ds/lazy-segment-tree.hpp"
-#include "nono/ds/segment-tree.hpp"
-#include "nono/graph/base.hpp"
-#include "nono/structure/act-monoid.hpp"
-#include "nono/structure/monoid.hpp"
-#include "nono/tree/tree.hpp"
+#include "../ds/lazy-segment-tree.hpp"
+#include "../ds/segment-tree.hpp"
+#include "../graph/base.hpp"
+#include "../structure/act-monoid.hpp"
+#include "../structure/monoid.hpp"
+#include "./tree.hpp"
 
 ///  brief : Treeの機能に加えて, パス, 部分木に対する総積を求められる.
 ///  TODO : lazysegtreeだったり, segtreeだったりがあやふや. いい感じにリファクタリングする.

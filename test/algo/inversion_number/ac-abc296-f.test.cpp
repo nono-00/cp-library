@@ -4,7 +4,7 @@
 #include <set>
 #include <vector>
 
-#include "nono/algo/inversion_number.hpp"
+#include "../../../nono/algo/inversion_number.hpp"
 
 namespace nono {
 

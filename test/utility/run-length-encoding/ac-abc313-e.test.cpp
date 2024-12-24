@@ -4,8 +4,8 @@
 #include <iostream>
 #include <string>
 
-#include "nono/math/modint.hpp"
-#include "nono/utility/run-length-encoding.hpp"
+#include "../../../nono/math/modint.hpp"
+#include "../../../nono/utility/run-length-encoding.hpp"
 
 namespace nono {
 

@@ -3,7 +3,7 @@
 #include <random>
 #include <string>
 
-#include "nono/string/lyndon-factorize.hpp"
+#include "../../../nono/string/lyndon-factorize.hpp"
 
 namespace nono {
 

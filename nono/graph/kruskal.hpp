@@ -5,8 +5,8 @@
 #include <numeric>
 #include <vector>
 
-#include "nono/ds/union-find.hpp"
-#include "nono/graph/base.hpp"
+#include "../ds/union-find.hpp"
+#include "./base.hpp"
 
 namespace nono {
 

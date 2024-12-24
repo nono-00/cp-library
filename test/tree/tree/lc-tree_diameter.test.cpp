@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include "nono/tree/tree.hpp"
+#include "../../../nono/tree/tree.hpp"
 
 namespace nono {
 

@@ -4,7 +4,7 @@
 #include <utility>
 #include <vector>
 
-#include "nono/graph/bipartite-matching.hpp"
+#include "../../../nono/graph/bipartite-matching.hpp"
 
 namespace nono {
 

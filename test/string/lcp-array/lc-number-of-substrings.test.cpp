@@ -2,8 +2,8 @@
 #include <iostream>
 #include <string>
 
-#include "nono/string/lcp-array.hpp"
-#include "nono/string/suffix-array.hpp"
+#include "../../../nono/string/lcp-array.hpp"
+#include "../../../nono/string/suffix-array.hpp"
 
 namespace nono {
 
