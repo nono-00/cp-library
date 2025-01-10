@@ -6,21 +6,25 @@
 
 namespace nono {
 
-///  brief : 区間加算区間取得 Fenwick Tree. lazy segment tree よりも定数倍が良い(はず).
+///  # 区間加算FenwickTree
+///  区間加算区間取得 Fenwick Tree.
+///  lazy segment tree よりも定数倍が良い(はず).
 template <class T>
 class RangeAddFenwickTree {
   public:
     RangeAddFenwickTree(int n = 0): n_(n), data1_(n), data2_(n) {}
 
-    //  brief:
-    //  - `i` 番目の要素に `v` を加算する
+    ///  # add(i, elem)
+    ///  data[i] <= data[i] + elem
+    ///  O(logn)
     void add(int i, T elem) {
         assert(0 <= i && i < n_);
         data1_.add(i, elem);
     }
 
-    //  brief:
-    //  - 区間 `[l, r)` の各要素に `v` を加算する
+    ///  # add(l, r, elem)
+    ///  [for i in [l, r)](data[i] <= data[i] + elem)
+    ///  O(logn)
     void add(int left, int right, T elem) {
         assert(0 <= left && left <= n_);
         assert(left <= right && right <= n_);
@@ -32,26 +36,34 @@ class RangeAddFenwickTree {
         }
     }
 
+    ///  # set(i, elem)
+    ///  data[i] <= elem
+    ///  O(logn)
     void set(int i, T elem) {
         assert(0 <= i && i < n_);
         add(i, elem - get(i));
     }
 
-    //  brief:
-    //  - 区間 `[0, i)` の要素の総和を取得する
+    ///  # sum(r)
+    ///  return sum[for i in [0, r)](data[i])
+    ///  O(logn)
     T sum(int i) const {
         assert(0 <= i && i <= n_);
         return data1_.sum(i) + i * data2_.sum(i);
     }
 
-    //  brief:
-    //  - 区間 `[l, r)` の要素の総和を取得する
+    ///  # sum(l, r)
+    ///  return sum[for i in [l, r)](data[i])
+    ///  O(logn)
     T sum(int left, int right) const {
         assert(0 <= left && left <= n_);
         assert(left <= right && right <= n_);
         return sum(right) - sum(left);
     }
 
+    ///  # get(i)
+    ///  return data[i]
+    ///  O(logn)
     T get(int i) const {
         assert(0 <= i && i < n_);
         return sum(i, i + 1);

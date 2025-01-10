@@ -9,8 +9,7 @@
 
 namespace nono {
 
-///  brief : オフライン辺追加/削除クエリを捌きながら, 連結成分を管理するやつ
-///  TODO : interfaceがカスかも？
+/// DEPRECATED
 
 //  querys := 辺追加/削除クエリなら辺. そうでないなら適当に(0, 0)にしておけば良い
 //  func := func(query_i, UnfoUnionFind&)

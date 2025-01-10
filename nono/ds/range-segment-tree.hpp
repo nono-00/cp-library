@@ -5,25 +5,21 @@
 #include <utility>
 #include <vector>
 
-#include "nono/ds/segment-tree.hpp"
-#include "nono/utility/compressor.hpp"
+#include "../utility/compressor.hpp"
+#include "./segment-tree.hpp"
 
 namespace nono {
 
-///  brief : 領域木segment tree盛り. 一点加算座標が事前にわかる場合に使える二次元 segment tree.
+///  # 領域木segment tree盛り
+///  一点変更座標が事前にわかる場合に使える二次元 segment tree.
 template <class M, class Index>
 class RangeSegmentTree {
     using T = M::Value;
 
   public:
-    //  brief:
-    //  - コンストラクタ
-    //
-    //  param:
-    //  - `points`: 一点加算の座標
-    //
-    //  complexity:
-    //  - O(N(logN)^2)
+    ///  # RangeSegmentTree(points)
+    ///  points: 変更クエリが来る場所
+    ///  O(N(logN)^2)
     RangeSegmentTree(const std::vector<std::pair<Index, Index>>& points): trees_(1), coord_y_(1) {
         std::vector<Index> xs;
         for (auto [x, y]: points) {
@@ -50,11 +46,9 @@ class RangeSegmentTree {
         }
     }
 
-    //  brief:
-    //  - 一点更新
-    //
-    //  complexity:
-    //  - O((logN)^2)
+    ///  # set(x, y, elem)
+    ///  data[x][y] <= elem
+    ///  O((logN)^2)
     void set(Index x, Index y, T w) {
         assert(coord_x_.contains(x));
         int i = coord_x_.compress(x);
@@ -74,11 +68,9 @@ class RangeSegmentTree {
         }
     }
 
-    //  brief:
-    //  - 一点取得
-    //
-    //  complexity:
-    //  - O(logN);
+    ///  # get(x, y)
+    ///  return data[x][y]
+    ///  O((logN)^2)
     T get(Index x, Index y) {
         assert(coord_x_.contains(x));
         int i = coord_x_.compress(x);
@@ -87,11 +79,9 @@ class RangeSegmentTree {
         return trees_[i].get(coord_y_[i].compress(y));
     }
 
-    //  brief:
-    //  - 領域取得
-    //
-    //  complexity:
-    //  - O((logN)^2)
+    ///  # prod(x1, y1, x2, y2)
+    ///  return op[for i in [x1, x2), for j in [y1, y2)](data[i][j])
+    ///  O((logN)^2)
     T prod(Index x1, Index y1, Index x2, Index y2) {
         int left = coord_x_.compress(x1);
         int right = coord_x_.compress(x2);

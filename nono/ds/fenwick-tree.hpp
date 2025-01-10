@@ -5,13 +5,16 @@
 
 namespace nono {
 
-/// brief : 一点加算区間取得. segment treeよりも定数倍が良い.
-/// TODO : 二分探索
+///  # FenwickTree
+///  一点加算区間取得. segment treeよりも定数倍が良い.
 template <class T>
 class FenwickTree {
   public:
     FenwickTree(int n): n_(n), data_(n_ + 1, T{0}) {}
 
+    ///  # add(i, elem)
+    ///  data[i] <= data[i] + elem
+    ///  O(log n)
     void add(int i, T elem) {
         assert(0 <= i && i < n_);
         for (i++; i <= n_; i += i & -i) {
@@ -19,12 +22,17 @@ class FenwickTree {
         }
     }
 
+    ///  # set(i, elem)
+    ///  data[i] <= elem
+    ///  O(log n)
     void set(int i, T elem) {
         assert(0 <= i && i < n_);
         add(i, elem - get(i));
     }
 
-    // [0, i)の総和
+    ///  # sum(i)
+    ///  return sum[for j in [0, i)](data[j])
+    ///  O(log n)
     T sum(int i) const {
         assert(0 <= i && i <= n_);
         T result{0};
@@ -34,12 +42,17 @@ class FenwickTree {
         return result;
     }
 
-    // [left, right)
+    ///  # sum(left, right)
+    ///  return sum[for i in [left, right)](data[i])
+    ///  O(log n)
     T sum(int left, int right) const {
         assert(left <= right);
         return sum(right) - sum(left);
     }
 
+    ///  # get(i)
+    ///  return data[i]
+    ///  O(log n)
     T get(int i) const {
         assert(0 <= i && i < n_);
         return sum(i, i + 1);

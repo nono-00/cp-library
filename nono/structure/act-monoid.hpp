@@ -19,6 +19,12 @@ struct RangeAffineRangeSum {
     struct Act {
         Act(T a = 1, T b = 0): a(a), b(b) {}
         T a;
+        friend bool operator==(Act lhs, Act rhs) {
+            return lhs.a == rhs.a && lhs.b == rhs.b;
+        }
+        friend bool operator!=(Act lhs, Act rhs) {
+            return !(lhs == rhs);
+        }
         T b;
     };
     static Value op(Value lhs, Value rhs) {

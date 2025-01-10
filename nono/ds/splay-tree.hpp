@@ -9,6 +9,10 @@
 
 namespace nono {
 
+namespace splay_tree {
+
+}
+
 ///  brief : deprecated
 template <class Key, class T>
 class SplayTree {

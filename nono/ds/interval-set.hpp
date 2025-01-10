@@ -6,7 +6,8 @@
 
 namespace nono {
 
-//  集合を区間で管理する
+///  # IntervalSet
+///  集合を区間で管理するやつ
 template <class Index = int>
 class IntervalSet {
     struct Interval {
@@ -32,9 +33,14 @@ class IntervalSet {
     using iterator = std::set<Interval>::iterator;
     using const_iterator = std::set<Interval>::const_iterator;
 
+    ///  # IntervalSet()
+    ///  空のinterval setを構築する
+    ///  O(1)
     IntervalSet() {}
 
-    //  [left, right)
+    ///  # add(left, right)
+    ///  S <= S or [left, right)
+    ///  ならし O(log n)
     void add(Index left, Index right) {
         assert(left < right);
         Interval interval{left, right};
@@ -57,7 +63,9 @@ class IntervalSet {
         add_interval(interval);
     }
 
-    //  [left, right)
+    ///  # erase(left, right)
+    ///  S <= S - [left, right)
+    ///  ならし O(log n)
     void erase(Index left, Index right) {
         assert(left < right);
         auto it = dat_.upper_bound({left, right});
@@ -86,6 +94,9 @@ class IntervalSet {
         }
     }
 
+    ///  # contains(index)
+    ///  whether index is in S
+    ///  O(log n)
     bool contains(Index index) {
         auto it = dat_.upper_bound({index, index});
         if (it == dat_.begin()) return false;
@@ -93,14 +104,20 @@ class IntervalSet {
         return it->contains(index);
     }
 
+    /// # empty()
+    /// whether S is emtpy
     bool empty() {
         return dat_.empty();
     }
 
+    /// # size()
+    /// |S|
     Index size() {
         return size_;
     }
 
+    /// # clear()
+    /// S <= {}
     void clear() {
         dat_.clear();
         size_ = 0;
