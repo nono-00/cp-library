@@ -7,20 +7,21 @@
 
 namespace nono {
 
-namespace ordered_set_node {
+namespace ordered_map_node {
 
-template <class T>
+template <class Key, class Value>
 struct Node {
     Node() = default;
-    Node(T key): key(key) {}
+    Node(Key key, Value value): key(key), value(value) {}
     Node* left = nullptr;
     Node* right = nullptr;
     int size = 1;
-    T key;
+    Key key;
+    Value value;
 };
 
-template <class T>
-using NodePtr = Node<T>*;
+template <class Key, class Value>
+using NodePtr = Node<Key, Value>*;
 
 std::mt19937 rng(std::random_device{}());
 
@@ -29,31 +30,31 @@ std::mt19937 rng(std::random_device{}());
 ///  # empty()
 ///  whether S is empty
 ///  O(1)
-template <class T>
-bool empty(NodePtr<T> root) {
+template <class Key, class Value>
+bool empty(NodePtr<Key, Value> root) {
     return !root;
 }
 
 ///  # size()
 ///  |S|
 ///  O(1)
-template <class T>
-int size(NodePtr<T> root) {
+template <class Key, class Value>
+int size(NodePtr<Key, Value> root) {
     return root ? root->size : 0;
 }
 
 ///  # update(root)
 ///  update size of S
-template <class T>
-void update(NodePtr<T> root) {
+template <class Key, class Value>
+void update(NodePtr<Key, Value> root) {
     root->size = 1 + size(root->left) + size(root->right);
 }
 
 ///  # merge(lhs, rhs)
 ///  return root of (lhs + rhs)
 ///  O(log n)
-template <class T>
-NodePtr<T> merge(NodePtr<T> lhs, NodePtr<T> rhs) {
+template <class Key, class Value>
+NodePtr<Key, Value> merge(NodePtr<Key, Value> lhs, NodePtr<Key, Value> rhs) {
     if (!lhs) return rhs;
     if (!rhs) return lhs;
     if (rng() & 1) {
@@ -71,8 +72,8 @@ NodePtr<T> merge(NodePtr<T> lhs, NodePtr<T> rhs) {
 ///  return (root of S[:k], root of S[k:])
 ///  if size(S) < k, return {S, empty set}
 ///  O(log n)
-template <class T>
-std::pair<NodePtr<T>, NodePtr<T>> split_by_size(NodePtr<T> root, int k) {
+template <class Key, class Value>
+std::pair<NodePtr<Key, Value>, NodePtr<Key, Value>> split_by_size(NodePtr<Key, Value> root, int k) {
     if (!root) return {nullptr, nullptr};
     if (size(root->left) >= k) {
         auto [lhs, rhs] = split_by_size(root->left, k);
@@ -90,8 +91,8 @@ std::pair<NodePtr<T>, NodePtr<T>> split_by_size(NodePtr<T> root, int k) {
 ///  # split by key(root, key)
 ///  return ({ x | x < key }, { x | key <= x })
 ///  O(log n)
-template <class T>
-std::pair<NodePtr<T>, NodePtr<T>> split_by_key(NodePtr<T> root, T key) {
+template <class Key, class Value>
+std::pair<NodePtr<Key, Value>, NodePtr<Key, Value>> split_by_key(NodePtr<Key, Value> root, Key key) {
     if (!root) return {nullptr, nullptr};
     if (root->key < key) {
         auto [lhs, rhs] = split_by_key(root->right, key);
@@ -106,21 +107,26 @@ std::pair<NodePtr<T>, NodePtr<T>> split_by_key(NodePtr<T> root, T key) {
     }
 }
 
-///  # insert(root, key)
+///  # set(root, key)
 ///  return root of (S or {key})
 ///  O(log n)
-template <class T>
-NodePtr<T> insert(NodePtr<T> root, T key) {
-    if (contains(root, key)) return root;
-    auto [lhs, rhs] = split_by_key(root, key);
-    return merge(lhs, merge(new Node<T>(key), rhs));
+template <class Key, class Value>
+NodePtr<Key, Value> set(NodePtr<Key, Value> root, Key key, Value value) {
+    auto node = find_by_key(root, key);
+    if (node) {
+        node->value = value;
+        return root;
+    } else {
+        auto [lhs, rhs] = split_by_key(root, key);
+        return merge(lhs, merge(new Node<Key, Value>(key, value), rhs));
+    }
 }
 
 ///  # erase(root, key)
 ///  return root of (S - {key})
 ///  O(log n)
-template <class T>
-NodePtr<T> erase(NodePtr<T> root, T key) {
+template <class Key, class Value>
+NodePtr<Key, Value> erase(NodePtr<Key, Value> root, Key key) {
     if (!contains(root, key)) return root;
     auto [lhs, rhs] = split_by_key(root, key);
     return merge(lhs, split_by_size(rhs, 1).second);
@@ -132,8 +138,8 @@ NodePtr<T> erase(NodePtr<T> root, T key) {
 ///  return S[k]
 ///  if not exist, return nullptr
 ///  O(log n)
-template <class T>
-NodePtr<T> find_by_size(NodePtr<T> root, int k) {
+template <class Key, class Value>
+NodePtr<Key, Value> find_by_size(NodePtr<Key, Value> root, int k) {
     while (root) {
         if (size(root->left) > k) {
             root = root->left;
@@ -151,8 +157,8 @@ NodePtr<T> find_by_size(NodePtr<T> root, int k) {
 ///  return key node
 ///  if not exist, return nullptr
 ///  O(log n)
-template <class T>
-NodePtr<T> find_by_key(NodePtr<T> root, T key) {
+template <class Key, class Value>
+NodePtr<Key, Value> find_by_key(NodePtr<Key, Value> root, Key key) {
     while (root) {
         if (key < root->key) {
             root = root->left;
@@ -168,16 +174,16 @@ NodePtr<T> find_by_key(NodePtr<T> root, T key) {
 ///  # contains(root, key)
 ///  return whether key in S
 ///  O(log n)
-template <class T>
-bool contains(NodePtr<T> root, T key) {
+template <class Key, class Value>
+bool contains(NodePtr<Key, Value> root, Key key) {
     return find_by_key(root, key);
 }
 
 ///  # rank(root, key)
 ///  return |{ x in S | x < key }|
 ///  O(log n)
-template <class T>
-int rank(NodePtr<T> root, T key) {
+template <class Key, class Value>
+int rank(NodePtr<Key, Value> root, Key key) {
     int result = 0;
     while (root) {
         if (root->key < key) {
@@ -194,8 +200,8 @@ int rank(NodePtr<T> root, T key) {
 ///  return min node
 ///  if not exist, return nullptr
 ///  O(log n)
-template <class T>
-NodePtr<T> min(NodePtr<T> root) {
+template <class Key, class Value>
+NodePtr<Key, Value> min(NodePtr<Key, Value> root) {
     while (root->left) root = root->left;
     return root;
 }
@@ -204,8 +210,8 @@ NodePtr<T> min(NodePtr<T> root) {
 ///  return max node
 ///  if not exist, return nullptr
 ///  O(log n)
-template <class T>
-NodePtr<T> max(NodePtr<T> root) {
+template <class Key, class Value>
+NodePtr<Key, Value> max(NodePtr<Key, Value> root) {
     while (root->right) root = root->right;
     return root;
 }
@@ -214,8 +220,8 @@ NodePtr<T> max(NodePtr<T> root) {
 ///  return S[k]
 ///  if not exist, return nullptr
 ///  O(log n)
-template <class T>
-NodePtr<T> kth(NodePtr<T> root, int k) {
+template <class Key, class Value>
+NodePtr<Key, Value> kth(NodePtr<Key, Value> root, int k) {
     return find_by_size(root, k);
 }
 
@@ -223,9 +229,9 @@ NodePtr<T> kth(NodePtr<T> root, int k) {
 ///  return next value
 ///  if not exist, return nullptr
 ///  O(log n)
-template <class T>
-NodePtr<T> successor(NodePtr<T> root, T key) {
-    NodePtr<T> result = nullptr;
+template <class Key, class Value>
+NodePtr<Key, Value> successor(NodePtr<Key, Value> root, Key key) {
+    NodePtr<Key, Value> result = nullptr;
     while (root) {
         if (key < root->key) result = root;
         if (key < root->key) {
@@ -241,9 +247,9 @@ NodePtr<T> successor(NodePtr<T> root, T key) {
 ///  return prev value
 ///  if not exist, return nullptr
 ///  O(log n)
-template <class T>
-NodePtr<T> predecessor(NodePtr<T> root, T key) {
-    NodePtr<T> result = nullptr;
+template <class Key, class Value>
+NodePtr<Key, Value> predecessor(NodePtr<Key, Value> root, Key key) {
+    NodePtr<Key, Value> result = nullptr;
     while (root) {
         if (root->key < key) result = root;
         if (root->key < key) {
@@ -255,64 +261,72 @@ NodePtr<T> predecessor(NodePtr<T> root, T key) {
     return result;
 }
 
-}  //  namespace ordered_set_node
+}  //  namespace ordered_map_node
 
-template <class T>
-class OrderedSet {
+template <class Key, class Value>
+class OrderedMap {
   public:
-    OrderedSet() {}
+    OrderedMap() {}
 
-    void insert(T key) {
-        root_ = ordered_set_node::insert(root_, key);
+    void set(Key key, Value value) {
+        root_ = ordered_map_node::set(root_, key, value);
     }
 
-    void erase(T key) {
-        root_ = ordered_set_node::erase(root_, key);
+    Value get(Key key) {
+        auto node = ordered_map_node::find_by_key(root_, key);
+        assert(node);
+        return node->value;
+    }
+
+    void erase(Key key) {
+        root_ = ordered_map_node::erase(root_, key);
     }
 
     bool empty() {
-        return ordered_set_node::empty(root_);
+        return ordered_map_node::empty(root_);
     }
 
     int size() {
-        return ordered_set_node::size(root_);
+        return ordered_map_node::size(root_);
     }
 
-    T min() {
+    std::pair<Key, Value> min() {
         assert(!empty());
-        return ordered_set_node::min(root_)->key;
+        auto node = ordered_map_node::min(root_);
+        return {node->key, node->value};
     }
 
-    T max() {
+    std::pair<Key, Value> max() {
         assert(!empty());
-        return ordered_set_node::max(root_)->key;
+        auto node = ordered_map_node::max(root_);
+        return {node->key, node->value};
     }
 
-    T kth(int k) {
+    std::pair<Key, Value> kth(int k) {
         assert(0 <= k && k < size());
-        return ordered_set_node::kth(root_, k)->key;
+        return ordered_map_node::kth(root_, k)->key;
     }
 
-    bool contains(T key) {
-        return ordered_set_node::contains(root_, key);
+    bool contains(Key key) {
+        return ordered_map_node::contains(root_, key);
     }
 
-    int rank(T key) {
-        return ordered_set_node::rank(root_, key);
+    int rank(Key key) {
+        return ordered_map_node::rank(root_, key);
     }
 
-    std::optional<T> successor(T key) {
-        auto node = ordered_set_node::successor(root_, key);
-        return node ? std::optional<T>(node->key) : std::nullopt;
+    std::optional<std::pair<Key, Value>> successor(Key key) {
+        auto node = ordered_map_node::successor(root_, key);
+        return node ? std::optional<std::pair<Key, Value>>({node->key, node->value}) : std::nullopt;
     }
 
-    std::optional<T> predecessor(T key) {
-        auto node = ordered_set_node::predecessor(root_, key);
-        return node ? std::optional<T>(node->key) : std::nullopt;
+    std::optional<std::pair<Key, Value>> predecessor(Key key) {
+        auto node = ordered_map_node::predecessor(root_, key);
+        return node ? std::optional<std::pair<Key, Value>>({node->key, node->value}) : std::nullopt;
     }
 
   private:
-    ordered_set_node::NodePtr<T> root_ = nullptr;
+    ordered_map_node::NodePtr<Key, Value> root_ = nullptr;
 };
 
 }  //  namespace nono

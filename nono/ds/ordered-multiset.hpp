@@ -7,7 +7,7 @@
 
 namespace nono {
 
-namespace ordered_set_node {
+namespace ordered_multiset_node {
 
 template <class T>
 struct Node {
@@ -111,13 +111,13 @@ std::pair<NodePtr<T>, NodePtr<T>> split_by_key(NodePtr<T> root, T key) {
 ///  O(log n)
 template <class T>
 NodePtr<T> insert(NodePtr<T> root, T key) {
-    if (contains(root, key)) return root;
     auto [lhs, rhs] = split_by_key(root, key);
     return merge(lhs, merge(new Node<T>(key), rhs));
 }
 
 ///  # erase(root, key)
 ///  return root of (S - {key})
+///  erase only one element
 ///  O(log n)
 template <class T>
 NodePtr<T> erase(NodePtr<T> root, T key) {
@@ -255,64 +255,77 @@ NodePtr<T> predecessor(NodePtr<T> root, T key) {
     return result;
 }
 
-}  //  namespace ordered_set_node
+///  # count(root, key)
+///  return num of key in S
+///  O(log n)
+template <class T>
+NodePtr<T> count(NodePtr<T> root, T key) {
+    auto node = successor(root, key);
+    return node ? rank(root, node->key) : size(root) - rank(root, key);
+}
+
+}  //  namespace ordered_multiset_node
 
 template <class T>
-class OrderedSet {
+class OrderedMultiSet {
   public:
-    OrderedSet() {}
+    OrderedMultiSet() {}
 
     void insert(T key) {
-        root_ = ordered_set_node::insert(root_, key);
+        root_ = ordered_multiset_node::insert(root_, key);
     }
 
     void erase(T key) {
-        root_ = ordered_set_node::erase(root_, key);
+        root_ = ordered_multiset_node::erase(root_, key);
     }
 
     bool empty() {
-        return ordered_set_node::empty(root_);
+        return ordered_multiset_node::empty(root_);
     }
 
     int size() {
-        return ordered_set_node::size(root_);
+        return ordered_multiset_node::size(root_);
     }
 
     T min() {
         assert(!empty());
-        return ordered_set_node::min(root_)->key;
+        return ordered_multiset_node::min(root_)->key;
     }
 
     T max() {
         assert(!empty());
-        return ordered_set_node::max(root_)->key;
+        return ordered_multiset_node::max(root_)->key;
     }
 
     T kth(int k) {
         assert(0 <= k && k < size());
-        return ordered_set_node::kth(root_, k)->key;
+        return ordered_multiset_node::kth(root_, k)->key;
     }
 
     bool contains(T key) {
-        return ordered_set_node::contains(root_, key);
+        return ordered_multiset_node::contains(root_, key);
     }
 
     int rank(T key) {
-        return ordered_set_node::rank(root_, key);
+        return ordered_multiset_node::rank(root_, key);
+    }
+
+    int count(T key) {
+        return ordered_multiset_node::count(root_, key);
     }
 
     std::optional<T> successor(T key) {
-        auto node = ordered_set_node::successor(root_, key);
+        auto node = ordered_multiset_node::successor(root_, key);
         return node ? std::optional<T>(node->key) : std::nullopt;
     }
 
     std::optional<T> predecessor(T key) {
-        auto node = ordered_set_node::predecessor(root_, key);
+        auto node = ordered_multiset_node::predecessor(root_, key);
         return node ? std::optional<T>(node->key) : std::nullopt;
     }
 
   private:
-    ordered_set_node::NodePtr<T> root_ = nullptr;
+    ordered_multiset_node::NodePtr<T> root_ = nullptr;
 };
 
 }  //  namespace nono
