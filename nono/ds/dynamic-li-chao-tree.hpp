@@ -8,9 +8,9 @@
 
 namespace nono {
 
-///  brief : 直線, 線分追加, ある地点での最小値/最大値取得ができる
-
-//  MinDynamicLiChaoTree, MaxDynamicLiChaoTreeを定義してあるので使うと良い
+///  # 動的LiChao木
+///  直線, 線分追加, ある地点での最小値/最大値取得ができる
+///  MinDynamicLiChaoTree, MaxDynamicLiChaoTreeを定義してあるので使うと良い
 template <class T, class Index = int, bool minimum = true>
 class DynamicLiChaoTree {
     static constexpr T compare = minimum ? 1 : -1;
@@ -36,6 +36,8 @@ class DynamicLiChaoTree {
     };
 
   public:
+    ///  # DynamicLiChaoTree(lb, ub)
+    ///  [lb, ub)の領域を持つLiChao木を作る
     DynamicLiChaoTree(Index lb = std::numeric_limits<Index>::min(), Index ub = std::numeric_limits<Index>::max())
         : lb_(lb),
           ub_(ub),
@@ -43,14 +45,22 @@ class DynamicLiChaoTree {
     ~DynamicLiChaoTree() {
         delete root_;
     }
+    ///  # add_line(a, b)
+    ///  [lb, ub)にax + bを追加する
+    ///  O(log(ub - lb))
     void add_line(T a, T b) {
         add_segment(lb_, ub_, a, b);
     }
-    //  [l, r)にax+bを追加
+    ///  # add_segment
+    ///  [l, r)にax+bを追加
+    ///  O(log(ub - lb))
     void add_segment(Index l, Index r, T a, T b) {
         assert(lb_ <= l && l <= r && r <= ub_);
         add(root_, lb_, ub_, l, r, Line(compare * a, compare * b));
     }
+    ///  # get(x)
+    ///  min/max[forall (a, b) in {Line or Segment}](ax + b)
+    ///  線分、直線が存在しない場合、nullopt
     std::optional<T> get(Index x) {
         assert(lb_ <= x && x < ub_);
         auto result = get(root_, lb_, ub_, x);

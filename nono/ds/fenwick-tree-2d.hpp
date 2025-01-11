@@ -5,18 +5,20 @@
 
 namespace nono {
 
-///  brief : 一点加算、総和取得が \\( O(\log ^ 2 N) \\) で可能
+///  # 二次元FenwickTree
+///  二次元領域和を扱う
 template <class T>
 class FenwickTree2D {
   public:
     FenwickTree2D() = default;
+    ///  # FenwickTree2D(h, w)
+    ///  data[h][w]
+    ///  O(h * w)
     FenwickTree2D(int h, int w): h_(h), w_(w), data_(h_ + 1, std::vector<T>(w_ + 1, T{0})) {}
 
-    //  brief:
-    //  - `(h, w)` に `v` を加算する
-    //
-    //  complexity:
-    //  - O(logH logW)
+    ///  # add(h, w, elem)
+    ///  data[h][w] <= data[h][w] + elem
+    ///  O(logh logw)
     void add(int h, int w, T elem) {
         assert(0 <= h && h < h_);
         assert(0 <= w && w < w_);
@@ -27,14 +29,18 @@ class FenwickTree2D {
         }
     }
 
+    ///  # set(h, w, elem)
+    ///  data[h][w] <= elem
+    ///  O(logh logw)
     void set(int h, int w, T elem) {
         assert(0 <= h && h < h_);
         assert(0 <= w && w < w_);
         add(h, w, elem - get(h, w));
     }
 
-    //  brief:
-    //  - `[0, h) \times [0, w)` の総和を取得する
+    ///  # sum(h, w)
+    ///  return sum[for i in [0, h), for j in [0, w)](data[i][j])
+    ///  O(logh logw)
     T sum(int h, int w) const {
         assert(0 <= h && h <= h_);
         assert(0 <= w && w <= w_);
@@ -47,8 +53,9 @@ class FenwickTree2D {
         return result;
     }
 
-    //  brief:
-    //  - `[lh, rh) \times [lw, rw)` の総和を取得する
+    ///  # sum(lh, lw, rh, rw)
+    ///  return sum[for i in [lh, rh), for j in [lw, rw)](data[i][j])
+    ///  O(logh logw)
     T sum(int lh, int lw, int rh, int rw) const {
         assert(0 <= lh && lh <= h_);
         assert(0 <= lw && lw <= w_);
@@ -57,6 +64,9 @@ class FenwickTree2D {
         return sum(rh, rw) + sum(lh, lw) - sum(rh, lw) - sum(lh, rw);
     }
 
+    ///  # get(h, w)
+    ///  return data[h][w]
+    ///  O(logh logw)
     T get(int h, int w) const {
         assert(0 <= h && h < h_);
         assert(0 <= w && w < w_);

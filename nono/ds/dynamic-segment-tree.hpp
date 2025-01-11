@@ -6,8 +6,8 @@
 
 namespace nono {
 
-///  brief : 座圧せずに使えるsegment tree. とても遅い.
-///  TODO : 二分探索
+///  # 動的セグ木
+///  座圧せずに使えるsegment tree. とても遅い.
 template <class M, class Index = int>
 class DynamicSegmentTree {
     using T = M::Value;
@@ -42,12 +42,9 @@ class DynamicSegmentTree {
     };
 
   public:
-    //  complexity:
-    //  - O(1)
-    //
-    //  param:
-    //  - `lb`: 格納する領域の下界
-    //  - `ub`: 格納する領域の上界
+    ///  # DynamicSegmentTree(lb, ub)
+    ///  [lb, ub)を扱うセグ木を作る
+    ///  O(1)
     DynamicSegmentTree(Index lb = std::numeric_limits<Index>::min(), Index ub = std::numeric_limits<Index>::max())
         : root_(nullptr),
           lb_(lb),
@@ -58,29 +55,33 @@ class DynamicSegmentTree {
         delete root_;
     }
 
-    //  complexity:
-    //  - O(log (ub - lb))
+    ///  # set(pos, value)
+    ///  data[pos] <= value
+    ///  O(log (ub - lb))
     void set(Index pos, T value) {
         assert(lb_ <= pos && pos < ub_);
         set(root_, lb_, ub_, pos, value);
     }
 
-    //  complexity:
-    //  - O(log (ub - lb))
+    ///  # get(pos)
+    ///  return data[pos]
+    ///  O(log (ub - lb))
     T get(Index pos) {
         assert(lb_ <= pos && pos < ub_);
         return get(root_, lb_, ub_, pos);
     }
 
-    //  complexity:
-    //  - O(log (ub - lb))
+    ///  # get(pos)
+    ///  return prod[for i in [lb, ub)](data[i])
+    ///  O(log (ub - lb))
     T prod(Index lb, Index ub) {
         assert(lb_ <= lb && lb <= ub && ub <= ub_);
         return prod(root_, lb_, ub_, lb, ub);
     }
 
-    //  complexity:
-    //  - O(1)
+    ///  # all_prod()
+    ///  return prod[for i in [lb, ub)](data[i])
+    ///  O(1)
     T all_prod() {
         return root_ ? root_->value : M::e();
     }

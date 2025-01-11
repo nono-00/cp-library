@@ -4,31 +4,32 @@
 #include <random>
 #include <utility>
 
-#include "../structure/monoid.hpp"
+#include "../structure/act-monoid.hpp"
 
 namespace nono {
 
-namespace treap_node {
+namespace lazy_treap_node {
 
 ///  # Treap Node
 ///  根のpが最も小さい
 template <class M>
 struct Node {
     static std::mt19937 rng;
-    using Rev = monoid::Rev<M>;
+    using Rev = act_monoid::Rev<M>;
     using T = M::Value;
 
     bool rev = false;
     Rev::Value elem, tot;
-    unsigned priority;
+    Rev::Act act;
 
+    unsigned priority;
     int size;
     Node* l = nullptr;
     Node* r = nullptr;
 
-    ///  遅延セグ木と違い, 今のrevはまだ適用していない
-    Node(): elem(M::e()), tot(M::e()), priority(rng()), size(1) {}
-    Node(T elem): elem(elem), tot(elem), priority(rng()), size(1) {}
+    ///  遅延セグ木と違い, 今のrev, actはまだ適用していない
+    Node(): elem(M::e()), tot(M::e()), act(M::id()), priority(rng()), size(1) {}
+    Node(T elem): elem(elem), tot(elem), act(M::id()), priority(rng()), size(1) {}
     ~Node() {
         if (l) delete l;
         if (r) delete r;
@@ -40,6 +41,13 @@ struct Node {
             if (l) l->rev ^= true;
             if (r) r->rev ^= true;
             rev = false;
+        }
+        if (act != Rev::id()) {
+            elem = Rev::mapping(act, elem);
+            tot = Rev::mapping(act, tot);
+            if (l) l->act = Rev::composition(act, l->act);
+            if (r) r->act = Rev::composition(act, r->act);
+            act = Rev::id();
         }
     }
     void update() {
@@ -128,18 +136,19 @@ NodePtr<M> erase(NodePtr<M> node, int k) {
     return merge(lhs, rhs);
 }
 
-}  //  namespace treap_node
+}  //  namespace lazy_treap_node
 
-///  # Treap
+///  # LazyTreap
 ///  平衡二分木
-///  insertやerase, reverse, prodなどが大体O(logn)
+///  insertやerase, reverse, prod, applyなどが大体O(logn)
 template <class M>
-class Treap {
+class LazyTreap {
     using T = M::Value;
+    using F = M::Act;
 
   public:
-    Treap() {}
-    ~Treap() {
+    LazyTreap() {}
+    ~LazyTreap() {
         if (root_) delete root_;
     }
 
@@ -155,7 +164,7 @@ class Treap {
     ///  O(logn)
     void insert(int k, T v) {
         assert(0 <= k && k <= size());
-        root_ = treap_node::insert(root_, k, v);
+        root_ = lazy_treap_node::insert(root_, k, v);
     }
 
     ///  # push_back(v)
@@ -170,7 +179,7 @@ class Treap {
     ///  O(logn)
     void erase(int k) {
         assert(0 <= k && k < size());
-        root_ = treap_node::erase(root_, k);
+        root_ = lazy_treap_node::erase(root_, k);
     }
 
     ///  # prod(l, r)
@@ -179,10 +188,10 @@ class Treap {
     T prod(int l, int r) {
         assert(0 <= l && l <= r && r <= size());
         if (l == r) return M::e();
-        auto [t, rhs] = treap_node::split(root_, r);
-        auto [lhs, mhs] = treap_node::split(t, l);
+        auto [t, rhs] = lazy_treap_node::split(root_, r);
+        auto [lhs, mhs] = lazy_treap_node::split(t, l);
         T result = mhs->tot.ord;
-        root_ = treap_node::merge(treap_node::merge(lhs, mhs), rhs);
+        root_ = lazy_treap_node::merge(lazy_treap_node::merge(lhs, mhs), rhs);
         return result;
     }
 
@@ -191,10 +200,10 @@ class Treap {
     ///  O(logn)
     void set(int k, T v) {
         assert(0 <= k && k < size());
-        auto [t, rhs] = treap_node::split(root_, k + 1);
-        auto [lhs, mhs] = treap_node::split(t, k);
+        auto [t, rhs] = lazy_treap_node::split(root_, k + 1);
+        auto [lhs, mhs] = lazy_treap_node::split(t, k);
         mhs->elem = mhs->tot = v;
-        root_ = treap_node::merge(treap_node::merge(lhs, mhs), rhs);
+        root_ = lazy_treap_node::merge(lazy_treap_node::merge(lhs, mhs), rhs);
     }
 
     ///  # get(k)
@@ -202,10 +211,10 @@ class Treap {
     ///  O(logn)
     T get(int k) {
         assert(0 <= k && k < size());
-        auto [t, rhs] = treap_node::split(root_, k + 1);
-        auto [lhs, mhs] = treap_node::split(t, k);
+        auto [t, rhs] = lazy_treap_node::split(root_, k + 1);
+        auto [lhs, mhs] = lazy_treap_node::split(t, k);
         T result = mhs->v.ord;
-        root_ = treap_node::merge(treap_node::merge(lhs, mhs), rhs);
+        root_ = lazy_treap_node::merge(lazy_treap_node::merge(lhs, mhs), rhs);
         return result;
     }
 
@@ -213,15 +222,28 @@ class Treap {
     ///  data <= data[0:l] + reverse(data[l:r]) + data[r:]
     ///  O(logn)
     void reverse(int l, int r) {
+        assert(0 <= l && l <= r && r <= size());
         if (l == r) return;
-        auto [t, rhs] = treap_node::split(root_, r);
-        auto [lhs, mhs] = treap_node::split(t, l);
+        auto [t, rhs] = lazy_treap_node::split(root_, r);
+        auto [lhs, mhs] = lazy_treap_node::split(t, l);
         mhs->rev ^= true;
-        root_ = treap_node::merge(treap_node::merge(lhs, mhs), rhs);
+        root_ = lazy_treap_node::merge(lazy_treap_node::merge(lhs, mhs), rhs);
+    }
+
+    ///  # apply(l, r, f)
+    ///  [for i in [l, r)](data[i] <= mapping(f, data[i]))
+    ///  O(logn)
+    void apply(int l, int r, F f) {
+        assert(0 <= l && l <= r && r <= size());
+        if (l == r) return;
+        auto [t, rhs] = lazy_treap_node::split(root_, r);
+        auto [lhs, mhs] = lazy_treap_node::split(t, l);
+        mhs->act = M::composition(f, mhs->act);
+        root_ = lazy_treap_node::merge(lazy_treap_node::merge(lhs, mhs), rhs);
     }
 
   private:
-    treap_node::NodePtr<M> root_ = nullptr;
+    lazy_treap_node::NodePtr<M> root_ = nullptr;
 };
 
 }  //  namespace nono

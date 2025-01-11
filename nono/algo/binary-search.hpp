@@ -4,8 +4,7 @@
 #include <concepts>
 #include <numeric>
 
-/// brief : 二分探索
-/// TODO : 浮動小数点数にぶたんのverify
+///  # 二分探索
 namespace nono {
 
 template <std::integral T, class F>

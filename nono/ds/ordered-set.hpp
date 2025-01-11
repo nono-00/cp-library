@@ -1,0 +1,320 @@
+#pragma once
+
+#include <cassert>
+#include <optional>
+#include <random>
+#include <utility>
+
+namespace nono {
+
+namespace ordered_set_node {
+
+template <class T>
+struct Node {
+    Node() = default;
+    Node(T key): key(key) {}
+    Node* left = nullptr;
+    Node* right = nullptr;
+    int size = 1;
+    T key;
+};
+
+template <class T>
+using NodePtr = Node<T>*;
+
+std::mt19937 rng(std::random_device{}());
+
+//  -- CHANGE --
+
+///  # empty()
+///  whether S is empty
+///  O(1)
+template <class T>
+bool empty(NodePtr<T> root) {
+    return !root;
+}
+
+///  # size()
+///  |S|
+///  O(1)
+template <class T>
+int size(NodePtr<T> root) {
+    return root ? root->size : 0;
+}
+
+///  # update(root)
+///  update size of S
+template <class T>
+void update(NodePtr<T> root) {
+    root->size = 1 + size(root->left) + size(root->right);
+}
+
+///  # merge(lhs, rhs)
+///  return root of (lhs + rhs)
+///  O(log n)
+template <class T>
+NodePtr<T> merge(NodePtr<T> lhs, NodePtr<T> rhs) {
+    if (!lhs) return rhs;
+    if (!rhs) return lhs;
+    if (((long long)rng() * (lhs->size + rhs->size)) >> 32 < lhs->size) {
+        lhs->right = merge(lhs->right, rhs);
+        update(lhs);
+        return lhs;
+    } else {
+        rhs->left = merge(lhs, rhs->left);
+        update(rhs);
+        return rhs;
+    }
+}
+
+///  # split by size(root, k)
+///  return (root of S[:k], root of S[k:])
+///  if size(S) < k, return {S, empty set}
+///  O(log n)
+template <class T>
+std::pair<NodePtr<T>, NodePtr<T>> split_by_size(NodePtr<T> root, int k) {
+    if (!root) return {nullptr, nullptr};
+    if (size(root->left) >= k) {
+        auto [lhs, rhs] = split_by_size(root->left, k);
+        root->left = rhs;
+        update(root);
+        return {lhs, root};
+    } else {
+        auto [lhs, rhs] = split_by_size(root->right, k - size(root->left) - 1);
+        root->right = lhs;
+        update(root);
+        return {root, rhs};
+    }
+}
+
+///  # split by key(root, key)
+///  return ({ x | x < key }, { x | key <= x })
+///  O(log n)
+template <class T>
+std::pair<NodePtr<T>, NodePtr<T>> split_by_key(NodePtr<T> root, T key) {
+    if (!root) return {nullptr, nullptr};
+    if (root->key < key) {
+        auto [lhs, rhs] = split_by_key(root->right, key);
+        root->right = lhs;
+        update(root);
+        return {root, rhs};
+    } else {
+        auto [lhs, rhs] = split_by_key(root->left, key);
+        root->left = rhs;
+        update(root);
+        return {lhs, root};
+    }
+}
+
+///  # insert(root, key)
+///  return root of (S or {key})
+///  O(log n)
+template <class T>
+NodePtr<T> insert(NodePtr<T> root, T key) {
+    if (contains(root, key)) return root;
+    auto [lhs, rhs] = split_by_key(root, key);
+    return merge(lhs, merge(new Node<T>(key), rhs));
+}
+
+///  # erase(root, key)
+///  return root of (S - {key})
+///  O(log n)
+template <class T>
+NodePtr<T> erase(NodePtr<T> root, T key) {
+    if (!contains(root, key)) return root;
+    auto [lhs, temp] = split_by_key(root, key);
+    auto [mhs, rhs] = split_by_size(temp, 1);
+    delete mhs;
+    return merge(lhs, rhs);
+}
+
+//  -- SEARCH --
+
+///  # find by size(root, k)
+///  return S[k]
+///  if not exist, return nullptr
+///  O(log n)
+template <class T>
+NodePtr<T> find_by_size(NodePtr<T> root, int k) {
+    while (root) {
+        if (size(root->left) > k) {
+            root = root->left;
+        } else if (size(root->left) == k) {
+            return root;
+        } else {
+            k -= size(root->left) + 1;
+            root = root->right;
+        }
+    }
+    return nullptr;
+}
+
+///  # find by key(root, key)
+///  return key node
+///  if not exist, return nullptr
+///  O(log n)
+template <class T>
+NodePtr<T> find_by_key(NodePtr<T> root, T key) {
+    while (root) {
+        if (key < root->key) {
+            root = root->left;
+        } else if (key > root->key) {
+            root = root->right;
+        } else {
+            return root;
+        }
+    }
+    return nullptr;
+}
+
+///  # contains(root, key)
+///  return whether key in S
+///  O(log n)
+template <class T>
+bool contains(NodePtr<T> root, T key) {
+    return find_by_key(root, key);
+}
+
+///  # rank(root, key)
+///  return |{ x in S | x < key }|
+///  O(log n)
+template <class T>
+int rank(NodePtr<T> root, T key) {
+    int result = 0;
+    while (root) {
+        if (root->key < key) {
+            result += size(root->left) + 1;
+            root = root->right;
+        } else {
+            root = root->left;
+        }
+    }
+    return result;
+}
+
+///  # min(root)
+///  return min node
+///  if not exist, return nullptr
+///  O(log n)
+template <class T>
+NodePtr<T> min(NodePtr<T> root) {
+    while (root->left) root = root->left;
+    return root;
+}
+
+///  # max(root)
+///  return max node
+///  if not exist, return nullptr
+///  O(log n)
+template <class T>
+NodePtr<T> max(NodePtr<T> root) {
+    while (root->right) root = root->right;
+    return root;
+}
+
+///  # kth(root, k)
+///  return S[k]
+///  if not exist, return nullptr
+///  O(log n)
+template <class T>
+NodePtr<T> kth(NodePtr<T> root, int k) {
+    return find_by_size(root, k);
+}
+
+///  # successor(node)
+///  return next value
+///  if not exist, return nullptr
+///  O(log n)
+template <class T>
+NodePtr<T> successor(NodePtr<T> root, T key) {
+    NodePtr<T> result = nullptr;
+    while (root) {
+        if (key < root->key) result = root;
+        if (key < root->key) {
+            root = root->left;
+        } else {
+            root = root->right;
+        }
+    }
+    return result;
+}
+
+///  # predecessor(node)
+///  return prev value
+///  if not exist, return nullptr
+///  O(log n)
+template <class T>
+NodePtr<T> predecessor(NodePtr<T> root, T key) {
+    NodePtr<T> result = nullptr;
+    while (root) {
+        if (root->key < key) result = root;
+        if (root->key < key) {
+            root = root->right;
+        } else {
+            root = root->left;
+        }
+    }
+    return result;
+}
+
+}  //  namespace ordered_set_node
+
+template <class T>
+class OrderedSet {
+  public:
+    OrderedSet() {}
+
+    void insert(T key) {
+        root_ = ordered_set_node::insert(root_, key);
+    }
+
+    void erase(T key) {
+        root_ = ordered_set_node::erase(root_, key);
+    }
+
+    bool empty() {
+        return ordered_set_node::empty(root_);
+    }
+
+    int size() {
+        return ordered_set_node::size(root_);
+    }
+
+    T min() {
+        assert(!empty());
+        return ordered_set_node::min(root_)->key;
+    }
+
+    T max() {
+        assert(!empty());
+        return ordered_set_node::max(root_)->key;
+    }
+
+    T kth(int k) {
+        assert(0 <= k && k < size());
+        return ordered_set_node::kth(root_, k)->key;
+    }
+
+    bool contains(T key) {
+        return ordered_set_node::contains(root_, key);
+    }
+
+    int rank(T key) {
+        return ordered_set_node::rank(root_, key);
+    }
+
+    std::optional<T> successor(T key) {
+        auto node = ordered_set_node::successor(root_, key);
+        return node ? std::optional<T>(node->key) : std::nullopt;
+    }
+
+    std::optional<T> predecessor(T key) {
+        auto node = ordered_set_node::predecessor(root_, key);
+        return node ? std::optional<T>(node->key) : std::nullopt;
+    }
+
+  private:
+    ordered_set_node::NodePtr<T> root_ = nullptr;
+};
+
+}  //  namespace nono

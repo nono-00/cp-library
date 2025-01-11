@@ -6,7 +6,10 @@
 
 namespace nono {
 
-///  brief : 時々作用がミスるlazy segment tree. だいたいこれ. <https://rsm9.hatenablog.com/entry/2021/02/01/220408>
+///  # Segment Tree Beats
+///  時々作用がミスるlazy segment tree.
+///  ミスったときに愚直に計算する.
+///  だいたいこれ. <https://rsm9.hatenablog.com/entry/2021/02/01/220408>
 template <class M>
 struct SegmentTreeBeats {
     using T = M::Value;
@@ -26,6 +29,9 @@ struct SegmentTreeBeats {
         }
     }
 
+    ///  # set(p, x)
+    ///  data[p] <= x
+    ///  O(logn)
     void set(int p, T x) {
         assert(0 <= p && p < n_);
         p += size_;
@@ -34,6 +40,9 @@ struct SegmentTreeBeats {
         for (int i = 1; i <= log_; i++) update(p >> i);
     }
 
+    ///  # get(p)
+    ///  return data[p]
+    ///  O(logn)
     T get(int p) {
         assert(0 <= p && p < n_);
         p += size_;
@@ -41,6 +50,9 @@ struct SegmentTreeBeats {
         return data_[p];
     }
 
+    ///  # prod(l, r)
+    ///  return op[for i in [l, r)](data[i])
+    ///  O(logn)
     T prod(int l, int r) {
         assert(0 <= l && l <= r && r <= n_);
         if (l == r) return M::e();
@@ -64,10 +76,15 @@ struct SegmentTreeBeats {
         return M::op(sml, smr);
     }
 
+    ///  # all_prod()
+    ///  O(1)
     T all_prod() {
         return data_[1];
     }
 
+    ///  # apply(p, f)
+    ///  data[p] <= mapping(f, data[p])
+    ///  O(logn)
     void apply(int p, F f) {
         assert(0 <= p && p < n_);
         p += size_;
@@ -75,6 +92,10 @@ struct SegmentTreeBeats {
         data_[p] = M::mapping(f, data_[p]);
         for (int i = 1; i <= log_; i++) update(p >> i);
     }
+
+    ///  # apply(l, r, f)
+    ///  [for i in [l, r)](data[i] <= mapping(f, data[i])
+    ///  O(logn)
     void apply(int l, int r, F f) {
         assert(0 <= l && l <= r && r <= n_);
         if (l == r) return;
@@ -105,6 +126,9 @@ struct SegmentTreeBeats {
         }
     }
 
+    ///  # max_right(l, f)
+    ///  return max { r | r in (l, n], G(prod(l, r)) is true}
+    ///  O(logn)
     template <class G>
     int max_right(int l, G g) {
         assert(0 <= l && l <= n_);
@@ -132,6 +156,9 @@ struct SegmentTreeBeats {
         return n_;
     }
 
+    ///  # min_left(r, f)
+    ///  return min { l | l in [0, r), G(prod(l, r)) is true}
+    ///  O(logn)
     template <class G>
     int min_left(int r, G g) {
         assert(0 <= r && r <= n_);
@@ -187,4 +214,3 @@ struct SegmentTreeBeats {
 };
 
 }  //  namespace nono
-

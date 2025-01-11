@@ -2,28 +2,22 @@
 
 #include <cassert>
 #include <limits>
-#include <memory>
 
 #include "./dynamic-segment-tree.hpp"
 
 namespace nono {
 
-///  brief : 座圧せずに使える二次元segment tree. とっっても遅い
-
-//  tparam:
-//  - `T`: 配列の要素の型
-//  - `op`: 演算関数. 戻り値 `T`, 引数 `T, T` でなければならない.
-//  - `e`: 単位元を返す関数. 戻り値 `T`, 引数 `void` でなければならない.
-//  - `Index`: 添字の型
+///  # 動的二次元セグ木
+///  座圧せずに使える二次元segment tree.
+///  とっっても遅い
 template <class M, class Index = int>
 class DynamicSegmentTree2D {
     using T = M::Value;
     struct Node;
     using NodePtr = Node*;
 
-    //  brief:
-    //  - 一次元の領域を表す構造体
-    //  - あまりにも引数が面倒になったので利用
+    ///  # Bounds
+    //  一次元の領域を表す構造体
     struct Bounds {
         Index lower;
         Index upper;
@@ -84,37 +78,35 @@ class DynamicSegmentTree2D {
     };
 
   public:
-    //  brief:
-    //  - コンストラクタ
-    //
-    //  complexity:
-    //  - O(1)
-    //
-    //  param:
-    //  - `{h/w}_lb`: 格納する領域の下界
-    //  - `{h/w}_ub`: 格納する領域の上界
+    ///  # DynamicSegmentTree2D(h_lb, h_ub, w_lb, w_ub)
+    ///  {h/w}_lb: 格納する領域の下界
+    ///  {h/w}_ub: 格納する領域の上界
+    ///  O(1)
     DynamicSegmentTree2D(Index h_lb = std::numeric_limits<Index>::min(), Index h_ub = std::numeric_limits<Index>::max(),
                          Index w_lb = std::numeric_limits<Index>::min(), Index w_ub = std::numeric_limits<Index>::max())
         : root_(nullptr),
           h_(h_lb, h_ub),
           w_(w_lb, w_ub) {}
 
-    //  complexity:
-    //  - O((logN) ^ 2)
+    ///  # set(i, j, value)
+    ///  data[i][j] <= value
+    ///  O((logN)^2)
     void set(Index pos_h, Index pos_w, T value) {
         assert(h_.inside(pos_h) && w_.inside(pos_w));
         set(root_, h_, pos_h, pos_w, value);
     }
 
-    //  complexity:
-    //  - O((logN) ^ 2)
+    ///  # get(i, j)
+    ///  return data[i][j]
+    ///   O((logN)^2)
     T get(Index pos_h, Index pos_w) {
         assert(h_.inside(pos_h) && w_.inside(pos_w));
         return get(root_, h_, pos_h, pos_w);
     }
 
-    //  complexity:
-    //  - O((logN) ^ 2)
+    ///  # prod(h1, w1, h2, w2)
+    ///  return prod forall[i in [h1, h2), j in [w1, w2)](data[i][j])
+    ///  O((logN) ^ 2)
     T prod(Index pos_h1, Index pos_w1, Index pos_h2, Index pos_w2) {
         assert(h_.inside(pos_h1) && w_.inside(pos_w1));
         assert(h_.inside(pos_h2) && w_.inside(pos_w2));
@@ -123,6 +115,8 @@ class DynamicSegmentTree2D {
         return prod(root_, h_, Bounds(pos_h1, pos_h2), Bounds(pos_w1, pos_w2));
     }
 
+    ///  # all_prod()
+    ///  O(1)
     T all_prod() {
         return root_ ? root_->segtree.all_prod() : M::e();
     }

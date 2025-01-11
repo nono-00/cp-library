@@ -8,7 +8,9 @@
 
 namespace nono {
 
-///  brief : 静的な矩形領域積クエリを前処理\\( O(n \log ^ 2 n) \\), クエリ \\( O(1) \\)で. メモリ使用量がバカ.
+///  # 二次元sparse table
+///  静的な矩形領域積クエリを前処理O(n(logn)^2), クエリ O(1)で.
+///  メモリ使用量がバカ.
 template <class M>
 class SparseTable2D {
     using T = M::Value;
@@ -45,6 +47,9 @@ class SparseTable2D {
         }
     }
 
+    ///  # prod(h1, w1, h2, w2)
+    ///  return op[for i in [h1, h2), for j in [w1, w2)](data[i][j])
+    ///  O(1)
     T prod(int h1, int w1, int h2, int w2) const {
         assert(0 <= h1 && h1 <= h2 && h2 <= h_);
         assert(0 <= w1 && w1 <= w2 && w2 <= w_);

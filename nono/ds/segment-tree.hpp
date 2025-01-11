@@ -6,7 +6,7 @@
 
 namespace nono {
 
-/// brief : 一点更新 区間取得のsegment tree. <https://atcoder.github.io/ac-library/master/document_ja/segtree.html>
+///  brief : 一点更新 区間取得のsegment tree. <https://atcoder.github.io/ac-library/master/document_ja/segtree.html>
 template <class M>
 class SegmentTree {
     using T = M::Value;
@@ -24,6 +24,9 @@ class SegmentTree {
         }
     }
 
+    ///  # set(p, x)
+    ///  data[p] <= x
+    ///  O(logn)
     void set(int p, T x) {
         assert(0 <= p && p < n_);
         p += size_;
@@ -31,11 +34,17 @@ class SegmentTree {
         for (int i = 1; i <= log_; i++) update(p >> i);
     }
 
+    ///  # get(p)
+    ///  return data[p]
+    ///  O(logn)
     T get(int p) const {
         assert(0 <= p && p < n_);
         return data_[p + size_];
     }
 
+    ///  # prod(l, r)
+    ///  return op[for i in [l, r)](data[i])
+    ///  O(logn)
     T prod(int l, int r) const {
         assert(0 <= l && l <= r && r <= n_);
         T sml = M::e(), smr = M::e();
@@ -51,10 +60,15 @@ class SegmentTree {
         return M::op(sml, smr);
     }
 
+    ///  # all_prod()
+    ///  O(1)
     T all_prod() const {
         return data_[1];
     }
 
+    ///  # apply(p, f)
+    ///  data[p] <= mapping(f, data[p])
+    ///  O(logn)
     template <class F>
     int max_right(int l, F f) const {
         assert(0 <= l && l <= n_);
@@ -80,6 +94,9 @@ class SegmentTree {
         return n_;
     }
 
+    ///  # apply(l, r, f)
+    ///  [for i in [l, r)](data[i] <= mapping(f, data[i])
+    ///  O(logn)
     template <class F>
     int min_left(int r, F f) const {
         assert(0 <= r && r <= n_);

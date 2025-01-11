@@ -8,10 +8,9 @@
 
 namespace nono {
 
-/// brief : Mo's algorithm. もおぉぉ.
-
-//  {|add,erase|}(pos, is_end): pos番目の要素を{|加える,削除する|}, is_end がtrueなら末尾要素の{|追加, 削除|}
-//  solve(pos): pos番目のクエリに回答する
+///  # Mo's algorithm
+///  {|add,erase|}(pos, is_end): pos番目の要素を{|加える,削除する|}, is_end がtrueなら末尾要素の{|追加, 削除|}
+///  solve(pos): pos番目のクエリに回答する
 template <int BLOCK, class Add, class Erase, class Solve>
 void mo(const std::vector<std::pair<int, int>>& querys, Add add, Erase erase, Solve solve) {
     std::vector<int> index(querys.size());

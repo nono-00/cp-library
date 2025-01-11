@@ -66,7 +66,7 @@ void solve() {
     for (int i = 0; i < n; i++) {
         b[i] = std::lower_bound(c.begin(), c.end(), a[i]) - c.begin();
     }
-    ManageMaxMode data(c.size(), max_cnt);
+    ManageMaxMode data(c.size(), max_cnt + 10);
     auto add = [&](int i, bool) {
         assert(0 <= i && i < n);
         data.add(b[i]);

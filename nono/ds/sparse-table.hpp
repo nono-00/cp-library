@@ -6,7 +6,9 @@
 
 namespace nono {
 
-///  brief : 静的な区間積クエリを前処理\\( O(n \log n) \\), クエリ \\( O(1) \\)で. だいたいDisjointを使った方が良い
+///  # Sparse Table
+///  静的な区間積クエリを前処理 O(nlogn), クエリ O(1)で.
+///  だいたいDisjointを使った方が良い
 template <class M>
 class SparseTable {
     using T = M::Value;
@@ -27,6 +29,9 @@ class SparseTable {
         }
     }
 
+    ///  # prod(l, r)
+    ///  return op[for i in [l, r)](data[i])
+    ///  O(1)
     T prod(int left, int right) const {
         assert(0 <= left && left <= n_);
         assert(left <= right && right <= n_);

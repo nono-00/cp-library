@@ -21,10 +21,6 @@ bool operator==(Value lhs, Value rhs) {
     return lhs.ord == rhs.ord && lhs.rev == rhs.rev;
 }
 
-bool operator==(Act lhs, Act rhs) {
-    return lhs.a == rhs.a && lhs.b == rhs.b;
-}
-
 #include "nono/structure/test.hpp"
 
 namespace nono {

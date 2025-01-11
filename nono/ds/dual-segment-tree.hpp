@@ -5,18 +5,9 @@
 
 namespace nono {
 
-///  brief : 区間作用, 一点取得のsegment tree. 作用が可換のもののみに対応.
-
-//  tparam:
-//  - `T`: 配列の要素の型
-//  - `e`: 単位元を返す関数. 戻り値 `T`, 引数 `void` でなければならない.
-//  - 'F': 写像の型
-//  - 'mapping': T mapping(F, T), 写像
-//  - 'composition': F mapping(F, F) 合成写像
-//
-//  note:
-//  - 作用が可換のときしか使えない
-//  - そうじゃないなら遅延セグ木で
+///  # 双対セグ木
+///  区間作用, 一点取得のsegment tree.
+///  作用が可換のもののみに対応.
 template <class M>
 class DualSegmentTree {
     using T = M::Value;
@@ -27,12 +18,18 @@ class DualSegmentTree {
     DualSegmentTree(int n): n_(n), data_(n_, M::e()), lazy_(n_, M::id()) {}
     DualSegmentTree(const std::vector<T>& data): n_(data.size()), data_(data_), lazy_(n_, M::id()) {}
 
+    ///  # apply(i, value)
+    ///  data[i] <= mapping(value, data[i])
+    ///  O(logn)
     void apply(int i, F value) {
         assert(0 <= i && i < n_);
         i += n_;
         eval(i, value);
     }
 
+    ///  # apply(l, r, value)
+    ///  forall i in [l, r) data[i] <= mapping(value, data[i])
+    ///  O(logn)
     void apply(int left, int right, F value) {
         assert(0 <= left && left <= n_);
         assert(left <= right && right <= n_);
@@ -42,6 +39,9 @@ class DualSegmentTree {
         }
     }
 
+    ///  # get(i)
+    ///  data[i]を返す
+    ///  O(logn)
     T get(int i) const {
         assert(0 <= i && i < n_);
         T result = data_[i];
