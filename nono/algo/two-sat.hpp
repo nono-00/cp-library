@@ -12,7 +12,7 @@ namespace nono {
 ///  # 2sat
 ///  (a or b) and (c or d) ... みたいなのを解く
 ///
-///  計算量 : O(N + M)
+///  O(N + M)
 class TwoSat {
   public:
     TwoSat() {}

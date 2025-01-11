@@ -1,4 +1,5 @@
 // https://codeforces.com/contest/2051/problem/F
+#define IGNORE
 #include <iostream>
 
 #include "../../../nono/ds/interval-set.hpp"

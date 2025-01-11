@@ -1,4 +1,5 @@
 // https://www.acmicpc.net/problem/16907
+#define IGNORE
 #include <iostream>
 #include <string>
 

@@ -15,10 +15,6 @@ bool operator==(Value lhs, Value rhs) {
     return lhs.sum == rhs.sum && lhs.num == rhs.num;
 }
 
-bool operator==(Act lhs, Act rhs) {
-    return lhs.a == rhs.a && lhs.b == rhs.b;
-}
-
 #include "nono/structure/test.hpp"
 
 namespace nono {

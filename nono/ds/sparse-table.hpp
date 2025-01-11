@@ -31,7 +31,7 @@ class SparseTable {
 
     ///  # prod(l, r)
     ///  return op[for i in [l, r)](data[i])
-    ///  O(logn)
+    ///  O(1)
     T prod(int left, int right) const {
         assert(0 <= left && left <= n_);
         assert(left <= right && right <= n_);
