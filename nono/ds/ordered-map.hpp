@@ -57,7 +57,7 @@ template <class Key, class Value>
 NodePtr<Key, Value> merge(NodePtr<Key, Value> lhs, NodePtr<Key, Value> rhs) {
     if (!lhs) return rhs;
     if (!rhs) return lhs;
-    if (rng() & 1) {
+    if (((long long)rng() * (lhs->size + rhs->size)) >> 32 < lhs->size) {
         lhs->right = merge(lhs->right, rhs);
         update(lhs);
         return lhs;
@@ -128,8 +128,10 @@ NodePtr<Key, Value> set(NodePtr<Key, Value> root, Key key, Value value) {
 template <class Key, class Value>
 NodePtr<Key, Value> erase(NodePtr<Key, Value> root, Key key) {
     if (!contains(root, key)) return root;
-    auto [lhs, rhs] = split_by_key(root, key);
-    return merge(lhs, split_by_size(rhs, 1).second);
+    auto [lhs, temp] = split_by_key(root, key);
+    auto [mhs, rhs] = split_by_size(temp, 1);
+    delete mhs;
+    return merge(lhs, rhs);
 }
 
 //  -- SEARCH --

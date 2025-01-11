@@ -56,7 +56,7 @@ template <class T>
 NodePtr<T> merge(NodePtr<T> lhs, NodePtr<T> rhs) {
     if (!lhs) return rhs;
     if (!rhs) return lhs;
-    if (rng() & 1) {
+    if (((long long)rng() * (lhs->size + rhs->size)) >> 32 < lhs->size) {
         lhs->right = merge(lhs->right, rhs);
         update(lhs);
         return lhs;
@@ -122,8 +122,10 @@ NodePtr<T> insert(NodePtr<T> root, T key) {
 template <class T>
 NodePtr<T> erase(NodePtr<T> root, T key) {
     if (!contains(root, key)) return root;
-    auto [lhs, rhs] = split_by_key(root, key);
-    return merge(lhs, split_by_size(rhs, 1).second);
+    auto [lhs, temp] = split_by_key(root, key);
+    auto [mhs, rhs] = split_by_size(temp, 1);
+    delete mhs;
+    return merge(lhs, rhs);
 }
 
 //  -- SEARCH --
