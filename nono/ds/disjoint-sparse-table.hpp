@@ -34,6 +34,9 @@ class DisjointSparseTable {
         }
     }
 
+    ///  # prod(l, r)
+    ///  return op[for i in [l, r)](data[i])
+    ///  O(1)
     T prod(int left, int right) const {
         assert(0 <= left && left <= right);
         assert(left <= right && right <= n_);

@@ -13,10 +13,7 @@ namespace nono {
 
 namespace internal {
 
-/// brief : 木の直径.
-/// TODO : verify
-
-//  diameter(graph)の結果
+///  # diameter result
 template <class T>
 class DiameterResult {
   public:
@@ -26,24 +23,27 @@ class DiameterResult {
           vertex_id_(std::move(vertex_id)),
           edge_id_(std::move(edge_id)) {}
 
-    //  直径の長さ
+    ///  # dist()
+    ///  |diameter|
     T dist() const {
         return dist_;
     }
 
-    //  直径の端点
+    ///  # endpoints()
+    ///  endpoints of diameter
     std::array<int, 2> endpoints() const {
         return endpoints_;
     }
 
-    //  直径のパス 頂点
-    //  endpoints[0] -> ... -> ... -> endpoints[1]
+    ///  # vertex id()
+    ///  endpoints[0] -> ... -> ... -> endpoints[1]
     std::vector<int> vertex_id() const {
         return vertex_id_;
     }
 
-    //  直径のパス 辺
-    //  v[0] -> e[0] -> v[1] -> e[1] -> ... -> e[n - 2] -> v[n - 1]
+    ///  # edge id()
+    ///  edge id seq of diameter
+    ///  v[0] -> e[0] -> v[1] -> e[1] -> ... -> e[n - 2] -> v[n - 1]
     std::vector<int> edge_id() const {
         return edge_id_;
     }
@@ -57,8 +57,10 @@ class DiameterResult {
 
 }  //  namespace internal
 
-//  木の直径を求める
-//  木でないと壊れる
+///  # diameter(graph)
+///  木の直径を求める
+///  木でないと壊れる
+///  O(n)
 template <class T>
 internal::DiameterResult<T> diameter(const Graph<T>& graph) {
     assert(is_tree(graph));

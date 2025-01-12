@@ -15,7 +15,7 @@ class DynamicSegmentTree {
     using NodePtr = Node*;
 
     struct Node {
-        Node(): left(nullptr), right(nullptr), value(M::e()) {}
+        Node(): value(M::e()), left(nullptr), right(nullptr) {}
         Node(T value): value(value), left(nullptr), right(nullptr) {}
         ~Node() {
             if (left) {

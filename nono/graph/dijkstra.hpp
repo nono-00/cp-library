@@ -21,18 +21,20 @@ class DijkstraResult {
 
     DijkstraResult(std::vector<T> dist, std::vector<int> parent): dist_(std::move(dist)), parent_(std::move(parent)) {}
 
-    //  source -> destの最短距離
+    ///  # dist[dest]
+    ///  distance between source and dest
+    ///  if source and dest are not connected, return UNREACHABLE
+    ///  O(1)
     T dist(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         return dist_[dest];
     }
 
-    //  source -> destの最短経路
-    //
-    //  dist(dest)と違って辿り着けない/距離が確定しない頂点に対して
-    //  呼び足すと空の配列を返す
-    //
-    //  source -> ... -> ... -> dest順
+    ///  # path(dest)
+    ///  return shortest path from source to dest
+    ///  source -> ... -> ... -> dest
+    ///  if we can not reach dest, return empty vector
+    ///  O(|path|)
     std::vector<int> path(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         if (invalid(dest)) {
@@ -47,12 +49,16 @@ class DijkstraResult {
         return result;
     }
 
-    //  辿り着けないかどうか
+    ///  # invalid(dest)
+    ///  whether we can reach dest
+    ///  O(1)
     bool invalid(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         return dist_[dest] == UNREACHABLE;
     }
 
+    ///  # raw()
+    ///  return distance array
     std::vector<T> raw() const {
         return dist_;
     }
@@ -65,20 +71,9 @@ class DijkstraResult {
 
 }  //  namespace internal
 
-///  brief : 負辺なしの単一始点最短経路問題を解く. \\( O(|E| \log |E|) \\)
-
-//  brief:
-//  - 負辺無し単一始点最短経路問題を解く
-//
-//  complexity:
-//  - O((V + E)logV)
-//
-//  tparam:
-//  - `GraphType`: グラフ型
-//
-//  return:
-//  - `source` からたどり着くことができるのならば, `source` からの最短経路
-//  - そうでなければ `numeric_limit<T>::max()`
+///  # dijkstra
+///  複数始点負辺なしの最短経路問題
+///  O((V + E) log (V + E))
 template <class T>
 internal::DijkstraResult<T> dijkstra(const Graph<T>& graph, std::vector<int> source) {
     using Result = internal::DijkstraResult<T>;
@@ -107,6 +102,9 @@ internal::DijkstraResult<T> dijkstra(const Graph<T>& graph, std::vector<int> sou
     return Result(std::move(dist), std::move(parent));
 }
 
+///  # dijkstra
+///  単一始点負辺なしの最短経路問題
+///  O((V + E) log (V + E))
 template <class T>
 internal::DijkstraResult<T> dijkstra(const Graph<T>& graph, int source) {
     return dijkstra(graph, std::vector<int>{source});

@@ -1,12 +1,15 @@
 #pragma once
 
-#include <vector>
 #include <cassert>
+#include <vector>
 
 #include "./base.hpp"
 
 namespace nono {
 
+///  # is bipartite(graph)
+///  whether graph is bipartite
+///  O(n + m)
 template <class T>
 bool is_bipartite(const Graph<T>& graph) {
     int n = graph.size();
@@ -32,4 +35,4 @@ bool is_bipartite(const Graph<T>& graph) {
     return true;
 }
 
-}
+}  //  namespace nono

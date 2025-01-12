@@ -8,12 +8,11 @@
 
 namespace nono {
 
-///  brief : 橋列挙
-
-//  無向グラフでないと壊れる
-//  非連結、非単純グラフでも動くはず
-//
-//  橋: その辺を取り除くとグラフが非連結となるような辺.
+///  # bridges
+///  enumerate bridges
+///  無向グラフでないと壊れる
+///  非連結、非単純グラフでも動くはず
+///  bridge: その辺を取り除くとグラフが非連結となるような辺.
 template <class T>
 std::vector<int> bridges(const Graph<T>& graph) {
     assert(graph.is_undirected());

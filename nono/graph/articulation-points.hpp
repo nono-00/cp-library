@@ -8,11 +8,11 @@
 
 namespace nono {
 
-///  brief : 関節点列挙
-
-//  無向グラフでないと壊れる
-//  頂点番号の昇順で返す
-//  非連結、非単純グラフでも動くはず
+///  # articulation points
+///  関節点列挙
+///  無向グラフでないと壊れる
+///  頂点番号の昇順で返す
+///  非連結、非単純グラフでも動くはず
 template <class T>
 std::vector<int> articulation_points(const Graph<T>& graph) {
     assert(graph.is_undirected());

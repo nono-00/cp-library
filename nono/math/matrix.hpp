@@ -6,18 +6,15 @@
 
 namespace nono {
 
-/// brief : 行列ライブラリ. 行列積, 行列累乗くらいの機能しかない.
-
+///  # Matrix
+///  行列積, 行列累乗くらいの機能しかない.
 template <typename T>
 class Matrix {
   public:
     Matrix() = default;
     Matrix(int h, int w): h_(h), w_(w), data_(h, std::vector<T>(w)) {}
     Matrix(int h, int w, T init): h_(h), w_(w), data_(h, std::vector<T>(w, init)) {}
-    explicit Matrix(const std::vector<std::vector<T>>& data)
-        : h_(data.size()),
-          w_(data.front().size()),
-          data_(data) {
+    explicit Matrix(const std::vector<std::vector<T>>& data): h_(data.size()), w_(data.front().size()), data_(data) {
         for (int i = 0; i < h_; i++) {
             assert(static_cast<int>(data_[i].size()) == w_);
         }
@@ -40,7 +37,9 @@ class Matrix {
         return data_[pos];
     }
 
-    //  スカラー演算
+    ///  # operator += scalar
+    ///  data[i][j] <- data[i][j] + rhs
+    ///  O(nm)
     Matrix& operator+=(const T rhs) {
         for (int i = 0; i < h_; i++) {
             for (int j = 0; j < w_; j++) {
@@ -50,6 +49,9 @@ class Matrix {
         return *this;
     }
 
+    ///  # operator -= scalar
+    ///  data[i][j] <- data[i][j] - rhs
+    ///  O(nm)
     Matrix& operator-=(const T rhs) {
         for (int i = 0; i < h_; i++) {
             for (int j = 0; j < w_; j++) {
@@ -59,6 +61,9 @@ class Matrix {
         return *this;
     }
 
+    ///  # operator *= scalar
+    ///  data[i][j] <- data[i][j] * rhs
+    ///  O(nm)
     Matrix& operator*=(const T rhs) {
         for (int i = 0; i < h_; i++) {
             for (int j = 0; j < w_; j++) {
@@ -68,6 +73,9 @@ class Matrix {
         return *this;
     }
 
+    ///  # operator /= scalar
+    ///  data[i][j] <- data[i][j] / rhs
+    ///  O(nm)
     Matrix& operator/=(const T rhs) {
         for (int i = 0; i < h_; i++) {
             for (int j = 0; j < w_; j++) {
@@ -86,9 +94,6 @@ class Matrix {
     friend Matrix operator-(const Matrix& lhs, const T rhs) {
         return Matrix(lhs) -= rhs;
     }
-    friend Matrix operator-(const T lhs, const Matrix& rhs) {
-        return Matrix(rhs) -= lhs;
-    }
     friend Matrix operator*(const Matrix& lhs, const T rhs) {
         return Matrix(lhs) *= rhs;
     }
@@ -98,11 +103,10 @@ class Matrix {
     friend Matrix operator/(const Matrix& lhs, const T rhs) {
         return Matrix(lhs) /= rhs;
     }
-    friend Matrix operator/(const T lhs, const Matrix& rhs) {
-        return Matrix(rhs) /= lhs;
-    }
 
-    //  行列演算
+    ///  # operator+= matrix
+    ///  lhs[i][j] <- lhs[i][j] + rhs[i][j]
+    ///  O(nm)
     Matrix& operator+=(const Matrix& rhs) {
         assert(h_ == rhs.h_ && w_ == rhs.w_);
         for (int i = 0; i < h_; i++) {
@@ -113,6 +117,9 @@ class Matrix {
         return *this;
     }
 
+    ///  # operator-= matrix
+    ///  lhs[i][j] <- lhs[i][j] - rhs[i][j]
+    ///  O(nm)
     Matrix& operator-=(const Matrix& rhs) {
         assert(h_ == rhs.h_ && w_ == rhs.w_);
         for (int i = 0; i < h_; i++) {
@@ -123,6 +130,9 @@ class Matrix {
         return *this;
     }
 
+    ///  # operator*= matrix
+    ///  lhs[i][j] <- sum[for k in [0, w)](lhs[i][k] * rhs[k][j])
+    ///  O(nml)
     Matrix& operator*=(const Matrix& rhs) {
         assert(w_ == rhs.h_);
         std::vector<std::vector<T>> mat(h_, std::vector<T>(rhs.w_));
@@ -148,6 +158,9 @@ class Matrix {
         return Matrix(lhs) *= rhs;
     }
 
+    ///  # pow(exp)
+    ///  return (data) ** exp
+    ///  O(n^3 log exp)
     [[nodiscard]] Matrix pow(long long exp) const {
         assert(h_ == w_);
         Matrix result(h_, w_);
@@ -165,7 +178,9 @@ class Matrix {
         return result;
     }
 
-    // 多分時計周り
+    ///  # rotate()
+    ///  多分時計周り
+    ///  O(nm)
     [[nodiscard]] Matrix rotate() const {
         std::vector<std::vector<T>> result(w_, std::vector<T>(h_));
         for (int i = 0; i < h_; i++) {
@@ -176,6 +191,9 @@ class Matrix {
         return Matrix(result);
     }
 
+    ///  # transpose()
+    ///  転置
+    ///  O(nm)
     [[nodiscard]] Matrix transpose() const {
         std::vector<std::vector<T>> result(w_, std::vector<T>(h_));
         for (int i = 0; i < h_; i++) {
@@ -186,10 +204,12 @@ class Matrix {
         return Matrix(result);
     }
 
+    ///  # row()
     int row() const {
         return h_;
     }
 
+    ///  # column()
     int column() const {
         return w_;
     }

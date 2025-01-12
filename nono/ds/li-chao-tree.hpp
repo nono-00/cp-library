@@ -23,7 +23,7 @@ class LiChaoTree {
     };
 
   public:
-    LiChaoTree(int n): n_(std::bit_ceil((unsigned)n_)), data_(2 * n) {}
+    LiChaoTree(int n): n_(std::bit_ceil((unsigned)n)), data_(2 * n_) {}
     ///  # add_line(a, b)
     ///  [0, n)にax + bを追加する
     ///  O(logn)
@@ -66,16 +66,16 @@ class LiChaoTree {
             return;
         }
         int m = (l + r) / 2;
-        bool lhs = data_[i].eval(l) < v.eval(l);
-        bool mhs = data_[i].eval(m) < v.eval(m);
-        bool rhs = data_[i].eval(r - 1) < v.eval(r - 1);
+        bool lhs = data_[i]->eval(l) < v.eval(l);
+        bool mhs = data_[i]->eval(m) < v.eval(m);
+        bool rhs = data_[i]->eval(r - 1) < v.eval(r - 1);
         if (lhs && mhs && rhs) return;
         if (!lhs && !mhs && !rhs) {
             data_[i] = v;
             return;
         }
         if (lhs ^ mhs ^ rhs) {
-            swap(v, data_[i]);
+            std::swap(v, *data_[i]);
             lhs ^= true, mhs ^= true, rhs ^= true;
         }
         if (lhs) {
@@ -86,7 +86,7 @@ class LiChaoTree {
     }
     std::optional<T> get(int l, int r, int I, int i) {
         assert(0 <= l && l < r && r <= n_);
-        std::optional<T> v = data_[i] ? data_[i].eval(I) : std::nullopt;
+        std::optional<T> v = data_[i] ? std::optional<T>{data_[i]->eval(I)} : std::nullopt;
         if (l == I && l + 1 == r) {
             return v;
         }

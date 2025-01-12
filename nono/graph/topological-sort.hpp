@@ -1,26 +1,14 @@
 #pragma once
 
+#include <cassert>
 #include <vector>
 
 #include "./base.hpp"
 
 namespace nono {
 
-/// brief : トポソする. 
-/// TODO : DAGかどうかassertion
-
-//  brief:
-//  - トポロジカルソート. 入次数が0の頂点を削っていく.
-//
-//  pre:
-//  - グラフはDAGである必要がある
-//
-//  return:
-//  - グラフがDAGの場合は、トポロジカルソートされた頂点配列
-//
-//  note:
-//  - トポソ可能ならばグラフはDAGなので,
-//  - `result.size() == graph.size()`ならばグラフがDAGであると判定できる
+///  # topological sort(graph)
+///  if G is not DAG, return empty vector
 template <class T>
 std::vector<int> topological_sort(const Graph<T>& graph) {
     assert(graph.is_directed());
@@ -50,6 +38,7 @@ std::vector<int> topological_sort(const Graph<T>& graph) {
             }
         }
     }
+    if ((int)result.size() != n) return {};
     return result;
 }
 

@@ -1,17 +1,17 @@
 #pragma once
 
-#include <vector>
 #include <ranges>
+#include <vector>
 
 namespace nono {
 
-/// brief : Z algo. `result[i]:` `seq`と`seq[i:]`のprefixがどれだけ一致しているか?
-
+///  # Z algorithm
+///  Z algo. result[i]: seqとseq[i:]のprefixがどれだけ一致しているか
 template <std::ranges::random_access_range R>
 std::vector<int> z_algorithm(const R& sequence) {
     int n = std::size(sequence);
     std::vector<int> z_values(n, n);
-    // [left, right)
+    //  [left, right)
     int right = 0;
     int left = 0;
 

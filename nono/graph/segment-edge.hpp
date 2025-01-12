@@ -7,10 +7,10 @@
 
 namespace nono {
 
-///  brief : 区間に辺を貼るやつ.
-
-//  区間辺
-//  from, to共に半開区間
+///  # Segment Edge
+///  from := [a, b)
+///  to := [c, d)
+///  Segment Edge := { (u, v, w) | u in [a, b), v in [c, d), w := weight }
 template <class T>
 struct SegmentEdge {
     std::pair<int, int> from;
@@ -18,17 +18,18 @@ struct SegmentEdge {
     T weight;
 };
 
-//  区間辺集合から有向グラフを構築する
-//
-//  返り値のstd::vector<int>は構築後のグラフの頂点に
-//  対応する元のグラフの頂点を表す
-//
-//  mapping: vertex(segment-graph) -> vertex(original-graph)
-//
-//  mapping[i] = -1ならば対応する頂点は存在しない
-//  元のグラフにおける頂点iに対応する頂点はmapping[j] = iを満たすj
-//
-//  作られたグラフの頂点数が3 * n + mであることに注意
+///  # to graph(n, segment edges)
+///  区間辺集合から有向グラフを構築する
+///
+///  返り値のstd::vector<int>は構築後のグラフの頂点に
+///  対応する元のグラフの頂点を表す
+///
+///  mapping: vertex(segment-graph) -> vertex(original-graph)
+///
+///  mapping[i] = -1ならば対応する頂点は存在しない
+///  元のグラフにおける頂点iに対応する頂点はmapping[j] = iを満たすj
+///
+///  作られたグラフの頂点数が3 * n + mであることに注意
 template <class T>
 std::pair<Graph<T>, std::vector<int>> to_graph(int n, const std::vector<SegmentEdge<T>>& seg_edges) {
     int m = seg_edges.size();

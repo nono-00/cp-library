@@ -13,6 +13,10 @@ template <class T>
 struct Node {
     Node() = default;
     Node(T key): key(key) {}
+    ~Node() {
+        if (left) delete left;
+        if (right) delete right;
+    }
     Node* left = nullptr;
     Node* right = nullptr;
     int size = 1;
@@ -263,51 +267,91 @@ template <class T>
 class OrderedSet {
   public:
     OrderedSet() {}
+    ~OrderedSet() {
+        if (root_) delete root_;
+    }
 
+    ///  # insert(key)
+    ///  S <- S or {key}
+    ///  if key is in S, do nothing
+    ///  O(log n)
     void insert(T key) {
         root_ = ordered_set_node::insert(root_, key);
     }
 
+    ///  # erase(key)
+    ///  S <- S or {key}
+    ///  O(log n)
     void erase(T key) {
         root_ = ordered_set_node::erase(root_, key);
     }
 
+    ///  # empty()
+    ///  whether S is empty
+    ///  O(1)
     bool empty() {
         return ordered_set_node::empty(root_);
     }
 
+    ///  # size()
+    ///  |S|
+    ///  O(1)
     int size() {
         return ordered_set_node::size(root_);
     }
 
+    ///  # min()
+    ///  min(S)
+    ///  O(log n)
     T min() {
         assert(!empty());
         return ordered_set_node::min(root_)->key;
     }
 
+    ///  # max()
+    ///  max(S)
+    ///  O(log n)
     T max() {
         assert(!empty());
         return ordered_set_node::max(root_)->key;
     }
 
+    ///  # kth(k)
+    ///  S[k]
+    ///  0-index
+    ///  O(log n)
     T kth(int k) {
         assert(0 <= k && k < size());
         return ordered_set_node::kth(root_, k)->key;
     }
 
+    ///  # contains(key)
+    ///  whether key in S
+    ///  O(log n)
     bool contains(T key) {
         return ordered_set_node::contains(root_, key);
     }
 
+    ///  # rank(key)
+    ///  |{ x in S | x < key }|
+    ///  O(log n)
     int rank(T key) {
         return ordered_set_node::rank(root_, key);
     }
 
+    ///  # successor(key)
+    ///  return next value
+    ///  if not exist, return std::nullptr
+    ///  O(log n)
     std::optional<T> successor(T key) {
         auto node = ordered_set_node::successor(root_, key);
         return node ? std::optional<T>(node->key) : std::nullopt;
     }
 
+    ///  # predecessor(key)
+    ///  return next value
+    ///  if not exist, return std::nullptr
+    ///  O(log n)
     std::optional<T> predecessor(T key) {
         auto node = ordered_set_node::predecessor(root_, key);
         return node ? std::optional<T>(node->key) : std::nullopt;

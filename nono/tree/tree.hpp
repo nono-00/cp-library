@@ -11,7 +11,8 @@
 
 namespace nono {
 
-///  brief : 機能盛り盛りTree構造体. lca, la, jump, dist, depth, height, etc. Graphと同じように隣接リストとしても使える.
+///  # Tree
+///  graph + lca + la + jump + dist + depth + height + centroid + diameter ...
 template <class T>
 class Tree: public Graph<T> {
   public:
@@ -32,7 +33,8 @@ class Tree: public Graph<T> {
         set_heavy_edge(root_, -1);
         dfs(root_, -1, 0);
     }
-    //  least common ancester
+    ///  # least common ancester
+    ///  O(log n)
     int lca(int lhs, int rhs) {
         assert(0 <= lhs && lhs < n_);
         assert(0 <= rhs && rhs < n_);
@@ -43,23 +45,31 @@ class Tree: public Graph<T> {
         return (depth_[lhs] < depth_[rhs] ? lhs : rhs);
     }
 
-    //  lhsとrhsの距離
+    ///  # dist(lhs, rhs)
+    ///  distance from lhs to rhs (without weight)
+    ///  num of edges of path
+    ///  O(log n)
     int dist(int lhs, int rhs) {
         assert(0 <= lhs && lhs < n_);
         assert(0 <= rhs && rhs < n_);
         return depth_[lhs] + depth_[rhs] - 2 * depth_[lca(lhs, rhs)];
     }
 
-    //  lhsとrhsの距離
+    ///  # dist(lhs, rhs)
+    ///  distance from lhs to rhs (with weight)
+    ///  sum of edges weight of path
+    ///  O(log n)
     T weighted_dist(int lhs, int rhs) {
         assert(0 <= lhs && lhs < n_);
         assert(0 <= rhs && rhs < n_);
         return weighted_depth_[lhs] + weighted_depth_[rhs] - 2 * weighted_depth_[lca(lhs, rhs)];
     }
 
-    //  level ancester
-    //  根方向にk回移動
-    //  移動できないと壊れる
+    ///  # jump(x, k)
+    ///  level ancester
+    ///  根方向にk回移動
+    ///  移動できないと壊れる
+    ///  O(log n)
     int jump(int x, int k) {
         assert(0 <= x && x < n_);
         assert(0 <= k && k <= depth_[x]);
@@ -71,8 +81,11 @@ class Tree: public Graph<T> {
         return tour_[in_[head_[x]] + depth_[x] - depth_[head_[x]] - k];
     }
 
-    //  jump on tree
-    //  移動できないと壊れる
+    ///  # jump(from, to, k)
+    ///  jump on tree
+    ///  fromからtoに向かってk回移動
+    ///  移動できないと壊れる
+    ///  O(log n)
     int jump(int from, int to, int k) {
         assert(0 <= from && from < n_);
         assert(0 <= to && to < n_);
@@ -85,42 +98,56 @@ class Tree: public Graph<T> {
         }
     }
 
-    //  xの深さ
+    ///  # depth(x)
+    ///  distance from x to root (without weight)
+    ///  num of edges of path
+    ///  O(1)
     int depth(int x) {
         assert(0 <= x && x < n_);
         return depth_[x];
     }
 
-    //  xの深さ
+    ///  # depth(x)
+    ///  distance from x to root (with weight)
+    ///  sum of edges weight of path
+    ///  O(1)
     T weighted_depth(int x) {
         assert(0 <= x && x < n_);
         return weighted_depth_[x];
     }
 
-    //  xの高さ
+    ///  # height(x)
+    ///  height of vertex x (without weight)
+    ///  O(1)
     int height(int x) {
         assert(0 <= x && x < n_);
         return height_[x];
     }
 
-    //  xの高さ
+    ///  # height(x)
+    ///  height of vertex x (with weight)
+    ///  O(1)
     T weighted_height(int x) {
         assert(0 <= x && x < n_);
         return weighted_height_[x];
     }
 
-    //  x含む部分木内の頂点数
+    ///  # subtree(x)
+    ///  num of subtree (include x)
+    ///  O(1)
     int subtree(int x) {
         assert(0 <= x && x < n_);
         return out_[x] - in_[x];
     }
 
-    //  直径
+    ///  # diameter()
+    ///  O(n)
     auto diameter() {
         return nono::diameter(*this);
     }
 
-    //  重心列挙
+    ///  # centroids()
+    ///  O(n)
     auto centroids() {
         return nono::centroids(*this);
     }

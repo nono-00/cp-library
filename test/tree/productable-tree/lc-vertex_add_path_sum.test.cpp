@@ -2,13 +2,14 @@
 #include <iostream>
 #include <vector>
 
+#include "../../../nono/structure/act-monoid.hpp"
 #include "../../../nono/structure/monoid.hpp"
 #include "../../../nono/tree/productable-tree.hpp"
 
 namespace nono {
 
 void solve() {
-    using Monoid = monoid::Add<long long>;
+    using Monoid = act_monoid::ActMonoid<monoid::Add<long long>>;
     int n, q;
     std::cin >> n >> q;
     std::vector<long long> a(n);

@@ -6,7 +6,9 @@
 
 namespace nono {
 
-/// brief : lcp array. based on <https://atcoder.github.io/ac-library/master/document_ja/string.html>
+///  # lcp array
+///  based on <https://atcoder.github.io/ac-library/master/document_ja/string.html>
+///  O(|seq|)
 
 //  Reference:
 //  T. Kasai, G. Lee, H. Arimura, S. Arikawa, and K. Park,

@@ -13,6 +13,10 @@ template <class Key, class Value>
 struct Node {
     Node() = default;
     Node(Key key, Value value): key(key), value(value) {}
+    ~Node() {
+        if (left) delete left;
+        if (right) delete right;
+    }
     Node* left = nullptr;
     Node* right = nullptr;
     int size = 1;
@@ -24,8 +28,6 @@ template <class Key, class Value>
 using NodePtr = Node<Key, Value>*;
 
 std::mt19937 rng(std::random_device{}());
-
-//  -- CHANGE --
 
 ///  # empty()
 ///  whether S is empty
@@ -133,8 +135,6 @@ NodePtr<Key, Value> erase(NodePtr<Key, Value> root, Key key) {
     delete mhs;
     return merge(lhs, rhs);
 }
-
-//  -- SEARCH --
 
 ///  # find by size(root, k)
 ///  return S[k]
@@ -265,63 +265,110 @@ NodePtr<Key, Value> predecessor(NodePtr<Key, Value> root, Key key) {
 
 }  //  namespace ordered_map_node
 
+///  # OrderedMap
+///  RBST
+///  ordered_map_nodeのラッパー
 template <class Key, class Value>
 class OrderedMap {
   public:
     OrderedMap() {}
+    ~OrderedMap() {
+        if (root_) delete root_;
+    }
 
+    ///  # set(key, value)
+    ///  S[key] <= value
+    ///  O(log n)
     void set(Key key, Value value) {
         root_ = ordered_map_node::set(root_, key, value);
     }
 
+    ///  # get(key)
+    ///  return S[key]
+    ///  if key is not in S, fail
+    ///  O(log n)
     Value get(Key key) {
         auto node = ordered_map_node::find_by_key(root_, key);
         assert(node);
         return node->value;
     }
 
+    ///  # erase(key)
+    ///  S <= S - key
+    ///  if key is not in S, do nothing
+    ///  O(log n)
     void erase(Key key) {
         root_ = ordered_map_node::erase(root_, key);
     }
 
+    ///  # empty()
+    ///  whether S is empty
+    ///  O(1)
     bool empty() {
         return ordered_map_node::empty(root_);
     }
 
+    ///  # size()
+    ///  |S|
+    ///  O(1)
     int size() {
         return ordered_map_node::size(root_);
     }
 
+    ///  # min()
+    ///  min(S)
+    ///  O(log n)
     std::pair<Key, Value> min() {
         assert(!empty());
         auto node = ordered_map_node::min(root_);
         return {node->key, node->value};
     }
 
+    ///  # max()
+    ///  max(S)
+    ///  O(log n)
     std::pair<Key, Value> max() {
         assert(!empty());
         auto node = ordered_map_node::max(root_);
         return {node->key, node->value};
     }
 
+    ///  # kth(k)
+    ///  k番目に小さい値
+    ///  0-index
+    ///  O(log n)
     std::pair<Key, Value> kth(int k) {
         assert(0 <= k && k < size());
         return ordered_map_node::kth(root_, k)->key;
     }
 
+    ///  # contains(key)
+    ///  whether key in S
+    ///  O(log n)
     bool contains(Key key) {
         return ordered_map_node::contains(root_, key);
     }
 
+    ///  # rank(key)
+    ///  |{ (a, b) in S | a < key }|
+    ///  O(log n)
     int rank(Key key) {
         return ordered_map_node::rank(root_, key);
     }
 
+    ///  # successor(key)
+    ///  return next value
+    ///  if not exist, return std::optional
+    ///  O(log n)
     std::optional<std::pair<Key, Value>> successor(Key key) {
         auto node = ordered_map_node::successor(root_, key);
         return node ? std::optional<std::pair<Key, Value>>({node->key, node->value}) : std::nullopt;
     }
 
+    ///  # predecessor(key)
+    ///  return prev value
+    ///  if not exist, return std::optional
+    ///  O(log n)
     std::optional<std::pair<Key, Value>> predecessor(Key key) {
         auto node = ordered_map_node::predecessor(root_, key);
         return node ? std::optional<std::pair<Key, Value>>({node->key, node->value}) : std::nullopt;

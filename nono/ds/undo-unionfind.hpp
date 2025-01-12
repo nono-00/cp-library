@@ -7,7 +7,9 @@
 
 namespace nono {
 
-///  brief : Undoが可能なUnionFind
+///  # UndoUnionFind
+///  Undo
+///  辺追加クエリをstackで管理するような感じ
 class UndoUnionFind {
     struct History {
         int lhs;
@@ -18,15 +20,10 @@ class UndoUnionFind {
   public:
     UndoUnionFind() = default;
 
-    //  brief:
-    //  - コンストラクタ
     UndoUnionFind(int size): size_(size), data_(size, -1) {}
 
-    //  brief:
-    //  - 代表元を取得する
-    //
-    //  complexity:
-    //  - O(log N)
+    ///  # leader(x)
+    ///  O(log N)
     int leader(int x) {
         assert(0 <= x && x < size_);
         if (data_[x] < 0) {
@@ -36,16 +33,9 @@ class UndoUnionFind {
         }
     }
 
-    //  brief:
-    //  - 辺 `(lhs, rhs)` を追加する
-    //
-    //  return:
-    //  - 頂点 `lhs`, `rhs` がすでに連結ならば `false`
-    //  - そうでないならば `true
-    //
-    //  note:
-    //  - `merge` が失敗していても
-    //  - 操作をした記録は残っている
+    ///  # merge(lhs, rhs)
+    ///  edges <- edges + [(lhs, rhs)]
+    ///  O(log n)
     bool merge(int lhs, int rhs) {
         assert(0 <= lhs && lhs < size_);
         assert(0 <= rhs && rhs < size_);
@@ -61,11 +51,9 @@ class UndoUnionFind {
         return true;
     }
 
-    //  brief:
-    //  - 一つ前の `merge` 操作をなかったことにする
-    //
-    //  complexity:
-    //  - O(1)
+    ///  # undo()
+    ///  edges <- edges[:-1]
+    ///  O(1)
     void undo() {
         assert(!historys_.empty());
         auto [lhs, rhs, data] = historys_.back();
@@ -76,34 +64,32 @@ class UndoUnionFind {
         }
     }
 
-    //  brief:
-    //  - 頂点 `lhs`, `rhs`が連結かどうか
+    ///  # same(lhs, rhs)
+    ///  whether lhs and rhs are in same group
+    ///  O(log n)
     bool same(int lhs, int rhs) {
         assert(0 <= lhs && lhs < size_);
         assert(0 <= rhs && rhs < size_);
         return (leader(lhs) == leader(rhs));
     }
 
-    //  brief: //  - 頂点 `x` の属する連結成分の大きさを取得する
+    ///  # size(x)
+    ///  return |group x|
+    ///  O(log n)
     int size(int x) {
         assert(0 <= x && x < size_);
         return -data_[leader(x)];
     }
 
-    //  brief:
-    //  - 頂点数を取得する
+    ///  # size()
+    ///  num of vertex
+    ///  O(1)
     int size() const {
         return size_;
     }
 
-    //  brief:
-    //  - 連結成分分解する
-    //
-    //  note:
-    //  - 返り値の頂点の順番は未定義
-    //
-    //  see:
-    //  - https://atcoder.github.io/ac-library/document_ja/dsu.html
+    ///  # groups()
+    ///  https://atcoder.github.io/ac-library/document_ja/dsu.html
     std::vector<std::vector<int>> groups() {
         std::vector<int> leader_buf(size_), group_size(size_);
         for (int i = 0; i < size_; i++) {
@@ -124,9 +110,6 @@ class UndoUnionFind {
 
   private:
     int size_;
-    //  details:
-    //  - `data[i] < 0` ならば `i` を代表元とする連結成分の大きさ
-    //  - `data[i] >= 0` ならば `i` の属する連結成分の代表元
     std::vector<int> data_;
     std::vector<History> historys_;
 };

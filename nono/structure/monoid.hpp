@@ -5,9 +5,17 @@
 #include <numeric>
 #include <optional>
 
-///  brief : Monoid全部盛り.
 namespace nono {
+
 namespace monoid {
+
+struct MonoidTemplate {
+    struct Value {};
+    static Value op(Value lhs, Value rhs);
+    static Value e();
+};
+
+///  # Min
 template <class T>
 struct Min {
     using Value = T;
@@ -18,6 +26,8 @@ struct Min {
         return std::numeric_limits<T>::max();
     }
 };
+
+///  # Max
 template <class T>
 struct Max {
     using Value = T;
@@ -28,6 +38,8 @@ struct Max {
         return std::numeric_limits<T>::min();
     }
 };
+
+///  # MinMax
 template <class T>
 struct MinMax {
     struct Value {
@@ -43,6 +55,8 @@ struct MinMax {
         return Value{};
     }
 };
+
+///  # Add
 template <class T>
 struct Add {
     using Value = T;
@@ -53,6 +67,8 @@ struct Add {
         return static_cast<Value>(0);
     }
 };
+
+///  # Mul
 template <class T>
 struct Mul {
     using Value = T;
@@ -63,7 +79,9 @@ struct Mul {
         return static_cast<Value>(1);
     }
 };
-//   ax+b
+
+///  # Composite
+///  (ax + b) 関数の合成
 template <class T>
 struct Composite {
     struct Value {
@@ -81,7 +99,15 @@ struct Composite {
         return Value{};
     }
 };
-template <class T, class Index = unsigned>
+
+///  # MinIndex
+///  (a, i), (b, j)
+///  [1] if a < b:
+///      return (a, i)
+///  [2] else
+///      return (b, j)
+///  同じなら左側
+template <class T>
 struct MinIndex {
   private:
     struct Value_ {
@@ -101,6 +127,13 @@ struct MinIndex {
         return std::nullopt;
     }
 };
+
+///  # MaxIndex
+///  [1] if a > b:
+///      return (a, i)
+///  [2] else
+///      return (b, j)
+///  同じなら左側
 template <class T>
 struct MaxIndex {
   private:
@@ -121,6 +154,8 @@ struct MaxIndex {
         return std::nullopt;
     }
 };
+
+///  # Rev
 template <class M>
 struct Rev {
     using T = M::Value;
@@ -138,6 +173,8 @@ struct Rev {
         return Value{};
     }
 };
+
+///  # Gcd
 template <class T>
 struct Gcd {
     using Value = T;
@@ -148,11 +185,16 @@ struct Gcd {
         return Value{0};
     }
 };
-//  任意の連続部分列の総和の最大値
+
+///  # MaxSubSeq
+///  max[for r in [0, n), for r in [l + 1, n]](sum[for i in [l, r)](data[i]))
 template <class T>
 struct MaxSubSeq {
     struct Value {
         Value(T v = 0): val(std::max(T{0}, v)), prefix(std::min(T{0}, v)), suffix(std::max(T{0}, v)), sum(v) {}
+        T max_subseq_sum() const {
+            return val;
+        }
         T val, prefix, suffix, sum;
     };
     static Value op(Value lhs, Value rhs) {
@@ -167,5 +209,7 @@ struct MaxSubSeq {
         return Value{};
     }
 };
+
 }  //  namespace monoid
+
 }  //  namespace nono

@@ -8,27 +8,30 @@
 #include <unordered_map>
 #include <vector>
 
-///  brief : アホコラ. std::mapを使っているので遅め. 配列に書き換えると速くなる.
+///  # Aho Corasick
 namespace nono {
 template <class T = char>
 class AhoCorasick {
     struct Node {
         Node(int len, int parent): len(len), parent(parent) {}
+        ///  根から何回移動したか
         int len = 0;
-        //  親頂点
+        ///  親頂点
         int parent = 0;
-        //  suffix link.
-        //  最長共通接尾辞に移動する
+        ///  suffix link.
+        ///  最長共通接尾辞に移動する
         int link = 0;
-        //  単語の終端となる個数
+        ///  単語の終端となる個数
         int count = 0;
-        //  共通のsuffixを持つものの中で, 最も近いend of word.
+        ///  共通のsuffixを持つものの中で, 最も近いend of word.
         int closest_end = 0;
         std::map<T, int> to;
     };
 
   public:
     AhoCorasick(): pos_(0) {}
+    ///  # AhoCorasick
+    ///  O(sum[word in words](|word|))
     template <std::ranges::random_access_range R>
     AhoCorasick(const std::vector<R>& words): pos_(0),
                                               nodes_(1, Node(0, 0)) {
@@ -54,8 +57,10 @@ class AhoCorasick {
             }
         }
     }
-    //  exists word \in words, word is continuous subseq of input seq.
-    //  verified : https://www.acmicpc.net/problem/9250
+    ///  # contains(seq)
+    ///  exists word in words, word is continuous subseq of input seq.
+    ///  verified : https://www.acmicpc.net/problem/9250
+    ///  O(|seq|)
     template <std::ranges::random_access_range R>
     bool contains(const R& seq) {
         static_assert(std::is_same_v<typename R::value_type, T>);
@@ -74,8 +79,9 @@ class AhoCorasick {
         return false;
     }
 
-    //  \sum_{word \in words} num of (continuous subseq = seq)
-    //  verified : https://www.acmicpc.net/problem/10256
+    ///  sum[word in words](freq of word in seq)
+    ///  verified : https://www.acmicpc.net/problem/10256
+    ///  O(|seq|)
     template <class U, std::ranges::random_access_range R>
     U count(const R& seq) {
         static_assert(std::is_same_v<typename R::value_type, T>);
@@ -95,8 +101,10 @@ class AhoCorasick {
         return result;
     }
 
-    //  result[i] : seq[0:i+1]のsuffixと一致する単語のなかで最も長いもの
-    //  verified : https://www.acmicpc.net/problem/2809
+    ///  # longest suffix
+    ///  result[i] : seq[0:i+1]のsuffixと一致する単語のなかで最も長いwordの長さ
+    ///  verified : https://www.acmicpc.net/problem/2809
+    ///  O(|seq|)
     template <std::ranges::random_access_range R>
     std::vector<int> longest_suffix(const R& seq) {
         static_assert(std::is_same_v<typename R::value_type, T>);
@@ -117,6 +125,7 @@ class AhoCorasick {
         return result;
     }
 
+    ///  # nodes()
     std::vector<Node> nodes() const {
         return nodes_;
     }

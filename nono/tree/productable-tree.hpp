@@ -4,25 +4,22 @@
 #include <vector>
 
 #include "../ds/lazy-segment-tree.hpp"
-#include "../ds/segment-tree.hpp"
 #include "../graph/base.hpp"
 #include "../structure/act-monoid.hpp"
-#include "../structure/monoid.hpp"
 #include "./tree.hpp"
 
-///  brief : Treeの機能に加えて, パス, 部分木に対する総積を求められる.
-///  TODO : lazysegtreeだったり, segtreeだったりがあやふや. いい感じにリファクタリングする.
 namespace nono {
 
-//  辺ベースにしたいならEDGE = trueにする
+///  # Productable Tree
+///  tree + (prod path) + (prod subtree) + (apply path) + (apply subtree)
+///  if edge base, EDGE = true
 template <class M, class T, bool EDGE = false>
 class ProductableTree: public Tree<T> {
-    //  using Rev = act_monoid::Rev<M>;
-    using Rev = monoid::Rev<M>;
+    using Rev = act_monoid::Rev<M>;
 
     using Value = M::Value;
     using RevValue = Rev::Value;
-    //  using Act = M::Act;
+    using Act = M::Act;
 
     using Tree<T>::in_;
     using Tree<T>::out_;
@@ -38,45 +35,64 @@ class ProductableTree: public Tree<T> {
         : Tree<T>(n, edges, root) {
         std::vector<RevValue> rev_value(n);
         for (int i = 0; i < n; i++) rev_value[in_[i]] = value[i];
-        //  segtree_ = LazySegmentTree<Rev>(rev_value);
-        segtree_ = SegmentTree<Rev>(rev_value);
+        segtree_ = LazySegmentTree<Rev>(rev_value);
     }
 
+    ///  # set(x, value)
+    ///  vertex_x weight <- value
+    ///  O(log n)
     void set(int x, Value value) {
         segtree_.set(in_[x], value);
     }
 
+    ///  # set(u, v, value)
+    ///  edge (u, v) weight <- value
+    ///  O(log n)
     void set(int u, int v, Value value) {
         static_assert(EDGE);
         if (depth_[u] < depth_[v]) std::swap(u, v);
         segtree_.set(in_[u], value);
     }
 
-    //  void apply(int x, Act act) {
-    //      segtree_.apply(in_[x], act);
-    //  }
+    ///  # apply(x, act)
+    ///  vertex x weight <- mapping(act, vertex_x weight)
+    ///  O(log n)
+    void apply(int x, Act act) {
+        segtree_.apply(in_[x], act);
+    }
 
-    //  void apply(int u, int v, Act act) {
-    //      static_assert(EDGE);
-    //      if (depth_[u] < depth_[v]) std::swap(u, v);
-    //      segtree_.apply(in_[u], act);
-    //  }
+    ///  # apply(u, v, act)
+    ///  edge (u, v) weight <- mapping(act, edge (u, v) weight)
+    ///  O(log n)
+    void apply(int u, int v, Act act) {
+        static_assert(EDGE);
+        if (depth_[u] < depth_[v]) std::swap(u, v);
+        segtree_.apply(in_[u], act);
+    }
 
-    //  void apply_path(int lhs, int rhs, Act act) {
-    //      while (head_[lhs] != head_[rhs]) {
-    //          if (in_[lhs] > in_[rhs]) std::swap(lhs, rhs);
-    //          segtree_.apply(in_[head_[rhs]], in_[rhs] + 1, act);
-    //          rhs = parent_[head_[rhs]];
-    //      }
-    //      if (in_[lhs] > in_[rhs]) std::swap(lhs, rhs);
-    //      segtree_.apply(in_[lhs] + EDGE, in_[rhs], act);
-    //  }
+    ///  # apply path(u, v, act)
+    ///  [for w in path(u, v)](w_weight <- mapping(act, w_weight))
+    ///  O((log n)^2)
+    void apply_path(int lhs, int rhs, Act act) {
+        while (head_[lhs] != head_[rhs]) {
+            if (in_[lhs] > in_[rhs]) std::swap(lhs, rhs);
+            segtree_.apply(in_[head_[rhs]], in_[rhs] + 1, act);
+            rhs = parent_[head_[rhs]];
+        }
+        if (in_[lhs] > in_[rhs]) std::swap(lhs, rhs);
+        segtree_.apply(in_[lhs] + EDGE, in_[rhs], act);
+    }
 
-    //  void apply_subtree(int x, Act act) {
-    //      segtree_.apply(in_[x] + EDGE, out_[x], act);
-    //  }
+    ///  # apply subtree(x, act)
+    ///  [for w in subtree(x)](w_weight <- mapping(act, w_weight))
+    ///  O(log n)
+    void apply_subtree(int x, Act act) {
+        segtree_.apply(in_[x] + EDGE, out_[x], act);
+    }
 
-    //  非可換でもOK
+    ///  # prod path(from, to)
+    ///  [for w in path(from, to)](w_weight <- mapping(act, w_weight))
+    ///  O((log n)^2)
     Value prod_path(int from, int to) {
         Value sml = M::e();
         Value smr = M::e();
@@ -97,13 +113,15 @@ class ProductableTree: public Tree<T> {
         return M::op(sml, smr);
     }
 
+    ///  # prod subtree(x)
+    ///  [for w in subtree(x)](w_weight <- mapping(act, w_weight))
+    ///  O(log n)
     Value prod_subtree(int x) {
         return segtree_.prod(in_[x] + EDGE, out_[x]).ord;
     }
 
   private:
-    //  LazySegmentTree<Rev> segtree_;
-    SegmentTree<Rev> segtree_;
+    LazySegmentTree<Rev> segtree_;
 };
 
 }  //  namespace nono

@@ -10,7 +10,7 @@ namespace nono {
 
 void solve() {
     using Mint = Modint998244353;
-    using Monoid = monoid::Composite<Mint>;
+    using Monoid = act_monoid::ActMonoid<monoid::Composite<Mint>>;
     using Value = Monoid::Value;
     int n, q;
     std::cin >> n >> q;

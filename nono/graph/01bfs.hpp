@@ -11,6 +11,7 @@ namespace nono {
 
 namespace internal {
 
+///  # 01bfs result
 template <class T>
 class Bfs01Result {
   public:
@@ -18,18 +19,20 @@ class Bfs01Result {
 
     Bfs01Result(std::vector<T> dist, std::vector<int> parent): dist_(std::move(dist)), parent_(std::move(parent)) {}
 
-    //  source -> destの最短距離
+    ///  # dist[dest]
+    ///  distance between source and dest
+    ///  if source and dest are not connected, return UNREACHABLE
+    ///  O(1)
     T dist(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         return dist_[dest];
     }
 
-    //  source -> destの最短経路
-    //
-    //  dist(dest)と違って辿り着けない/距離が確定しない頂点に対して
-    //  呼び足すと空の配列を返す
-    //
-    //  source -> ... -> ... -> dest順
+    ///  # path(dest)
+    ///  return shortest path from source to dest
+    ///  source -> ... -> ... -> dest
+    ///  if we can not reach dest, return empty vector
+    ///  O(|path|)
     std::vector<int> path(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         if (invalid(dest)) {
@@ -44,12 +47,16 @@ class Bfs01Result {
         return result;
     }
 
-    //  辿り着けないかどうか
+    ///  # invalid(dest)
+    ///  whether we can reach dest
+    ///  O(1)
     bool invalid(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         return dist_[dest] == UNREACHABLE;
     }
 
+    ///  # raw()
+    ///  return distance array
     std::vector<T> raw() const {
         return dist_;
     }
@@ -62,8 +69,9 @@ class Bfs01Result {
 
 }  //  namespace internal
 
-///  brief : 01bfs.
-//  verified https://www.acmicpc.net/problem/13549
+///  # 01bfs(graph, sources)
+///  複数始点01bfs
+///  O(n + m)
 template <class T>
 internal::Bfs01Result<T> bfs01(const Graph<T>& graph, const std::vector<int>& source) {
     using Result = internal::Bfs01Result<T>;
@@ -99,6 +107,9 @@ internal::Bfs01Result<T> bfs01(const Graph<T>& graph, const std::vector<int>& so
     return Result(std::move(dist), std::move(parent));
 }
 
+///  # bfs01(graph, source)
+///  単一始点01bfs
+///  O(n + m)
 template <class T>
 internal::Bfs01Result<T> bfs01(const Graph<T>& graph, int source) {
     return bfs01(graph, std::vector<int>{source});

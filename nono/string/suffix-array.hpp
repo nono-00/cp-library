@@ -6,7 +6,8 @@
 #include <string>
 #include <vector>
 
-/// brief : suffix array. based on <https://atcoder.github.io/ac-library/master/document_ja/string.html>
+///  # Suffix Array
+///  based on <https://atcoder.github.io/ac-library/master/document_ja/string.html>
 namespace nono {
 
 namespace internal {

@@ -26,6 +26,8 @@ struct TreeDPInfoTemplate {
     static Point rake(Point lhs, Point rhs);
 };
 
+///  # DynamicTreeDP
+///  木dpで辺重みや頂点重みを変更するやつ
 template <class Info>
 class DynamicTreeDP {
     using Point = Info::Point;
@@ -35,6 +37,10 @@ class DynamicTreeDP {
     using NodeType = static_top_tree::NodeType;
 
   public:
+    ///  # DynamicTreeDP(n, init, vertexs, edges, root)
+    ///  init := 木構造を保持したやつ
+    ///  vertexs := 頂点重み列
+    ///  edges := 辺重み列
     template <class T>
     DynamicTreeDP(int n, const std::vector<EdgeBase<T>>& init, const std::vector<Point>& vertexs,
                   const std::vector<Edge>& edges, int root = 0)
@@ -52,10 +58,14 @@ class DynamicTreeDP {
         dfs(stt_.root);
     }
 
+    ///  # all_prod()
+    ///  O(1)
     Point all_prod() {
         return tot_[stt_.root].point;
     }
 
+    ///  # set_edge(i, edge)
+    ///  O(log n) ?
     void set_edge(int i, Edge edge) {
         int u = stt_.edges[i];
         edges_[u] = edge;
@@ -66,6 +76,8 @@ class DynamicTreeDP {
         }
     }
 
+    ///  # set vertex(i, point)
+    ///  O(log n) ?
     void set_vertex(int i, Point point) {
         int u = stt_.vertexs[i];
         vertexs_[u] = point;

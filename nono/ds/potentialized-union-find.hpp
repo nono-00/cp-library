@@ -20,7 +20,6 @@ class PotentializedUnionFind {
     PotentializedUnionFind(int n): n_(n), data_(n, -1), potential_(n, G::e()) {}
 
     ///  # leader(x)
-    ///  return leader(group of x)
     ///  O(logn)
     int leader(int x) {
         assert(0 <= x && x < n_);
@@ -128,12 +127,11 @@ class PotentializedUnionFind {
 
   private:
     int n_;
-    ///  `data[i] < 0` ならば `i` を代表元とする連結成分の大きさ
-    ///  `data[i] >= 0` ならば `i` の属する連結成分の代表元
+    ///  data[i] < 0 ならば i を代表元とする連結成分の大きさ
+    ///  data[i] >= 0 ならば i の属する連結成分の代表元
     std::vector<int> data_;
-    ///  頂点 `i` が代表元ならば `potential_[i] == 0`
-    ///  そうでないならば、頂点`i` を基準としたポテンシャル
-    ///  note:
+    ///  頂点 i が代表元ならば potential_[i] == 0
+    ///  そうでないならば、頂点 i を基準としたポテンシャル
     ///  常に正しい値が入っている訳ではない
     ///  適切に関数を呼び出して更新しないといけない
     std::vector<T> potential_;
