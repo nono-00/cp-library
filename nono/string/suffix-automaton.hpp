@@ -19,30 +19,31 @@
 
 namespace nono {
 
-///  brief : suffix automaton. 部分文字列の種類数をincrementalに処理できたりする. graphvizでの出力に対応.
-
-//  # 複数回出現する部分文字列の中で最長のものの長さ
-//      suffix link treeの葉ノード以外の最長の長さ
-//      suffix link をたどる <=> 出現回数が一回以上増える
-//
-//  # longest common substring
-//      普通にたどっていけば良い
-//
-//  # 複数回出現する部分文字列の個数
-//      <https://www.acmicpc.net/problem/10413>
-//      suffix link treeの葉ノード以外のsubstringsの個数
-//
-//  # cyclic shiftの最小
-//      <https://www.acmicpc.net/problem/3789>
-//      s + sを追加後, 長さ|s|の最小パスを探せば良い
-//      左端はnodes[pos].last - |s|
-//
-//  # K回以上登場する部分文字列の中で最長のもの
-//      <https://www.acmicpc.net/problem/6206>
-//      not clonedノードに重み1を割り当てたあと, 木dp.
-//      dp[u] = sum(dp[v]) + (not cloned(u))
-//      dp[u] >= kならばそのnodeがk回以上出現する
-//      freq関数でできたりする
+///  # Suffix Automaton
+///  部分文字列の種類数をincrementalに処理できたりする. graphvizでの出力に対応.
+///
+///  # 複数回出現する部分文字列の中で最長のものの長さ
+///      suffix link treeの葉ノード以外の最長の長さ
+///      suffix link をたどる <=> 出現回数が一回以上増える
+///
+///  # longest common substring
+///      普通にたどっていけば良い
+///
+///  # 複数回出現する部分文字列の個数
+///      <https://www.acmicpc.net/problem/10413>
+///      suffix link treeの葉ノード以外のsubstringsの個数
+///
+///  # cyclic shiftの最小
+///      <https://www.acmicpc.net/problem/3789>
+///      s + sを追加後, 長さ|s|の最小パスを探せば良い
+///      左端はnodes[pos].last - |s|
+///
+///  # K回以上登場する部分文字列の中で最長のもの
+///      <https://www.acmicpc.net/problem/6206>
+///      not clonedノードに重み1を割り当てたあと, 木dp.
+///      dp[u] = sum(dp[v]) + (not cloned(u))
+///      dp[u] >= kならばそのnodeがk回以上出現する
+///      freq関数でできたりする
 template <class T = char>
 class SuffixAutomaton {
     struct Node {
@@ -63,6 +64,8 @@ class SuffixAutomaton {
     SuffixAutomaton(const R& seq): SuffixAutomaton() {
         add(seq);
     }
+    ///  # add(c)
+    ///  ならし O(1)
     void add(T c) {
         seq_.push_back(c);
         int next_pos = nodes_.size();
@@ -96,16 +99,22 @@ class SuffixAutomaton {
         }
         subseq_ += nodes_[pos_].len - nodes_[nodes_[pos_].link].len;
     }
+    ///  # add(seq)
+    ///  O(|seq|)
     template <std::ranges::random_access_range R>
     void add(const R& seq) {
         static_assert(std::is_same_v<typename R::value_type, T>);
         for (auto c: seq) add(c);
     }
-    //  部分文字列の種類数
+    ///  # subseq()
+    ///  部分文字列の種類数
     long long subseq() {
         return subseq_;
     }
-    //  not verified
+    ///  # match(seq)
+    ///  whether seq in (subseq of S)
+    ///  not verified
+    ///  O(|seq|)
     template <std::ranges::random_access_range R>
     bool match(const R& seq) {
         static_assert(std::is_same_v<typename R::value_type, T>);
@@ -117,11 +126,13 @@ class SuffixAutomaton {
         return true;
     }
 
+    ///  # nodes()
     std::vector<Node> nodes() {
         return nodes_;
     }
 
-    //  suffix linkで作る無向木
+    ///  # suffix link tree()
+    ///  suffix linkで作る無向木
     std::vector<std::vector<int>> suffix_link_tree() {
         int n = nodes_.size();
         std::vector<std::vector<int>> graph(n);
@@ -132,10 +143,11 @@ class SuffixAutomaton {
         return graph;
     }
 
-    //  longest common substring.
-    //  最長共通部分列.
-    //
-    //  (a, b, c, d): S[a:b] = T[c:d]
+    ///  # lcs(seq)
+    ///  longest common substring.
+    ///  最長共通部分列.
+    ///  (a, b, c, d): S[a:b] = T[c:d]
+    ///  O(|seq|)
     template <std::ranges::random_access_range R>
     std::tuple<int, int, int, int> lcs(const R& seq) {
         std::array<int, 2> right{};
@@ -161,7 +173,9 @@ class SuffixAutomaton {
         return {right[0] - maxlen, right[0], right[1] - maxlen, right[1]};
     }
 
-    // 各ノードが何回出現するか?
+    ///  # freq()
+    ///  各ノードが何回出現するか?
+    ///  O(|S|)
     std::vector<int> freq() {
         int n = nodes_.size();
         auto graph = suffix_link_tree();

@@ -6,6 +6,8 @@
 
 #include "../structure/monoid.hpp"
 
+///  DEPRECATED
+
 namespace nono {
 
 namespace splay_tree_node {

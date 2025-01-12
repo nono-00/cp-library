@@ -5,6 +5,7 @@
 
 namespace nono {
 
+///  DEPRECETED
 ///  TODO : implementation
 template <class T>
 class IndexSet {

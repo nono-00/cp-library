@@ -6,7 +6,10 @@
 #include <vector>
 
 namespace nono {
-///  brief : ロリハ. based on <https://ei1333.github.io/library/string/rolling-hash.hpp>
+
+///  # Rolling Hash
+///  ロリハ.
+///  based on <https://ei1333.github.io/library/string/rolling-hash.hpp>
 template <uint64_t THRESHOLD = 10000000>
 struct RollingHash {
     static constexpr unsigned long long mod = (1ull << 61ull) - 1;
@@ -14,7 +17,10 @@ struct RollingHash {
     const unsigned long long base;
     std::vector<unsigned long long> power;
     explicit RollingHash(unsigned long long base = generate_base()): base(base), power{1} {}
-    //  列sのhash tableを作成
+
+    ///  # table(seq)
+    ///  return hash table of seq
+    ///  O(|seq|)
     template <std::ranges::random_access_range R>
     std::vector<unsigned long long> table(const R& seq) const {
         int n = seq.size();
@@ -24,7 +30,9 @@ struct RollingHash {
         }
         return hashed;
     }
-    //  列sのハッシュ値を計算
+    ///  # hash(seq)
+    ///  return hash of seq
+    ///  O(|seq|)
     template <std::ranges::random_access_range R>
     unsigned long long hash(const R& seq) {
         int n = seq.size();
@@ -34,14 +42,20 @@ struct RollingHash {
         }
         return val;
     }
-    //  hash tableを使って[l, r)のハッシュ値を計算
+
+    ///  # hash(seq)
+    ///  return hash of seq (using table)
+    ///  O(1)
     unsigned long long hash(const std::vector<unsigned long long>& s, int l, int r) {
         expand(r - l);
         return add(s[r], mod - mul(s[l], power[r - l]));
     }
-    //  s1 + s2のハッシュ値を計算
-    //  h1 = |s1|
-    //  h2 = |s2|
+
+    ///  # combine(h1, h2, h2len)
+    ///  hash(s1) = h1
+    ///  hash(s2) = h2
+    ///  return hash of (s1 + s2)
+    ///  O(1) or O(log |s2|)
     unsigned long long combine(unsigned long long h1, unsigned long long h2, unsigned long long h2len) {
         if (h2len <= THRESHOLD) {
             expand(h2len);
@@ -50,6 +64,13 @@ struct RollingHash {
             return add(mul(h1, pow(base, h2len)), h2);
         }
     }
+
+    ///  # lcp(a, l1, r1, b, l2, r2)
+    ///  a := hash table of s
+    ///  b := hash table of t
+    ///  return lcp(s[l1:r1], t[l2:r2])
+    ///  lcp := longest common prefix
+    ///  O(log |seq|)
     int lcp(const std::vector<unsigned long long>& a, int l1, int r1, const std::vector<unsigned long long>& b, int l2,
             int r2) {
         int len = std::min(r1 - l1, r2 - l2);
@@ -63,6 +84,8 @@ struct RollingHash {
         }
         return low;
     }
+
+    ///  # expand(n)
     inline void expand(int n) {
         if ((int)power.size() < n + 1) {
             int pre_n = (int)power.size();

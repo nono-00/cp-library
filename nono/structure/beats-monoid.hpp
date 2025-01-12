@@ -7,10 +7,11 @@
 #include <limits>
 #include <optional>
 
-///  brief : segment-tree-beats用Monoid全部盛り.
 namespace nono {
+
 namespace beats_monoid {
-// not verified
+
+///  # RangeChminRangeSum
 template <class T, class Count = unsigned>
 struct RangeChminRangeSum {
     struct Value {
@@ -66,7 +67,8 @@ struct RangeChminRangeSum {
         return std::numeric_limits<T>::max();
     }
 };
-// not verified
+
+///  # RangeChmaxRangeSum
 template <class T, class Count = unsigned>
 struct RangeChmaxRangeSum {
     struct Value {
@@ -122,7 +124,8 @@ struct RangeChmaxRangeSum {
         return std::numeric_limits<Act>::min();
     }
 };
-// not verified
+
+///  # RangeChminChmaxRangeSum
 template <class T, class Count = unsigned>
 struct RangeChminChmaxRangeSum {
   private:
@@ -148,8 +151,6 @@ struct RangeChminChmaxRangeSum {
         Count num_min;
         //  s: sum of segment
         T sum;
-        //  success or fail to apply
-        bool fail;
     };
     struct Act {
         //  a: chmin
@@ -243,6 +244,8 @@ struct RangeChminChmaxRangeSum {
         return Act{MAX, MIN};
     }
 };
+
+///  # RangeChminChmaxAddRangeSum
 template <class T, class Count = unsigned>
 struct RangeChminChmaxAddRangeSum {
   private:
@@ -373,7 +376,9 @@ struct RangeChminChmaxAddRangeSum {
         return Act{MAX, MIN, 0};
     }
 };
-//  https://atcoder.jp/contests/abc256/tasks/abc256_h
+
+///  # RangeDivideUpdateRangeSum
+///  https://atcoder.jp/contests/abc256/tasks/abc256_h
 struct RangeDivideUpdateRangeSum {
   private:
     using u64 = std::uint64_t;
@@ -392,7 +397,6 @@ struct RangeDivideUpdateRangeSum {
         u64 num;
         //  same: au64 i in [l, r) a_i == a
         bool same;
-        bool fail;
     };
     struct Act {
         //  a: divide
@@ -440,8 +444,9 @@ struct RangeDivideUpdateRangeSum {
         return Act{1, std::nullopt};
     }
 };
-//  https://codeforces.com/contest/855/problem/F
-//  not verified
+
+///  # RangeChminBootRangeSum
+///  https://codeforces.com/contest/855/problem/F
 template <class T>
 struct RangeChminBootRangeSum {
   private:
@@ -457,8 +462,6 @@ struct RangeChminBootRangeSum {
         int num;
         //  s: sum of segment
         T sum;
-        //  success or fail to apply
-        bool fail;
     };
     struct Act {
         T chmin_;
@@ -522,5 +525,7 @@ struct RangeChminBootRangeSum {
         return Act{MAX, false};
     }
 };
+
 }  //  namespace beats_monoid
+
 }  //  namespace nono

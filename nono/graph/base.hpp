@@ -7,8 +7,8 @@
 
 namespace nono {
 
-//  直接利用することは少ない
-//  aliasとしてEdge, WeightedEdgeがあるのでそちらを使うこと
+///  # EdgeBase
+///  aliasとしてEdge, WeightedEdgeがあるのでそちらを使うこと
 template <class T>
 struct EdgeBase {
     int from;
@@ -22,10 +22,9 @@ using Edge = EdgeBase<int>;
 template <class T>
 using WeightedEdge = EdgeBase<T>;
 
-///  brief : 辺/グラフ構造体などの基礎となるデータ構造など.
-
-//  グラフ構造体
-//  CSR方式で隣接リストを保持している
+///  # Graph
+///  static graph
+///  CSR方式で隣接リストを保持している
 template <class T>
 class Graph {
     struct Edge_ {
@@ -45,21 +44,32 @@ class Graph {
     template <class U>
     friend Graph<U> to_directed_graph(int n, const std::vector<EdgeBase<U>>& edges);
 
+    ///  # graph[i]
+    ///  return { (i, v) in E }
     subrange operator[](int i) {
         assert(0 <= i && i < n_);
         return std::ranges::subrange(edges_.begin() + indptr_[i], edges_.begin() + indptr_[i + 1]);
     }
+
+    ///  # graph[i]
+    ///  return { (i, v) in E }
     const_subrange operator[](int i) const {
         assert(0 <= i && i < n_);
         return std::ranges::subrange(edges_.begin() + indptr_[i], edges_.begin() + indptr_[i + 1]);
     }
-    //  グラフの頂点数を返す関数
+
+    ///  # size()
+    ///  |V|
     int size() const {
         return n_;
     }
+
+    ///  # edge_size()
+    ///  |E|
     int edge_size() const {
         return m_;
     }
+
     bool is_directed() const {
         return directed_;
     }
@@ -68,9 +78,9 @@ class Graph {
     }
 
   private:
-    //  コンストラクタ
-    //  publicではないので、外部からは呼び出せない
-    //  to_undirected_graph, to_directed_graphを代わりに使用すること
+    ///  # コンストラクタ
+    ///  publicではないので、外部からは呼び出せない
+    ///  to_undirected_graph, to_directed_graphを代わりに使用すること
     Graph(int n, const std::vector<EdgeBase<T>>& edges, bool directed)
         : n_(n),
           m_(edges.size()),
@@ -101,13 +111,15 @@ class Graph {
     bool directed_;
 };
 
-//  無向グラフを作成する関数
+///  # to_undirected_graph(n, edges)
+///  return G(V, E) (|V| = n)
 template <class T>
 Graph<T> to_undirected_graph(int n, const std::vector<EdgeBase<T>>& edges) {
     return Graph<T>(n, edges, false);
 }
 
-//  有向グラフを作成する関数
+///  # to_directed_graph(n, edges)
+///  return G(V, E) (|V| = n)
 template <class T>
 Graph<T> to_directed_graph(int n, const std::vector<EdgeBase<T>>& edges) {
     return Graph<T>(n, edges, true);

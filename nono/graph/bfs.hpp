@@ -1,9 +1,9 @@
 #pragma once
 
+#include <algorithm>
 #include <limits>
 #include <queue>
 #include <vector>
-#include <algorithm>
 
 #include "./base.hpp"
 
@@ -18,18 +18,20 @@ class BfsResult {
 
     BfsResult(std::vector<T> dist, std::vector<int> parent): dist_(std::move(dist)), parent_(std::move(parent)) {}
 
-    //  source -> destの最短距離
+    ///  # dist[dest]
+    ///  distance between source and dest
+    ///  if source and dest are not connected, return UNREACHABLE
+    ///  O(1)
     T dist(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         return dist_[dest];
     }
 
-    //  source -> destの最短経路
-    //
-    //  dist(dest)と違って辿り着けない/距離が確定しない頂点に対して
-    //  呼び足すと空の配列を返す
-    //
-    //  source -> ... -> ... -> dest順
+    ///  # path(dest)
+    ///  return shortest path from source to dest
+    ///  source -> ... -> ... -> dest
+    ///  if we can not reach dest, return empty vector
+    ///  O(|path|)
     std::vector<int> path(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         if (invalid(dest)) {
@@ -44,12 +46,16 @@ class BfsResult {
         return result;
     }
 
-    //  辿り着けないかどうか
+    ///  # invalid(dest)
+    ///  whether we can reach dest
+    ///  O(1)
     bool invalid(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         return dist_[dest] == UNREACHABLE;
     }
 
+    ///  # raw()
+    ///  return distance array
     std::vector<T> raw() const {
         return dist_;
     }
@@ -62,7 +68,8 @@ class BfsResult {
 
 }  //  namespace internal
 
-///  brief : 幅優先探索. 使ったことがない.
+///  # multiple source bfs
+///  O(n)
 template <class T>
 internal::BfsResult<T> bfs(const Graph<T>& graph, const std::vector<int>& source) {
     using Result = internal::BfsResult<T>;
@@ -89,6 +96,8 @@ internal::BfsResult<T> bfs(const Graph<T>& graph, const std::vector<int>& source
     return Result{dist, parent};
 }
 
+///  # single source bfs
+///  O(n)
 template <class T>
 internal::BfsResult<T> bfs(const Graph<T>& graph, int source) {
     return bfs(graph, std::vector<int>{source});

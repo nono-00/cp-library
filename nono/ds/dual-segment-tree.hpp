@@ -40,7 +40,7 @@ class DualSegmentTree {
     }
 
     ///  # get(i)
-    ///  data[i]を返す
+    ///  return data[i]
     ///  O(logn)
     T get(int i) const {
         assert(0 <= i && i < n_);

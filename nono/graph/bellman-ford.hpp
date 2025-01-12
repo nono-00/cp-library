@@ -11,11 +11,13 @@ namespace nono {
 
 namespace internal {
 
-//  bellman-fordの結果を表す型
+///  # bellman-ford result
 template <class T>
 class BellmanFordResult {
   public:
+    ///  source is not connected with dest
     static constexpr T UNREACHABLE = std::numeric_limits<T>::max();
+    ///  distance is not determined because graph has negative cycle
     static constexpr T INVALID = std::numeric_limits<T>::min();
 
     BellmanFordResult(std::vector<T> dist, std::vector<int> parent, bool has_negative_cycle)
@@ -23,18 +25,20 @@ class BellmanFordResult {
           parent_(std::move(parent)),
           has_negative_cycle_(has_negative_cycle) {}
 
-    //  source -> destの最短距離
+    ///  # dist[dest]
+    ///  distance between source and dest
+    ///  if source and dest are not connected, return UNREACHABLE
+    ///  O(1)
     T dist(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         return dist_[dest];
     }
 
-    //  source -> destの最短経路
-    //
-    //  dist(dest)と違って辿り着けない/距離が確定しない頂点に対して
-    //  呼び足すと空の配列を返す
-    //
-    //  source -> ... -> ... -> dest順
+    ///  # path(dest)
+    ///  return shortest path from source to dest
+    ///  source -> ... -> ... -> dest
+    ///  if we can not reach dest, return empty vector
+    ///  O(|path|)
     std::vector<int> path(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         if (invalid(dest)) {
@@ -49,14 +53,24 @@ class BellmanFordResult {
         return result;
     }
 
-    //  辿り着けないまたは距離が確定するかどうか
+    ///  # invalid(dest)
+    ///  whether we can reach dest
+    ///  or distance is determined.
     bool invalid(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         return dist_[dest] == UNREACHABLE || dist_[dest] == INVALID;
     }
 
+    ///  # has_negative_cycle
+    ///  whether graph has negative cycle
     bool has_negative_cycle() const {
         return has_negative_cycle_;
+    }
+
+    ///  # raw()
+    ///  return distance array
+    std::vector<T> raw() const {
+        return dist_;
     }
 
   private:
@@ -67,10 +81,9 @@ class BellmanFordResult {
 
 }  //  namespace internal
 
-///  brief : 負辺ありの単一始点最短経路問題を解く. \\( O(|E||V|) \\)
-//
-//  最短距離が確定しない頂点はstd::numeric_limits<T>::min()
-//  辿り着けない頂点はstd::numeric_limits<T>::max()
+///  # BellmanFord(edges, source)
+///  複数始点負辺ありの単一始点最短経路問題
+///  O(nm)
 template <class T>
 internal::BellmanFordResult<T> bellman_ford(int n, const std::vector<EdgeBase<T>>& edges,
                                             const std::vector<int>& source) {
@@ -112,6 +125,9 @@ internal::BellmanFordResult<T> bellman_ford(int n, const std::vector<EdgeBase<T>
     return Result(std::move(dist), std::move(parent), has_negative_cycle);
 }
 
+///  # BellmanFord(edges, source)
+///  単一始点負辺ありの単一始点最短経路問題
+///  O(nm)
 template <class T>
 internal::BellmanFordResult<T> bellman_ford(int n, const std::vector<EdgeBase<T>>& edges, int source) {
     return bellman_ford(n, edges, std::vector<int>{source});

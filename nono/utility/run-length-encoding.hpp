@@ -3,8 +3,6 @@
 #include <ranges>
 #include <vector>
 
-/// brief : ランレングス圧縮. 
-/// TODO : 配置場所が不適切?
 namespace nono {
 
 namespace internal {
@@ -17,6 +15,9 @@ struct RLEPair {
 
 }  //  namespace internal
 
+///  # run length encoding
+///  aababbba => [(a, 2), (b, 1), (a, 1), (b, 3), (a, 1)]
+///  O(|seq|)
 template <std::ranges::random_access_range R>
 std::vector<internal::RLEPair<typename R::value_type>> run_length_encoding(const R& sequence) {
     if (std::ranges::empty(sequence)) return {};

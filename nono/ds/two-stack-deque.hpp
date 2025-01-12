@@ -5,7 +5,8 @@
 
 namespace nono {
 
-///  brief : 二つのStackをくっつけてDequeにするやつ. 要素の総積を計算できる
+///  # TwoStackDeque
+///  二つのStackをくっつけてDequeにするやつ. 要素の総積を計算できる
 template <class M>
 class TwoStackDeque {
     using T = M::Value;
@@ -13,6 +14,9 @@ class TwoStackDeque {
   public:
     TwoStackDeque(): prod_front_(1, M::e()), prod_back_(1, M::e()) {}
 
+    ///  # front()
+    ///  return data[0]
+    ///  O(1)
     T front() {
         if (front_.empty()) {
             int m = (back_.size() + 1) / 2;
@@ -30,6 +34,9 @@ class TwoStackDeque {
         return front_.back();
     }
 
+    ///  # back()
+    ///  return data[-1]
+    ///  O(1)
     T back() {
         if (back_.empty()) {
             int m = (front_.size() + 1) / 2;
@@ -47,6 +54,9 @@ class TwoStackDeque {
         back_.back();
     }
 
+    ///  # pop_front()
+    ///  data <= data[1:]
+    ///  O(1)
     void pop_front() {
         if (front_.empty()) {
             int m = (back_.size() + 1) / 2;
@@ -65,6 +75,9 @@ class TwoStackDeque {
         prod_front_.pop_back();
     }
 
+    ///  # pop_back()
+    ///  data <= data[:size() - 1]
+    ///  O(1)
     void pop_back() {
         if (back_.empty()) {
             int m = (front_.size() + 1) / 2;
@@ -83,24 +96,39 @@ class TwoStackDeque {
         prod_back_.pop_back();
     }
 
+    ///  # push_front(elem)
+    ///  data <= [elem] + data
+    ///  O(1)
     void push_front(T elem) {
         front_.push_back(elem);
         prod_front_.push_back(M::op(elem, prod_front_.back()));
     }
 
+    ///  # push_back(elem)
+    ///  data <= data + [elem]
+    ///  O(1)
     void push_back(T elem) {
         back_.push_back(elem);
         prod_back_.push_back(M::op(prod_back_.back(), elem));
     }
 
+    ///  # size()
+    ///  |data|
+    ///  O(1)
     int size() const {
         return front_.size() + back_.size();
     }
 
+    ///  # prod()
+    ///  op[for v in data](v)
+    ///  O(1)
     T prod() const {
         return M::op(prod_front_.back(), prod_back_.back());
     }
 
+    ///  # empty()
+    ///  whether data is empty
+    ///  O(1)
     bool empty() const {
         return front_.empty() && back_.empty();
     }

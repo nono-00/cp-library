@@ -10,9 +10,7 @@
 namespace nono {
 
 ///  # 2sat
-///  (a or b) and (c or d) ... みたいなのを解く
-///
-///  O(N + M)
+///  (A_1 or A_2) and (A_3 or A_4) ... が真となる割り当てが存在するか
 class TwoSat {
   public:
     TwoSat() {}

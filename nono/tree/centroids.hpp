@@ -8,12 +8,9 @@
 
 namespace nono {
 
-/// brief : 木の重心を行きがけ順で列挙する.
-/// TODO : verify
-//
-//  良く書くので...
-//
-//  木ではないと壊れる
+///  # centroids(graph)
+///  木の重心を行きがけ順で列挙する.
+///  木ではないと壊れる
 template <class T>
 std::vector<int> centroids(const Graph<T>& graph) {
     assert(is_tree(graph));

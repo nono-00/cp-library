@@ -10,21 +10,20 @@ namespace nono {
 
 namespace internal {
 
-//  グラフの各頂点の状態を表す列挙型.
-//
-//  `NOT_VISITED`: 未訪問.
-//  `VISITED`: 訪問済み, かつ探索中.
-//  `FINISHED`: 訪問済み, かつ探索済み.
+///  # グラフの各頂点の状態を表す列挙型.
+///
+///  `NOT_VISITED`: 未訪問.
+///  `VISITED`: 訪問済み, かつ探索中.
+///  `FINISHED`: 訪問済み, かつ探索済み.
 enum class State {
     NOT_VISITED,
     VISITED,
     FINISHED
 };
 
-//  cycle-detectionの結果
-//
-//  v[0] e[0] v[1] e[1] ... v[n - 1] e[n - 1] v[0] ...
-//  のような感じになっている
+///  # cycle-detection result
+///
+///  v[0] e[0] v[1] e[1] ... v[n - 1] e[n - 1] v[0] ...
 class CycleDetectionResult {
   public:
     CycleDetectionResult(std::vector<int> edge_id, std::vector<int> vertex_id)
@@ -33,15 +32,23 @@ class CycleDetectionResult {
         assert(edge_id_.size() == vertex_id_.size());
     }
 
+    ///  # has cycle()
+    ///  whether graph has cycle
     bool has_cycle() const {
         return !edge_id_.empty();
     }
 
+    ///  # edge id
+    ///  return cycle edge id seq
     std::vector<int> edge_id() const {
+        assert(has_cycle());
         return edge_id_;
     }
 
+    ///  # vertex id
+    ///  return cycle vertex id seq
     std::vector<int> vertex_id() const {
+        assert(has_cycle());
         return vertex_id_;
     }
 
@@ -52,7 +59,9 @@ class CycleDetectionResult {
 
 }  //  namespace internal
 
-/// brief : サイクル検出. 無向, 有向, 単純, 非単純問わない.
+///  # cycle detection
+///  無向, 有向, 単純, 非単純問わない.
+///  O(n + m)
 template <class T>
 auto cycle_detection(const Graph<T>& graph) {
     using internal::State;

@@ -8,8 +8,8 @@
 namespace nono {
 
 ///  # 最長増加部分列, LIS
-///  要素の添字を返す.
-///  forall i < j, compare(seq[LIS[i]], seq[LIS[j]])
+///  [for i in [0, |LIS| - 1)](compare(seq[LIS[i]], seq[LIS[i + 1]]) = true)
+///  添え字列を返す
 template <class T, class Compare>
 std::vector<int> longest_increasing_subseq(const std::vector<T>& seq, Compare compare) {
     int n = seq.size();
@@ -37,8 +37,8 @@ std::vector<int> longest_increasing_subseq(const std::vector<T>& seq, Compare co
 }
 
 ///  # 最長増加部分列, LIS
-///  要素の添字を返す. 狭義.
-///  forall i < j, seq[LIS[i]] < seq[LIS[j]].
+///  [for i in [0, |LIS| - 1)](seq[LIS[i]] < seq[LIS[i + 1]])
+///  狭義. 添え字列を返す
 template <class T>
 std::vector<int> longest_increasing_subseq(const std::vector<T>& seq) {
     return longest_increasing_subseq(seq, std::less<T>());

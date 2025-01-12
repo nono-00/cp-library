@@ -7,15 +7,12 @@
 
 namespace nono {
 
-///  brief : 座標圧縮.
-//
+///  # Compressor
 template <class T>
 class Compressor {
   public:
     Compressor() = default;
 
-    //  brief:
-    //  - コンストラクタ
     Compressor(const std::vector<T>& data): data_(data) {
         std::sort(data_.begin(), data_.end());
         data_.erase(std::unique(data_.begin(), data_.end()), data_.end());
@@ -25,15 +22,14 @@ class Compressor {
         data_.erase(std::unique(data_.begin(), data_.end()), data_.end());
     }
 
-    //  brief:
-    //  - `v` を座標圧縮した結果を取得する
-    //
-    //  details:
-    //  - 構成時に渡した要素の中で `v` 未満の要素数を取得する
+    ///  # compress(value)
+    ///  O(log n)
     int compress(const T& value) const {
         return std::distance(data_.begin(), std::lower_bound(data_.begin(), data_.end(), value));
     }
 
+    ///  # compress(vec)
+    ///  O(n log n)
     std::vector<int> compress(const std::vector<T>& vec) const {
         std::vector<int> result(vec.size());
         for (int i = 0; auto v: vec) {
@@ -43,19 +39,21 @@ class Compressor {
         return result;
     }
 
-    //  brief:
-    //  - `Compressor` に追加された要素の `i` 番目に大きい要素を取得する
+    ///  # decompress(i)
+    ///  O(1)
     T decompress(int i) const {
         assert(0 <= i && i < data_.size());
         return data_[i];
     }
 
-    //  brief:
-    //  - 構築後の要素数を取得する
+    ///  # size()
+    ///  |{input sequenve}|
     int size() const {
         return data_.size();
     }
 
+    ///  # contains(value)
+    ///  O(log n)
     bool contains(const T& value) const {
         auto it = std::ranges::lower_bound(data_, value);
         return it != data_.end() && *it == value;

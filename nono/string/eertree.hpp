@@ -8,9 +8,9 @@
 #include <type_traits>
 #include <vector>
 
-///  brief : 回文木. std::mapを使っているので, 少し遅い.
 namespace nono {
 
+///  # Eertree (Palidrome tree)
 template <class T = char>
 class Eertree {
     struct Node {
@@ -30,9 +30,16 @@ class Eertree {
         nodes_.emplace_back(Node(0));
         seq_.push_back(std::numeric_limits<T>::max());
     }
+    ///  # size()
+    ///  num of node except ODD and EVEN
+    ///  equal num of substring palidromes
+    ///  O(1)
     int size() {
         return nodes_.size() - 2;
     }
+    ///  # add(c)
+    ///  add charactor
+    ///  ならし O(1)
     void add(T c) {
         const int i = seq_.size();
         seq_.push_back(c);
@@ -45,24 +52,33 @@ class Eertree {
         pos_ = nodes_[pos_].to[c];
         node_id_.push_back(pos_);
     }
+    ///  # add(seq)
+    ///  add sequence
+    ///  O(|seq|)
     template <std::ranges::random_access_range R>
     void add(const R& seq) {
         static_assert(std::is_same_v<typename R::value_type, T>);
         for (auto c: seq) add(c);
     }
 
-    //  node_id[i]: s[0:i+1]の最長接尾辞回文nodeid
+    ///  # node id()
+    ///  node_id[i]: s[0:i+1]の最長接尾辞回文nodeid
+    ///  O(n)
     std::vector<int> node_id() {
         return node_id_;
     }
 
+    ///  # nodes()
+    ///  O(n)
     std::vector<Node> nodes() {
         return nodes_;
     }
 
-    //  freq[i]: node[i]に対応する連続文字列回文が何度出現するか
-    //  sortしているので遅い
-    //  verified: https://www.acmicpc.net/problem/10066
+    ///  # freq()
+    ///  freq[i]: node[i]に対応する連続文字列回文が何度出現するか
+    ///  sortしているので遅い
+    ///  verified: https://www.acmicpc.net/problem/10066
+    ///  O(n log n)
     std::vector<int> freq() {
         std::vector<int> ids(nodes_.size());
         std::iota(ids.begin(), ids.end(), 0);

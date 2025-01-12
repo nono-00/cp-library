@@ -7,10 +7,20 @@
 
 namespace nono {
 
-///  brief : グラフを縮約する. 二辺連結成分分解や強連結成分分解したあとに使うと便利.
-
-//  自己ループは無い, 多重辺はあるので注意
-//  二重辺連結成分分解, 強連結成分などの場合はとくに気にすることは無い
+///  # contract(graph, groups)
+///  V_i' := groups[i]
+///  V' := { V_i' }
+///  E' := { [for (u, v) in E](mapping(u), mapping(v)) } - {(u, u)}
+///  return G'(V', E')
+///
+///  二辺連結成分分解や強連結成分分解したあとに使うと便利.
+///
+///  自己ループは無い, 多重辺はあるので注意
+///  二重辺連結成分分解, 強連結成分などの場合はとくに気にすることは無い
+///  ex.
+///      graph = graph(n, edges)
+///      groups = SCC(graph) or two-edge-connected_conponent(graph)
+///      contracted_graph = contract(graph, groups)
 template <class T>
 Graph<T> contract(const Graph<T>& graph, const std::vector<std::vector<int>>& groups) {
     constexpr int NONE = -1;

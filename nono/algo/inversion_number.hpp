@@ -8,6 +8,7 @@
 namespace nono {
 
 ///  # 反転数
+///  ## output
 ///  |{ (i, j) | i < j and A_i > A_j}|
 ///  i < j and A_i > A_jとなるような(i, j)の組みの数
 ///

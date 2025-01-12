@@ -59,7 +59,7 @@ class DynamicLiChaoTree {
         add(root_, lb_, ub_, l, r, Line(compare * a, compare * b));
     }
     ///  # get(x)
-    ///  min/max[forall (a, b) in {Line or Segment}](ax + b)
+    ///  min/max[for (a, b) in {Line or Segment}](ax + b)
     ///  線分、直線が存在しない場合、nullopt
     std::optional<T> get(Index x) {
         assert(lb_ <= x && x < ub_);

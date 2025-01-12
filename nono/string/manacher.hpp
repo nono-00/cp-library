@@ -10,21 +10,26 @@ namespace nono {
 
 namespace internal {
 
+///  # manacher result
 struct ManacherResult {
   public:
     ManacherResult(int n, std::vector<int> rad): n_(n), rad_(rad) {}
 
-    //  奇数長
-    //  s[i]をcenterとする回文半径
-    //  回文の長さが欲しい場合は2 * radius(i) - 1
+    ///  # radius(i)
+    ///  奇数長半径
+    ///  s[i]をcenterとする回文半径
+    ///  回文の長さが欲しい場合は2 * radius(i) - 1
+    ///  O(1)
     int radius(int i) {
         assert(0 <= i && i < n_);
         return rad_[2 * i + 1] / 2;
     }
 
-    //  偶数長
-    //  s[i], s[i + 1]を中心とした回文半径
-    //  回文の長さが欲しい場合は2 * radius(i)
+    ///  # radius(i, i + 1)
+    ///  偶数長
+    ///  s[i], s[i + 1]を中心とした回文半径
+    ///  回文の長さが欲しい場合は2 * radius(i)
+    ///  O(1)
     int radius(int i, int j) {
         assert(0 <= i && i < n_);
         assert(0 <= j && j < n_);
@@ -32,6 +37,7 @@ struct ManacherResult {
         return (rad_[2 * j] - 1) / 2;
     }
 
+    ///  # raw()
     std::vector<int> raw() const {
         return rad_;
     }
@@ -43,10 +49,9 @@ struct ManacherResult {
 
 }  //  namespace internal
 
-///  brief : manacher. 回文半径を求める. 偶奇両対応.
-//
-//  complexity:
-//  - O(|S|)
+///  # manacher
+///  回文半径を求める. 偶奇両対応.
+///  O(|seq|)
 template <std::ranges::random_access_range R>
 internal::ManacherResult manacher(const R& seq) {
     std::vector<std::optional<typename R::value_type>> dummy;

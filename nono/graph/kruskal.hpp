@@ -12,18 +12,20 @@ namespace nono {
 
 namespace internal {
 
-//  kruskal()の結果
-//
-//  edge_idは使う辺のid
+///  # kruskal result
 template <class T>
 class KruskalResult {
   public:
     KruskalResult(T cost, std::vector<int> edge_id): cost_(cost), edge_id_(std::move(edge_id)) {}
 
+    ///  # min cost
+    ///  cost of min spanning tree
     T min_cost() const {
         return cost_;
     }
 
+    ///  # edge id
+    ///  edge idof min spanning tree
     std::vector<int> edge_id() const {
         return edge_id_;
     }
@@ -37,12 +39,11 @@ class KruskalResult {
 
 ///  brief : 最小全域木を求める.
 
-//  最小全域木のコスト、使用する辺を取得する
-//  連結グラフでないと壊れる
-//
-//  `UnionFind`に依存
-//
-//  辺はソートされていなくても良い
+///  # kruskal(n, edges)
+///  最小全域木のコスト、使用する辺を取得する
+///  連結グラフでないと壊れる
+///  辺はソートされていなくても良い
+///  O(m log m)
 template <class T>
 internal::KruskalResult<T> kruskal(int n, const std::vector<EdgeBase<T>>& edges) {
     using Result = internal::KruskalResult<T>;

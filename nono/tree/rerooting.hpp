@@ -8,25 +8,24 @@
 
 namespace nono {
 
-//  これをコピペしていい感じに埋める
+///  これをコピペしていい感じに埋める
 struct ReRootingInfoTemplate {
-    //  各頂点が持つ値だったり
+    ///  各頂点が持つ値だったり
     using Value = int;
-    //  辺重み
+    ///  辺重み
     using Edge = int;
-    //  mergeの単位元
+    ///  mergeの単位元
     Value e();
-    //  subtree同士のmerge
+    ///  subtree同士のmerge
     Value merge(Value lhs, Value rhs);
-    //  辺重みを加える
+    ///  辺重みを加える
     Value add_edge(Edge edge, Value vertex);
-    //  virtual vertex に頂点重みを与える
+    ///  virtual vertex に頂点重みを与える
     Value add_vertex(Value vertex, Value value);
 };
 
-///  brief : 全方位木dp
-
-//  Info: 上のReRootingInfoTemplateを埋めてくれ
+///  # rerooting(graph, vertex)
+///  O(n)
 template <class Info>
 std::vector<typename Info::Value> rerooting(const Graph<typename Info::Edge>& graph,
                                             const std::vector<typename Info::Value>& vertex) {

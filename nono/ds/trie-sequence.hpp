@@ -1,12 +1,61 @@
 #pragma once
-/// TODO : implementation
-// #include "../monoid.hpp"
-// #include "../template.hpp"
-// #include "./segment_tree.hpp"
-// https://judge.yosupo.jp/problem/point_set_range_sort_range_composite
-// trie列を管理する
-// ソートのキーとなる値はdistinct
-// 一点更新 区間ソート 区間積
+
+#include <limits>
+
+// #include "../structure/monoid.hpp"
+
+namespace nono {
+
+namespace sortable_sequence_node {
+
+namespace binary_trie_node {
+
+template <class M, class Key = unsigned, int W = std::numeric_limits<Key>::digits>
+struct Node {
+    using Rev = monoid::Rev<M>;
+    Node() = default;
+    Node(M::Value value): total(value) {}
+
+    Node* left = nullptr;
+    Node* right = nullptr;
+    int size = 1;
+    Rev::Value total;
+};
+
+template <class M, class Key = unsigned, int W = std::numeric_limits<Key>::digits>
+using NodePtr = Node<M, Key, W>*;
+
+template <class M, class Key = unsigned, int W = std::numeric_limits<Key>::digits>
+int size(NodePtr<M, Key, W> root) {
+    return root ? root->size : 0;
+}
+
+template <class M, class Key = unsigned, int W = std::numeric_limits<Key>::digits>
+monoid::Rev<M>::Value prod(NodePtr<M, Key, W> root) {
+    return root ? root->total : M::e();
+}
+
+template <class M, class Key = unsigned, int W = std::numeric_limits<Key>::digits>
+void update(NodePtr<M, Key, W> root) {
+    root->size = size(root->left) + size(root->right);
+    root->total = monoid::Rev<M>::op(prod(root->left), prod(root->right));
+}
+
+
+}  //  namespace binary_trie_node
+
+}  //  namespace sortable_sequence_node
+
+}  //  namespace nono
+
+///  TODO : implementation
+//  #include "../monoid.hpp"
+//  #include "../template.hpp"
+//  #include "./segment_tree.hpp"
+//  https://judge.yosupo.jp/problem/point_set_range_sort_range_composite
+//  trie列を管理する
+//  ソートのキーとなる値はdistinct
+//  一点更新 区間ソート 区間積
 template <class M, class K = unsigned, int lg = 31>
 struct trie_sequence {
     struct node {
@@ -61,18 +110,17 @@ struct trie_sequence {
     };
     using nodeptr = node*;
     using T = M::T;
-    // n: 列の長さ
+    //  n: 列の長さ
     int n;
-    // s: 各区間の左端を管理する
+    //  s: 各区間の左端を管理する
     std::set<int> s;
-    // root: 各区間の左端はtrieの根
+    //  root: 各区間の左端はtrieの根
     vector<nodeptr> root;
-    // rev: 各trieが昇順か降順か
+    //  rev: 各trieが昇順か降順か
     vector<bool> rev;
-    // segtree: trieの根の総積を管理するセグ木
+    //  segtree: trieの根の総積を管理するセグ木
     segment_tree<M> segtree;
-    trie_sequence(const vector<K>& k, const vector<T>& v):
-        n(k.size()), root(n), rev(n), segtree(n) {
+    trie_sequence(const vector<K>& k, const vector<T>& v): n(k.size()), root(n), rev(n), segtree(n) {
         rep(i, 0, n + 1) s.insert(i);
         rep(i, 0, n) {
             root[i] = chain(k[i], v[i]);
@@ -81,10 +129,14 @@ struct trie_sequence {
         }
     }
     ~trie_sequence() noexcept {
-        rep(i, 0, n) if (root[i]) { delete root[i]; }
+        rep(i, 0, n) if (root[i]) {
+            delete root[i];
+        }
     }
-    // (key = x, value = v)のみ持つtrieを作成
-    static nodeptr chain(unsigned x, T v) { return chain(x, v, lg); }
+    //  (key = x, value = v)のみ持つtrieを作成
+    static nodeptr chain(unsigned x, T v) {
+        return chain(x, v, lg);
+    }
     static nodeptr chain(unsigned x, T v, int d) {
         nodeptr p = new node();
         if (d == 0) {
@@ -97,9 +149,9 @@ struct trie_sequence {
         p->update();
         return p;
     }
-    // |0|1|2|3|4|
-    // iの含まれる区間[l, r)を[l, i), [i, r)で分割する
-    // すでに分割されている場合、なにもしない
+    //  |0|1|2|3|4|
+    //  iの含まれる区間[l, r)を[l, i), [i, r)で分割する
+    //  すでに分割されている場合、なにもしない
     void split(int i) {
         if (i == 0 || i == n) return;
         auto it = s.upper_bound(i);
@@ -126,9 +178,9 @@ struct trie_sequence {
             segtree.set(i, root[i]->v.ord);
         }
     }
-    // [l, r)をソートする <=> 区間[l, r)に対応するノードを作成する
-    // ソートのキーとなる値はdistinct
-    // f = true -> 降順
+    //  [l, r)をソートする <=> 区間[l, r)に対応するノードを作成する
+    //  ソートのキーとなる値はdistinct
+    //  f = true -> 降順
     void sort(int l, int r, bool f = false) {
         split(l);
         split(r);
@@ -144,7 +196,7 @@ struct trie_sequence {
             segtree.set(l, root[l]->v.ord);
         }
     }
-    // iの要素を変更する
+    //  iの要素を変更する
     void set(int i, unsigned k, T v) {
         split(i);
         split(i + 1);
@@ -154,13 +206,15 @@ struct trie_sequence {
         rev[i] = false;
         segtree.set(i, v);
     }
-    // [l, r)の総積
+    //  [l, r)の総積
     T prod(int l, int r) {
         split(l);
         split(r);
         return segtree.prod(l, r);
     }
-    T get(int i) { return prod(i, i + 1); }
+    T get(int i) {
+        return prod(i, i + 1);
+    }
     friend ostream& operator<<(ostream& os, trie_sequence& s) {
         vector<T> a;
         rep(i, 0, s.n) a.push_back(s.get(i));
@@ -168,4 +222,3 @@ struct trie_sequence {
         return os;
     }
 };
-

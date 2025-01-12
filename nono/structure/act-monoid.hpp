@@ -1,13 +1,31 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
+#include <limits>
 #include <numeric>
 #include <optional>
 #include <variant>
 
-///  brief : ActMonoid全部盛り.
 namespace nono {
+
 namespace act_monoid {
+
+template <class T>
+struct ActMonoidTemplate {
+    struct Value {};
+    struct Act {};
+    static Value op(Value lhs, Value rhs);
+    static Value e();
+    static Value mapping(Act act, Value value);
+    ///  lhs(rhs(x))
+    static Act compososition(Act lhs, Act rhs);
+    static Act id();
+};
+
+///  # RangeAffineRangeSum
+///  op a b := a + b
+///  mapping (a, b) x := x <- ax + b
 template <class T, class Count = unsigned>
 struct RangeAffineRangeSum {
     struct Value {
@@ -44,6 +62,9 @@ struct RangeAffineRangeSum {
         return Act{};
     }
 };
+
+///  # RangeAddCountMin
+///  区間に含まれる最小値とその出現回数
 template <class T, class Count = unsigned>
 struct RangeAddCountMin {
     //  (min, count)
@@ -55,9 +76,9 @@ struct RangeAddCountMin {
     };
     using Act = T;
     static Value op(Value lhs, Value rhs) {
-        if (lhs.min == rhs.min) return Value{lhs.min, lhs.num + rhs.num};
         if (!lhs.min) return rhs;
         if (!rhs.min) return lhs;
+        if (lhs.min == rhs.min) return Value{lhs.min, lhs.num + rhs.num};
         return lhs.min < rhs.min ? lhs : rhs;
     }
     static Value e() {
@@ -74,9 +95,12 @@ struct RangeAddCountMin {
         return 0;
     }
 };
+
+///  # RangeAddCountMin
+///  区間に含まれる最大値とその出現回数
 template <class T, class Count = unsigned>
 struct RangeAddCountMax {
-    //  (min, count)
+    //  (max, count)
     struct Value {
         Value(): max(std::nullopt), num(0) {}
         Value(std::optional<T> val, Count num = 1): max(val), num(num) {}
@@ -85,9 +109,9 @@ struct RangeAddCountMax {
     };
     using Act = T;
     static Value op(Value lhs, Value rhs) {
-        if (lhs.max == rhs.max) return Value{lhs.max, lhs.num + rhs.num};
         if (!lhs.max) return rhs;
         if (!rhs.max) return lhs;
+        if (lhs.max == rhs.max) return Value{lhs.max, lhs.num + rhs.num};
         return lhs.max > rhs.max ? lhs : rhs;
     }
     static Value e() {
@@ -104,6 +128,8 @@ struct RangeAddCountMax {
         return 0;
     }
 };
+
+///  # Rev
 template <class M>
 struct Rev {
     using T = M::Value;
@@ -133,11 +159,29 @@ struct Rev {
         return M::id();
     }
 };
+
+///  # RangeAddRangeGcd
+///    gcd(A_0, A_1, A_2, ...)
+///  = gcd(A_0, A_1 - A_0, A_2 - A_1, ...)
+///
+///  tot := gcd(A_1 - A_0, A_2 - A_1, ...)
+///  answer := gcd(A_0, tot)
+///
+///  op lhs rhs :=
+///     left <- lhs.left,
+///     right <- rhs.right,
+///     tot <- gcd(left.tot, right.tot, lhs.right - rhs.left)
+///
+//// ## range add
+///  mapping act value :=
+///     left <- left + act,
+///     right <- right + act,
+///     tot <- tot
+///     (totは差分のgcd, すべての値にact足しても差分は不変)
 template <class T>
 struct RangeAddRangeGcd {
-  private:
-    struct Value_ {
-        Value_(T v = 0): left(v), right(v), tot(0) {}
+    struct Value {
+        Value(T v = 0): left(v), right(v), tot(0) {}
         T left = 0;
         T right = 0;
         T tot = 0;
@@ -145,25 +189,20 @@ struct RangeAddRangeGcd {
             return std::gcd(tot, left);
         }
     };
-
-  public:
-    using Value = std::optional<Value_>;
     using Act = T;
     static Value op(Value lhs, Value rhs) {
-        if (!lhs) return rhs;
-        if (!rhs) return lhs;
         Value res{0};
-        res->left = lhs->left;
-        res->right = rhs->right;
-        res->tot = std::gcd(lhs->tot, std::gcd(rhs->tot, std::abs(lhs->right - rhs->left)));
+        res.left = lhs.left;
+        res.right = rhs.right;
+        res.tot = std::gcd(lhs.tot, std::gcd(rhs.tot, std::abs(lhs.right - rhs.left)));
         return res;
     }
     static Value e() {
-        return std::nullopt;
+        return Value{};
     }
     static Value mapping(Act act, Value value) {
-        value->left += act;
-        value->right += act;
+        value.left += act;
+        value.right += act;
         return value;
     }
     static Act composition(Act lhs, Act rhs) {
@@ -173,6 +212,8 @@ struct RangeAddRangeGcd {
         return Act{0};
     }
 };
+
+///  # RangeUpdateRangeGcd
 template <class T>
 struct RangeUpdateRangeGcd {
     using Value = T;
@@ -195,15 +236,23 @@ struct RangeUpdateRangeGcd {
         return std::nullopt;
     }
 };
-//  任意の連続部分列の総和の最大値
+
+///  # RangeUpdateMaxSubSeq
+///  任意の連続部分列の総和の最大値
 template <class T, class Count = unsigned>
 struct RangeUpdateMaxSubSeq {
     struct Value {
-        Value(T v = 0): val(std::max(T{0}, v)), prefix(std::min(T{0}, v)), suffix(std::max(T{0}, v)), sum(v), num(1) {}
+        Value(T v = 0, Count n = 1)
+            : val(std::max(T{0}, v)),
+              prefix(std::min(T{0}, v)),
+              suffix(std::max(T{0}, v)),
+              sum(v),
+              num(n) {}
         T val, prefix, suffix, sum;
         Count num;
     };
     using Act = std::optional<T>;
+
     static Value op(Value lhs, Value rhs) {
         Value result{};
         result.prefix = std::min(lhs.prefix, lhs.sum + rhs.prefix);
@@ -236,6 +285,66 @@ struct RangeUpdateMaxSubSeq {
         return std::nullopt;
     }
 };
+
+///  # RangeChminChmaxAddRangeMinMax
+///  Act (low, high, add) (x) -> min(high, max(low, x + add))
+template <class T>
+struct RangeChminChmaxAddRangeMinMax {
+  private:
+    static constexpr T MAX = std::numeric_limits<T>::max();
+    static constexpr T MIN = std::numeric_limits<T>::max();
+
+  public:
+    struct Value {
+        Value(): min(MAX), max(MIN) {}
+        Value(T value): min(value), max(value) {}
+        Value(T min, T max): min(min), max(max) {}
+        T min;
+        T max;
+    };
+    struct Act {
+        T chmin_;
+        T chmax_;
+        T add_;
+        static Act chmin(T a) {
+            return Act{a, MIN, static_cast<T>(0)};
+        }
+        static Act chmax(T a) {
+            return Act{MAX, a, static_cast<T>(0)};
+        }
+        static Act clamp(T low, T high) {
+            return Act{high, low, static_cast<T>(0)};
+        }
+        static Act add(T b) {
+            return Act{MAX, MIN, b};
+        }
+        Act(T a, T b, T c): chmin_(a), chmax_(b), add_(c) {}
+    };
+    static Value op(Value lhs, Value rhs) {
+        return Value{std::min(lhs.min, rhs.min), std::max(lhs.max, rhs.max)};
+    }
+    static Value e() {
+        return Value{};
+    }
+    static Value mapping(Act act, Value value) {
+        return Value{
+            std::clamp(value.min + act.add_, act.chmax_, act.chmin_),
+            std::clamp(value.max + act.add_, act.chmax_, act.chmin_),
+        };
+    }
+    static Act composition(Act lhs, Act rhs) {
+        T chmin = (lhs.chmin_ != MAX ? lhs.chmin_ - rhs.add_ : lhs.chmin_);
+        T chmax = (lhs.chmax_ != MIN ? lhs.chmax_ - rhs.add_ : lhs.chmax_);
+        if (rhs.chmin_ <= chmax) return Act{chmax, chmax, lhs.add_ + rhs.add_};
+        if (chmin <= rhs.chmax_) return Act{chmin, chmin, lhs.add_ + rhs.add_};
+        return Act{std::min(rhs.chmin_, chmin), std::max(rhs.chmax_, chmax), lhs.add_ + rhs.add_};
+    }
+    static Act id() {
+        return Act{MAX, MIN, static_cast<T>(0)};
+    }
+};
+
+///  # ActMonoid
 template <class M>
 struct ActMonoid {
     using Value = M::Value;
@@ -256,5 +365,7 @@ struct ActMonoid {
         return {};
     }
 };
+
 }  //  namespace act_monoid
+
 }  //  namespace nono

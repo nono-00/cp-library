@@ -3,9 +3,9 @@
 namespace nono {
 
 
-/// brief : 群全部盛り.
 namespace group {
 
+///  # Add
 template <class T>
 struct Add {
     using Value = T;

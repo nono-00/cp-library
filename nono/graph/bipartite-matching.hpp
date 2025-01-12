@@ -11,10 +11,15 @@
 #include "./base.hpp"
 #include "./is-bipartite.hpp"
 
-///  brief : 二部マッチング. かなり速い. 多重辺があっても動くはず.
 namespace nono {
 
-//  使った辺の添字列を昇順で返す.
+///  # bipatite matching(left, right, edges)
+///  L := left vertex (0 <= v < left)
+///  R := right vertex (0 <= v < right)
+///  E := (u, v) in (L, R) (= edges)
+///  return matching (L, R, E)
+///  辺番号列を返す
+///  多重辺あっても大丈夫なはず
 std::vector<int> bipartite_matching(int left, int right, std::vector<std::pair<int, int>> edges) {
     int m = edges.size();
     for (auto& [u, v]: edges) {
@@ -85,6 +90,9 @@ std::vector<int> bipartite_matching(int left, int right, std::vector<std::pair<i
     return result;
 }
 
+///  # bipatite matching(graph)
+///  辺番号列を返す
+///  多重辺あっても大丈夫なはず
 template <class T>
 std::vector<int> bipartite_matching(const Graph<T>& graph) {
     assert(is_bipartite(graph));

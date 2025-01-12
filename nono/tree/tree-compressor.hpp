@@ -13,6 +13,9 @@ namespace nono {
 
 namespace internal {
 
+///  # TreeCompressResult
+///  graph := compressed graph
+///  mapping[i] := vertex i (compressed graph) -> vertex mapping[i] (original graph)
 template <class T>
 struct TreeCompressResult {
     Graph<T> graph;
@@ -21,7 +24,8 @@ struct TreeCompressResult {
 
 }  //  namespace internal
 
-///  brief : "指定された頂点たちの最小共通祖先関係を保って木を圧縮してできる補助的な木" を作るやつ
+///  # Tree Compressor
+///  "指定された頂点たちの最小共通祖先関係を保って木を圧縮してできる補助的な木" を作るやつ
 template <class T>
 class TreeCompressor {
     using Result = internal::TreeCompressResult<T>;
@@ -37,6 +41,8 @@ class TreeCompressor {
     };
 
   public:
+    ///  # TreeCompressor(graph)
+    ///  O(n log n)
     TreeCompressor(const Graph<T>& graph): in_(graph.size()), out_(graph.size()) {
         assert(is_tree(graph));
         int n = graph.size();
@@ -58,6 +64,9 @@ class TreeCompressor {
         table_ = SparseTable<Min_>(depth_index_pairs);
     }
 
+    ///  # compress(vertices)
+    ///  verticesに含まれる頂点の祖先関係を保ったtreeを作る
+    ///  O(|v| log |v|)
     Result compress(std::vector<int> vertices) const {
         std::ranges::sort(vertices, [&](int lhs, int rhs) { return in_[lhs] < in_[rhs]; });
         for (int i = 0, n = vertices.size(); i + 1 < n; i++) vertices.push_back(lca(vertices[i], vertices[i + 1]));

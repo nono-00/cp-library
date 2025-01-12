@@ -8,22 +8,11 @@
 
 namespace nono {
 
-///  brief : 強連結成分分解する. 単純非単純を問わない.
-
-//  brief:
-//  - 強連結成分分解
-//
-//  complexity:
-//  - O(V + E)
-//
-//  param:
-//  - `graph`: 有向グラフ. 単純非単純を問わない
-//
-//  return:
-//  - 強連結成分ごとの頂点配列をトポロジカルソートした配列
-//
-//  note:
-//  - Tarjan's algorithmを使用している.
+///  # SCC (strongly connected component)(graph)
+///  強連結成分分解
+///  O(V + E)
+///  有向グラフ. 単純非単純を問わない
+///  強連結成分ごとの頂点配列をトポロジカルソートした配列
 template <class T>
 std::vector<std::vector<int>> strongly_connected_components(const Graph<T>& graph) {
     assert(graph.is_directed());
