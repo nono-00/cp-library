@@ -14,7 +14,7 @@ class UnionFind {
     UnionFind(int size): size_(size), data_(size, -1) {}
 
     ///  # leader(x)
-    ///  O(log N)
+    ///  O(log n)
     int leader(int x) {
         assert(0 <= x && x < size_);
         if (data_[x] < 0) {
