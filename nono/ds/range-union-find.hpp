@@ -24,6 +24,9 @@ class RangeUnionFind {
     ///  # merge(lhs, rhs, width)
     ///  add edge (lhs, rhs), (lhs + 1, rhs + 1), ..., (lhs + width - 1, rhs + width - 1)
     ///  全体でO(n (log n)^2)
+    ///
+    ///  F : (l, r, p)
+    ///  l, r をmerge. 代表元はp.
     template <class F = decltype(DUMMY)>
     void merge(int lhs, int rhs, int width, F f = DUMMY) {
         auto dfs = [&](auto&& self, int lhs, int rhs, int i) -> void {
