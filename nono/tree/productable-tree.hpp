@@ -13,6 +13,8 @@ namespace nono {
 ///  # Productable Tree
 ///  tree + (prod path) + (prod subtree) + (apply path) + (apply subtree)
 ///  if edge base, EDGE = true
+///
+///  辺重みはコンストラクタで初期化できないので注意
 template <class M, class T, bool EDGE = false>
 class ProductableTree: public Tree<T> {
     using Rev = act_monoid::Rev<M>;
