@@ -19,7 +19,7 @@ struct ActMonoidTemplate {
     static Value e();
     static Value mapping(Act act, Value value);
     ///  lhs(rhs(x))
-    static Act compososition(Act lhs, Act rhs);
+    static Act composition(Act lhs, Act rhs);
     static Act id();
 };
 
