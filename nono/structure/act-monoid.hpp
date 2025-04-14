@@ -292,7 +292,7 @@ template <class T>
 struct RangeChminChmaxAddRangeMinMax {
   private:
     static constexpr T MAX = std::numeric_limits<T>::max();
-    static constexpr T MIN = std::numeric_limits<T>::max();
+    static constexpr T MIN = std::numeric_limits<T>::min();
 
   public:
     struct Value {
