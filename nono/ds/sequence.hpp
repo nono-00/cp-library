@@ -167,84 +167,19 @@ NodePtr<T> kth(NodePtr<T> root, int k) {
     return find_by_size(root, k);
 }
 
+///  # copy(root)
+//   deep copy
+//   O(n)
 template <class T>
-class Iterator {
-  public:
-    using value_type = T;
-    using reference = const T&;
-    using pointer = const T*;
-    using difference_type = std::ptrdiff_t;
-    using iterator_concept = std::bidirectional_iterator_tag;
-
-    Iterator(): current(nullptr) {}
-    Iterator(NodePtr<T> node): current(node) {}
-
-    reference operator*() const {
-        return current->value;
-    }
-    pointer operator->() const {
-        return &current->value;
-    }
-
-    Iterator& operator++() {
-        if (current) {
-            if (current->right) {
-                current = current->right;
-                while (current->left) current = current->left;
-            } else {
-                NodePtr<T> parent = current->parent;
-                while (parent && current == parent->right) {
-                    current = parent;
-                    parent = current->parent;
-                }
-                current = parent;
-            }
-        }
-        return *this;
-    }
-
-    Iterator operator++(int) {
-        Iterator temp = *this;
-        ++(*this);
-        return temp;
-    }
-
-    Iterator& operator--() {
-        if (current) {
-            if (current->left) {
-                current = current->left;
-                while (current->right) current = current->right;
-            } else {
-                NodePtr<T> parent = current->parent;
-                while (parent && current == parent->left) {
-                    current = parent;
-                    parent = current->parent;
-                }
-                current = parent;
-            }
-        }
-        return *this;
-    }
-
-    Iterator operator--(int) {
-        Iterator temp = *this;
-        --(*this);
-        return temp;
-    }
-
-    friend bool operator==(const Iterator& lhs, const Iterator& rhs) {
-        return lhs.current == rhs.current;
-    }
-
-    friend bool operator!=(const Iterator& lhs, const Iterator& rhs) {
-        return !(lhs == rhs);
-    }
-
-  private:
-    NodePtr<T> current;
-};
-
-static_assert(std::bidirectional_iterator<Iterator<int>>);
+NodePtr<T> copy(NodePtr<T> root) {
+    if (!root) return nullptr;
+    push(root);
+    NodePtr<T> new_root = new Node<T>(root->element);
+    new_root->left = copy(root->left);
+    new_root->right = copy(root->right);
+    update(new_root);
+    return new_root;
+}
 
 }  //  namespace sequence
 
@@ -258,6 +193,21 @@ class Sequence {
     Sequence() {}
     ~Sequence() {
         if (root_) delete root_;
+    }
+    Sequence(const Sequence& seq): root_(sequence::copy(seq.root_)) {}
+    Sequence(Sequence&& seq): root_(std::move(seq.root_)) {
+        seq.root_ = nullptr;
+    }
+    Sequence& operator=(const Sequence& seq) {
+        if (root_) delete root_;
+        root_ = sequence::copy(seq.root_);
+        return *this;
+    }
+    Sequence& operator=(Sequence&& seq) {
+        if (root_) delete root_;
+        root_ = std::move(seq.root_);
+        seq.root_ = nullptr;
+        return *this;
     }
 
     ///  # insert(index, element)
@@ -334,6 +284,19 @@ class Sequence {
         sequence::find_by_size(root_, index)->element = element;
     }
 
+    T& operator[](int index) {
+        return sequence::kth(root_, index)->element;
+    }
+
+    const T& operator[](int index) const {
+        return sequence::kth(root_, index)->element;
+    }
+
+    void clear() {
+        if (root_) delete root_;
+        root_ = nullptr;
+    }
+
     ///  # reverse(left, right)
     ///  S <- S[:left] + S[left:right:-1] + S[right:]
     ///  O(log n)
@@ -343,6 +306,31 @@ class Sequence {
         auto [mhs, rhs] = sequence::split_by_size(temp, right - left);
         sequence::reverse(mhs);
         root_ = sequence::merge(sequence::merge(lhs, mhs), rhs);
+    }
+
+    ///  # split(k)
+    ///  return {S[:k], S[k:]}
+    ///  S is undefined after split
+    ///  O(log n)
+    std::pair<Sequence, Sequence> split(int k) {
+        auto [lhs, rhs] = sequence::split_by_size(root_, k);
+        Sequence first, second;
+        first.root_ = lhs;
+        second.root_ = rhs;
+        root_ = nullptr;
+        return {first, second};
+    }
+
+    ///  # merge(lhs, rhs)
+    ///  return lhs + rhs
+    ///  lhs and rhs are undefined after merge
+    ///  O(log n)
+    friend Sequence merge(Sequence& lhs, Sequence& rhs) {
+        Sequence seq;
+        seq.root_ = sequence::merge(lhs.root_, rhs.root_);
+        lhs.root_ = nullptr;
+        rhs.root_ = nullptr;
+        return seq;
     }
 
   private:
