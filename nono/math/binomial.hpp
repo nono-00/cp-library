@@ -21,6 +21,7 @@ class Binomial {
     Mint binom(int n, int k) {
         assert(0 <= k);
         assert(k <= n);
+        if (m <= std::max(k, n - k)) return binom_lucas(n, k);
         if (THRESHOLD <= n) return binom_naive(n, k);
         extend(n);
         return fact_[n] * fact_inv_[n - k] * fact_inv_[k];
@@ -30,6 +31,7 @@ class Binomial {
     ///  n!
     Mint fact(int n) {
         assert(0 <= n);
+        if (m <= n) return 0;
         extend(n);
         return fact_[n];
     }
@@ -38,6 +40,7 @@ class Binomial {
     ///  inv(n!)
     Mint fact_inv(int n) {
         assert(0 <= n);
+        assert(n < m);
         extend(n);
         return fact_inv_[n];
     }
@@ -61,6 +64,22 @@ class Binomial {
         }
         return res;
     }
+
+    Mint binom_lucas(int n, int k) {
+        Mint res = 1;
+        while (n || k) {
+            if (n % m >= k % m) {
+                res *= binom(n % m, k % m);
+                n /= m;
+                k /= m;
+            } else {
+                res = 0;
+                break;
+            }
+        }
+        return res;
+    }
+
     Mint perm_naive(int n, int k) {
         Mint res = 1;
         for (int i = 0; i < k; i++) {
@@ -75,14 +94,16 @@ class Binomial {
             for (int i = size_ + 1; i < n + 1; i++) {
                 fact_[i] = i * fact_[i - 1];
             }
-            fact_inv_.resize(n + 1);
-            fact_inv_[n] = fact_[n].inv();
-            for (int i = n - 1; i > size_; i--) {
+            int n2 = std::min(n, m - 1);
+            fact_inv_.resize(n2 + 1);
+            fact_inv_[n2] = fact_[n2].inv();
+            for (int i = n2 - 1; i > size_; i--) {
                 fact_inv_[i] = (i + 1) * fact_inv_[i + 1];
             }
             size_ = n;
         }
     }
+
     int size_;
     std::vector<Mint> fact_;
     std::vector<Mint> fact_inv_;
