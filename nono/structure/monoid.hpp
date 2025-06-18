@@ -102,56 +102,37 @@ struct Composite {
 
 ///  # MinIndex
 ///  (a, i), (b, j)
-///  [1] if a < b:
+///  [1] if a <= b:
 ///      return (a, i)
 ///  [2] else
 ///      return (b, j)
 ///  同じなら左側
 template <class T>
 struct MinIndex {
-  private:
-    struct Value_ {
-        Value_(T val, int i): min(val), index(i) {}
-        T min;
+    struct Value {
+        Value(T value, int index): value(value), index(index) {}
+        T value;
         int index;
     };
-
-  public:
-    using Value = std::optional<Value_>;
     static Value op(Value lhs, Value rhs) {
-        if (!lhs) return rhs;
-        if (!rhs) return lhs;
-        return lhs->min < rhs->min ? lhs : rhs;
+        return (lhs.value <= rhs.value ? lhs : rhs);
     }
     static Value e() {
-        return std::nullopt;
+        return {std::numeric_limits<T>::max(), -1};
     }
 };
 
-///  # MaxIndex
-///  [1] if a > b:
-///      return (a, i)
-///  [2] else
-///      return (b, j)
-///  同じなら左側
 template <class T>
 struct MaxIndex {
-  private:
-    struct Value_ {
-        Value_(T val, int i): max(val), index(i) {}
-        T max;
+    struct Value {
+        T value;
         int index;
     };
-
-  public:
-    using Value = std::optional<Value_>;
     static Value op(Value lhs, Value rhs) {
-        if (!lhs) return rhs;
-        if (!rhs) return lhs;
-        return lhs->max > rhs->max ? lhs : rhs;
+        return (lhs.value >= rhs.value ? lhs : rhs);
     }
     static Value e() {
-        return std::nullopt;
+        return {std::numeric_limits<T>::min(), -1};
     }
 };
 
