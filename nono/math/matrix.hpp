@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <initializer_list>
+#include <iostream>
 #include <vector>
 
 namespace nono {
@@ -102,6 +103,20 @@ class Matrix {
     }
     friend Matrix operator/(const Matrix& lhs, const T rhs) {
         return Matrix(lhs) /= rhs;
+    }
+    friend bool operator==(const Matrix& lhs, const Matrix& rhs) {
+        return lhs.data_ == rhs.data_;
+    }
+    friend bool operator!=(const Matrix& lhs, const Matrix& rhs) {
+        return !(lhs.data_ == rhs.data_);
+    }
+    friend std::ostream& operator<<(std::ostream& os, const Matrix& mat) {
+        for (int i = 0; i < mat.h_; i++) {
+            for (int j = 0; j < mat.w_; j++) {
+                os << mat[i][j] << " \n"[j + 1 == mat.w_];
+            }
+        }
+        return os;
     }
 
     ///  # operator+= matrix
