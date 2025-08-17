@@ -4,6 +4,22 @@
 
 namespace nono {
 
+template <int N>
+std::array<bool, N> prime_sieve() {
+    std::array<bool, N> sieve{};
+    sieve.fill(true);
+    sieve[0] = sieve[1] = false;
+    for (int i = 4; i < N; i += 2) sieve[i] = false;
+    for (int i = 3; i * i < N; i += 2) {
+        if (sieve[i]) {
+            for (int j = i * i; j < N; j += 2 * i) {
+                sieve[j] = false;
+            }
+        }
+    }
+    return sieve;
+}
+
 bool is_prime(unsigned long long p) {
     using u64 = unsigned long long;
     using u128 = __uint128_t;
