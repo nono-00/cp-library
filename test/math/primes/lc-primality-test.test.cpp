@@ -2,7 +2,7 @@
 
 #include <bits/stdc++.h>
 
-#include "nono/math/primes.hpp"
+#include "../../../nono/math/primes.hpp"
 
 int main() {
     std::cin.tie(0)->sync_with_stdio(0);
