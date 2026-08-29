@@ -1,0 +1,43 @@
+// competitive-verifier: STANDALONE
+#include <cassert>
+#include <iostream>
+#include <random>
+
+#include "nono/structure/monoid/gcd.hpp"
+#include "nono/structure/law-checker.hpp"
+
+namespace nono {
+
+void solve() {
+    using Monoid = monoid::Gcd<unsigned>;
+    //  fix
+    assert(test_value_associativity<Monoid>(0, 0, 1));
+    assert(test_value_associativity<Monoid>(1, 10, 30));
+    assert(test_value_associativity<Monoid>(2, 3, 5));
+    assert(test_value_associativity<Monoid>(10, 10, 10));
+    assert(test_value_associativity<Monoid>(100, 10, 50));
+
+    //  random
+    std::mt19937 rng(1134);
+    const int T = 10;
+    for (int i = 0; i < T; i++) {
+        unsigned a = rng();
+        unsigned b = rng();
+        unsigned c = rng();
+        assert(test_value_associativity<Monoid>(a, b, c));
+        assert(test_value_associativity<Monoid>(a, c, b));
+        assert(test_value_associativity<Monoid>(b, a, c));
+        assert(test_value_associativity<Monoid>(b, c, a));
+        assert(test_value_associativity<Monoid>(c, a, b));
+        assert(test_value_associativity<Monoid>(c, b, a));
+        assert(test_value_identity<Monoid>(a));
+        assert(test_value_identity<Monoid>(b));
+        assert(test_value_identity<Monoid>(c));
+    }
+}
+
+}  //  namespace nono
+
+int main() {
+    nono::solve();
+}

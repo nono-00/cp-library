@@ -1,0 +1,40 @@
+#pragma once
+
+#include <ranges>
+#include <vector>
+
+namespace nono {
+
+///  # Z algorithm
+///  Z algo. result[i]: seqとseq[i:]のprefixがどれだけ一致しているか
+template <std::ranges::random_access_range R>
+std::vector<int> z_algorithm(const R& sequence) {
+    int n = std::size(sequence);
+    std::vector<int> z_values(n, n);
+    //  [left, right)
+    int right = 0;
+    int left = 0;
+
+    for (int i = 1; i < n; i++) {
+        if (right <= i) {
+            left = i;
+            right = i;
+            while (right < n && sequence[right - left] == sequence[right]) {
+                right++;
+            }
+            z_values[i] = right - left;
+        } else if (z_values[i - left] < right - i) {
+            z_values[i] = z_values[i - left];
+        } else {
+            left = i;
+            while (right < n && sequence[right - left] == sequence[right]) {
+                right++;
+            }
+            z_values[i] = right - i;
+        }
+    }
+
+    return z_values;
+}
+
+}  //  namespace nono

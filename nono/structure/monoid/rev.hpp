@@ -1,0 +1,28 @@
+#pragma once
+
+namespace nono {
+
+namespace monoid {
+
+///  # Rev
+template <class M>
+struct Rev {
+    using T = M::Value;
+    struct Value {
+        Value(): ord(M::e()), rev(M::e()) {}
+        Value(T v_): ord(v_), rev(v_) {}
+        T ord, rev;
+    };
+    static Value op(Value lhs, Value rhs) {
+        lhs.ord = M::op(lhs.ord, rhs.ord);
+        lhs.rev = M::op(rhs.rev, lhs.rev);
+        return lhs;
+    }
+    static Value e() {
+        return Value{};
+    }
+};
+
+}  //  namespace monoid
+
+}  //  namespace nono

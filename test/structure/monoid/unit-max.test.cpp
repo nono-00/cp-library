@@ -1,0 +1,29 @@
+// competitive-verifier: STANDALONE
+#include <cassert>
+#include <iostream>
+
+#include "nono/structure/monoid/max.hpp"
+#include "nono/structure/law-checker.hpp"
+
+namespace nono {
+
+void solve() {
+    using Monoid = monoid::Max<unsigned>;
+    //  fix
+    for (unsigned i = 0; i < 3; i++) {
+        for (unsigned j = 0; j < 3; j++) {
+            for (unsigned k = 0; k < 3; k++) {
+                assert(test_value_associativity<Monoid>(i, j, k));
+            }
+        }
+    }
+    for (unsigned i = 0; i < 10; i++) {
+        assert(test_value_identity<Monoid>(i));
+    }
+}
+
+}  //  namespace nono
+
+int main() {
+    nono::solve();
+}
