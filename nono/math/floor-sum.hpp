@@ -2,10 +2,14 @@
 
 #include <utility>
 
-#include "util.hpp"
+#include "./util.hpp"
 
 namespace nono {
 
+//  # floor_sum(n, m, a, b)
+//  sum[for i in [0, n)](floor((a * i + b) / m)) を返す。a, bは負でもよい
+//  n >= 0, m >= 1 でないと壊れる。途中の計算がlong longに収まらないと壊れる
+//  O(log m)
 long long floor_sum(long long n, long long m, long long a, long long b) {
     if (a < 0 || m <= a) {
         auto [a1, a2] = safe_div_mod(a, m);

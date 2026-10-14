@@ -7,9 +7,10 @@
 
 namespace nono {
 
-///  # Potentialized Union Find
-///  UnionFind with Potential.
-///  可換/非可換どちらでも動く.
+//  # PotentializedUnionFind
+//  ポテンシャル付きUnionFind。Gは群(G::Value, G::op, G::e, G::inv)
+//  可換/非可換どちらでも動く.
+//  頂点が [0, size()) でないと壊れる
 template <class G>
 class PotentializedUnionFind {
     using T = G::Value;
@@ -17,10 +18,13 @@ class PotentializedUnionFind {
 
   public:
     PotentializedUnionFind() = default;
+    //  # PotentializedUnionFind(n)
+    //  頂点数がnで、全ての頂点が別々の連結成分にある状態を作る
     PotentializedUnionFind(int n): n_(n), data_(n, -1), potential_(n, G::e()) {}
 
-    ///  # leader(x)
-    ///  O(logn)
+    //  # leader(x)
+    //  xが属する連結成分の代表元を返す
+    //  O(log n)
     int leader(int x) {
         assert(0 <= x && x < n_);
         if (data_[x] < 0) {
@@ -30,10 +34,11 @@ class PotentializedUnionFind {
         return data_[x] = leader(data_[x]);
     }
 
-    ///  # merge(lhs, rhs, diff)
-    ///  頂点 `lhs` を基準とした頂点 `rhs` のポテンシャルが `diff`
-    ///  となるように辺を追加する
-    ///  O(logn)
+    //  # merge(lhs, rhs, diff)
+    //  頂点 `lhs` を基準とした頂点 `rhs` のポテンシャルが `diff`
+    //  となるように辺を追加する
+    //  すでに同じ連結成分にあるときは、何もせずfalseを返す(diffと矛盾していても検出しない)
+    //  O(log n)
     bool merge(int lhs, int rhs, T diff) {
         assert(0 <= lhs && lhs < n_);
         assert(0 <= rhs && rhs < n_);
@@ -55,21 +60,21 @@ class PotentializedUnionFind {
         return true;
     }
 
-    ///  # potential(x)
-    ///  leader(x) を基準とした x のポテンシャルを取得する
-    ///  O(logn)
+    //  # potential(x)
+    //  leader(x) を基準とした x のポテンシャルを取得する
+    //  O(log n)
     T potential(int x) {
         assert(0 <= x && x < n_);
         leader(x);
         return potential_[x];
     }
 
-    ///  # potential(lhs, rhs)
-    ///  lhs を基準とした rhs のポテンシャルを取得する
-    ///
-    ///  lhs, rhs が同じ連結成分に属しているのならば、上述のポテンシャル
-    ///  そうでないならば nullopt
-    ///  O(logn)
+    //  # potential(lhs, rhs)
+    //  lhs を基準とした rhs のポテンシャルを取得する
+    //
+    //  lhs, rhs が同じ連結成分に属しているのならば、上述のポテンシャル
+    //  そうでないならば nullopt
+    //  O(log n)
     Result potential(int lhs, int rhs) {
         assert(0 <= lhs && lhs < n_);
         assert(0 <= rhs && rhs < n_);
@@ -80,33 +85,35 @@ class PotentializedUnionFind {
         }
     }
 
-    ///  # same(lhs, rhs)
-    ///  lhs, rhsが連結かどうか
-    ///  O(log n)
+    //  # same(lhs, rhs)
+    //  lhs, rhsが連結かどうか
+    //  O(log n)
     bool same(int lhs, int rhs) {
         assert(0 <= lhs && lhs < n_);
         assert(0 <= rhs && rhs < n_);
         return leader(lhs) == leader(rhs);
     }
 
-    ///  # size(x)
-    ///  頂点 x の属する連結成分の大きさを取得する
-    ///  O(logn)
+    //  # size(x)
+    //  頂点 x の属する連結成分の大きさを取得する
+    //  O(log n)
     int size(int x) {
         assert(0 <= x && x < n_);
         return -data_[leader(x)];
     }
 
-    ///  # size()
-    ///  O(1)
+    //  # size()
+    //  頂点数
+    //  O(1)
     int size() const {
         return n_;
     }
 
-    ///  # groups()
-    ///  連結成分分解する
-    ///  返り値の頂点の順番は未定義
-    ///  https://atcoder.github.io/ac-library/document_ja/dsu.html
+    //  # groups()
+    //  連結成分分解する
+    //  連結成分の順序と、連結成分内の頂点の順序は未定義
+    //  https://atcoder.github.io/ac-library/document_ja/dsu.html
+    //  O(n log n)
     std::vector<std::vector<int>> groups() {
         std::vector<int> leader_buf(n_), group_size(n_);
         for (int i = 0; i < n_; i++) {
@@ -127,13 +134,13 @@ class PotentializedUnionFind {
 
   private:
     int n_;
-    ///  data[i] < 0 ならば i を代表元とする連結成分の大きさ
-    ///  data[i] >= 0 ならば i の属する連結成分の代表元
+    //  data[i] < 0 ならば i を代表元とする連結成分の大きさ
+    //  data[i] >= 0 ならば i の属する連結成分の代表元
     std::vector<int> data_;
-    ///  頂点 i が代表元ならば potential_[i] == 0
-    ///  そうでないならば、頂点 i を基準としたポテンシャル
-    ///  常に正しい値が入っている訳ではない
-    ///  適切に関数を呼び出して更新しないといけない
+    //  頂点 i が代表元ならば potential_[i] == 0
+    //  そうでないならば、頂点 i を基準としたポテンシャル
+    //  常に正しい値が入っている訳ではない
+    //  適切に関数を呼び出して更新しないといけない
     std::vector<T> potential_;
 };
 

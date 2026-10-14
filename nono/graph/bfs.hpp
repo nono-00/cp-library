@@ -11,27 +11,29 @@ namespace nono {
 
 namespace bfs_internal {
 
+//  # BfsResult
+//  bfsの結果。各メンバ関数のdestが [0, n) でないと壊れる
 template <class T>
 class BfsResult {
   public:
+    //  # UNREACHABLE
+    //  到達できない頂点の距離として入る値
     static constexpr T UNREACHABLE = std::numeric_limits<T>::max();
 
     BfsResult(std::vector<T> dist, std::vector<int> parent): dist_(std::move(dist)), parent_(std::move(parent)) {}
 
-    ///  # dist[dest]
-    ///  distance between source and dest
-    ///  if source and dest are not connected, return UNREACHABLE
-    ///  O(1)
+    //  # dist(dest)
+    //  始点からdestまでの距離。到達できない場合はUNREACHABLE
+    //  O(1)
     T dist(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         return dist_[dest];
     }
 
-    ///  # path(dest)
-    ///  return shortest path from source to dest
-    ///  source -> ... -> ... -> dest
-    ///  if we can not reach dest, return empty vector
-    ///  O(|path|)
+    //  # path(dest)
+    //  始点からdestまでの最短経路を、頂点の列 (始点, ..., dest) で返す
+    //  到達できない場合は空の列を返す
+    //  O(|path|)
     std::vector<int> path(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         if (invalid(dest)) {
@@ -46,30 +48,33 @@ class BfsResult {
         return result;
     }
 
-    ///  # invalid(dest)
-    ///  whether we can reach dest
-    ///  O(1)
+    //  # invalid(dest)
+    //  destに到達できないならtrue
+    //  O(1)
     bool invalid(int dest) const {
         assert(0 <= dest && dest < dist_.size());
         return dist_[dest] == UNREACHABLE;
     }
 
-    ///  # raw()
-    ///  return distance array
+    //  # raw()
+    //  全頂点の距離の配列を返す
     std::vector<T> raw() const {
         return dist_;
     }
 
   private:
     std::vector<T> dist_;
-    //  parent_[i] = -1 => source or unrechable
+    //  parent_[i] = -1 => 始点、または到達できない頂点
     std::vector<int> parent_;
 };
 
 }  //  namespace bfs_internal
 
-///  # multiple source bfs
-///  O(n)
+//  # bfs(graph, source)
+//  複数始点の幅優先探索。各頂点について、最も近い始点からの距離を求める
+//  辺の重みが全て同じ正の値でないと壊れる(最短距離にならない)
+//  sourceの要素が [0, n) でないと壊れる
+//  O(n + m)
 template <class T>
 bfs_internal::BfsResult<T> bfs(const Graph<T>& graph, const std::vector<int>& source) {
     using Result = bfs_internal::BfsResult<T>;
@@ -96,8 +101,11 @@ bfs_internal::BfsResult<T> bfs(const Graph<T>& graph, const std::vector<int>& so
     return Result{dist, parent};
 }
 
-///  # single source bfs
-///  O(n)
+//  # bfs(graph, source)
+//  単一始点の幅優先探索
+//  辺の重みが全て同じ正の値でないと壊れる(最短距離にならない)
+//  sourceが [0, n) でないと壊れる
+//  O(n + m)
 template <class T>
 bfs_internal::BfsResult<T> bfs(const Graph<T>& graph, int source) {
     return bfs(graph, std::vector<int>{source});

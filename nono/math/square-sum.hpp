@@ -2,12 +2,15 @@
 
 #include <algorithm>
 
-#include "primes.hpp"
+#include "./primes.hpp"
 
 namespace nono {
 
+//  # count_square_sum_terms(n)
+//  nを平方数の和で表すとき、最小で何個の平方数が要るかを返す(1から4)
 //  https://www.acmicpc.net/problem/17633
-//  最小で幾つの平方数の和で表されるか？
+//  n >= 1 でないと壊れる
+//  計算量は prime_factors(n) と同じ
 int count_square_sum_terms(unsigned long long n) {
     auto factors = prime_factors(n);
     std::sort(std::begin(factors), std::end(factors));

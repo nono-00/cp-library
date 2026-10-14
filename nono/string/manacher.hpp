@@ -10,26 +10,27 @@ namespace nono {
 
 namespace manacher_internal {
 
-///  # manacher result
+//  # ManacherResult
+//  manacherの結果
 struct ManacherResult {
   public:
     ManacherResult(int n, std::vector<int> rad): n_(n), rad_(rad) {}
 
-    ///  # radius(i)
-    ///  奇数長半径
-    ///  s[i]をcenterとする回文半径
-    ///  回文の長さが欲しい場合は2 * radius(i) - 1
-    ///  O(1)
+    //  # radius(i)
+    //  s[i]を中心とする、奇数長の回文の最大半径(中心を含めて数える)
+    //  回文の長さが欲しい場合は 2 * radius(i) - 1
+    //  0 <= i < |s| でないと壊れる
+    //  O(1)
     int radius(int i) {
         assert(0 <= i && i < n_);
         return rad_[2 * i + 1] / 2;
     }
 
-    ///  # radius(i, i + 1)
-    ///  偶数長
-    ///  s[i], s[i + 1]を中心とした回文半径
-    ///  回文の長さが欲しい場合は2 * radius(i)
-    ///  O(1)
+    //  # radius(i, j)
+    //  s[i]とs[j]の間を中心とする、偶数長の回文の最大半径。無ければ0
+    //  回文の長さが欲しい場合は 2 * radius(i, j)
+    //  j = i + 1 でないと壊れる
+    //  O(1)
     int radius(int i, int j) {
         assert(0 <= i && i < n_);
         assert(0 <= j && j < n_);
@@ -37,7 +38,9 @@ struct ManacherResult {
         return (rad_[2 * j] - 1) / 2;
     }
 
-    ///  # raw()
+    //  # raw()
+    //  各文字の間と両端に区切りを入れた、長さ 2 * |s| + 1 の列に対する半径の配列を返す
+    //  添字 2 * i + 1 が s[i]、添字 2 * i が s[i - 1] と s[i] の間に対応する
     std::vector<int> raw() const {
         return rad_;
     }
@@ -49,9 +52,9 @@ struct ManacherResult {
 
 }  //  namespace manacher_internal
 
-///  # manacher
-///  回文半径を求める. 偶奇両対応.
-///  O(|seq|)
+//  # manacher(seq)
+//  各位置を中心とする最長の回文の半径を求める。奇数長・偶数長の両方に対応
+//  O(|seq|)
 template <std::ranges::random_access_range R>
 manacher_internal::ManacherResult manacher(const R& seq) {
     std::vector<std::optional<typename R::value_type>> dummy;

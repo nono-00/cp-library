@@ -6,14 +6,22 @@
 
 namespace nono {
 
-///  brief : 一点更新 区間取得のsegment tree. <https://atcoder.github.io/ac-library/master/document_ja/segtree.html>
+//  # SegmentTree
+//  一点更新 区間取得のsegment tree. <https://atcoder.github.io/ac-library/master/document_ja/segtree.html>
+//  Mはモノイド。添字が範囲外だと壊れる(pは [0, n)、l, rは 0 <= l <= r <= n)
 template <class M>
 class SegmentTree {
     using T = M::Value;
 
   public:
     SegmentTree(): SegmentTree(0) {}
+    //  # SegmentTree(n)
+    //  長さnで、全要素を M::e() にする
+    //  O(n)
     explicit SegmentTree(int n): SegmentTree(std::vector<T>(n, M::e())) {}
+    //  # SegmentTree(v)
+    //  vの内容で初期化する
+    //  O(n)
     explicit SegmentTree(const std::vector<T>& v): n_(int(v.size())) {
         size_ = std::bit_ceil((unsigned int)(n_));
         log_ = std::countr_zero((unsigned int)size_);
@@ -24,9 +32,9 @@ class SegmentTree {
         }
     }
 
-    ///  # set(p, x)
-    ///  data[p] <= x
-    ///  O(logn)
+    //  # set(p, x)
+    //  data[p] <= x
+    //  O(log n)
     void set(int p, T x) {
         assert(0 <= p && p < n_);
         p += size_;
@@ -34,17 +42,17 @@ class SegmentTree {
         for (int i = 1; i <= log_; i++) update(p >> i);
     }
 
-    ///  # get(p)
-    ///  return data[p]
-    ///  O(logn)
+    //  # get(p)
+    //  return data[p]
+    //  O(1)
     T get(int p) const {
         assert(0 <= p && p < n_);
         return data_[p + size_];
     }
 
-    ///  # prod(l, r)
-    ///  return op[for i in [l, r)](data[i])
-    ///  O(logn)
+    //  # prod(l, r)
+    //  return op[for i in [l, r)](data[i])
+    //  O(log n)
     T prod(int l, int r) const {
         assert(0 <= l && l <= r && r <= n_);
         T sml = M::e(), smr = M::e();
@@ -60,16 +68,17 @@ class SegmentTree {
         return M::op(sml, smr);
     }
 
-    ///  # all_prod()
-    ///  O(1)
+    //  # all_prod()
+    //  return op[for i in [0, n)](data[i])
+    //  O(1)
     T all_prod() const {
         return data_[1];
     }
 
-    ///  # max_right(l, f)
-    ///  f(op[for i in [l, r)](data[i])) == trueを満たす最大のrを返す
-    ///  f(M::e())はtrueである必要がある
-    ///  O(logn)
+    //  # max_right(l, f)
+    //  f(op[for i in [l, r)](data[i])) == trueを満たす最大のrを返す
+    //  f(M::e()) がtrueでないと壊れる
+    //  O(log n)
     template <class F>
     int max_right(int l, F f) const {
         assert(0 <= l && l <= n_);
@@ -95,10 +104,10 @@ class SegmentTree {
         return n_;
     }
 
-    ///  # min_left(r, f)
-    ///  f(op[for i in [l, r)](data[i])) == trueを満たす最小のlを返す
-    ///  f(M::e())はtrueである必要がある
-    ///  O(logn)
+    //  # min_left(r, f)
+    //  f(op[for i in [l, r)](data[i])) == trueを満たす最小のlを返す
+    //  f(M::e()) がtrueでないと壊れる
+    //  O(log n)
     template <class F>
     int min_left(int r, F f) const {
         assert(0 <= r && r <= n_);

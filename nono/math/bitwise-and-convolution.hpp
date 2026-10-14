@@ -7,6 +7,10 @@
 
 namespace nono {
 
+//  # bitwise_and_convolution(lhs, rhs)
+//  result[k] = sum[for (i, j) with (i & j) = k](lhs[i] * rhs[j]) となる列を返す
+//  lhsとrhsの長さが同じ2冪でないと壊れる
+//  O(n log n)
 template <class T>
 std::vector<T> bitwise_and_convolution(std::vector<T> lhs, std::vector<T> rhs) {
     assert(std::size(lhs) == std::size(rhs));

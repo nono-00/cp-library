@@ -6,7 +6,8 @@ namespace nono {
 
 namespace monoid {
 
-///  # Gcd
+//  # Gcd
+//  最大公約数。op(a, b) = gcd(a, b), e() = 0
 template <class T>
 struct Gcd {
     using Value = T;

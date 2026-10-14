@@ -7,8 +7,10 @@ namespace nono {
 
 namespace act_monoid {
 
-///  # RangeUpdateMaxSubSeq
-///  任意の連続部分列の総和の最大値
+//  # RangeUpdateMaxSubSeq
+//  区間更新(代入)、任意の連続部分列の総和の最大値
+//  空の部分列(和0)も候補に含むので、最大値は0以上になる
+//  1要素は Value(v) で作る。Actは std::optional<T> で、値があればその値を代入し、nulloptなら何もしない
 template <class T, class Count = unsigned>
 struct RangeUpdateMaxSubSeq {
     struct Value {

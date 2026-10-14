@@ -4,7 +4,10 @@ namespace nono {
 
 namespace act_monoid {
 
-///  # Rev
+//  # Rev
+//  act-monoid Mについて、順方向の積(ord)と逆方向の積(rev)を同時に持つラッパー
+//  作用はMのものを、ordとrevの両方に適用する
+//  opが可換でないact-monoidで、列を逆向きに並べた積も必要なときに使う
 template <class M>
 struct Rev {
     using T = M::Value;

@@ -7,19 +7,26 @@
 
 namespace nono {
 
-///  # Matrix
-///  行列積, 行列累乗くらいの機能しかない.
+//  # Matrix
+//  h行w列の行列。行列積, 行列累乗くらいの機能しかない.
+//  スカラーとの四則演算、行列どうしの加減乗算、==, !=, 出力ができる
 template <typename T>
 class Matrix {
   public:
     Matrix() = default;
     Matrix(int h, int w): h_(h), w_(w), data_(h, std::vector<T>(w)) {}
     Matrix(int h, int w, T init): h_(h), w_(w), data_(h, std::vector<T>(w, init)) {}
+
+    //  # Matrix(data)
+    //  dataが空だと壊れる。各行の長さが揃っていないと壊れる
     explicit Matrix(const std::vector<std::vector<T>>& data): h_(data.size()), w_(data.front().size()), data_(data) {
         for (int i = 0; i < h_; i++) {
             assert(static_cast<int>(data_[i].size()) == w_);
         }
     }
+
+    //  # Matrix(init)
+    //  initが空だと壊れる。各行の長さが揃っていないと壊れる
     Matrix(std::initializer_list<std::vector<T>> init): data_(init.begin(), init.end()) {
         h_ = data_.size();
         w_ = data_.front().size();
@@ -28,6 +35,9 @@ class Matrix {
         }
     }
 
+    //  # operator[](pos)
+    //  pos行目を返す
+    //  0 <= pos < row() でないと壊れる
     const std::vector<T>& operator[](const int pos) const {
         assert(0 <= pos && pos < h_);
         return data_[pos];
@@ -38,9 +48,9 @@ class Matrix {
         return data_[pos];
     }
 
-    ///  # operator += scalar
-    ///  data[i][j] <- data[i][j] + rhs
-    ///  O(nm)
+    //  # operator+=(rhs)
+    //  スカラーを全要素に足す。data[i][j] <- data[i][j] + rhs
+    //  O(hw)
     Matrix& operator+=(const T rhs) {
         for (int i = 0; i < h_; i++) {
             for (int j = 0; j < w_; j++) {
@@ -50,9 +60,9 @@ class Matrix {
         return *this;
     }
 
-    ///  # operator -= scalar
-    ///  data[i][j] <- data[i][j] - rhs
-    ///  O(nm)
+    //  # operator-=(rhs)
+    //  スカラーを全要素から引く。data[i][j] <- data[i][j] - rhs
+    //  O(hw)
     Matrix& operator-=(const T rhs) {
         for (int i = 0; i < h_; i++) {
             for (int j = 0; j < w_; j++) {
@@ -62,9 +72,9 @@ class Matrix {
         return *this;
     }
 
-    ///  # operator *= scalar
-    ///  data[i][j] <- data[i][j] * rhs
-    ///  O(nm)
+    //  # operator*=(rhs)
+    //  全要素をスカラー倍する。data[i][j] <- data[i][j] * rhs
+    //  O(hw)
     Matrix& operator*=(const T rhs) {
         for (int i = 0; i < h_; i++) {
             for (int j = 0; j < w_; j++) {
@@ -74,9 +84,9 @@ class Matrix {
         return *this;
     }
 
-    ///  # operator /= scalar
-    ///  data[i][j] <- data[i][j] / rhs
-    ///  O(nm)
+    //  # operator/=(rhs)
+    //  全要素をスカラーで割る。data[i][j] <- data[i][j] / rhs
+    //  O(hw)
     Matrix& operator/=(const T rhs) {
         for (int i = 0; i < h_; i++) {
             for (int j = 0; j < w_; j++) {
@@ -119,9 +129,10 @@ class Matrix {
         return os;
     }
 
-    ///  # operator+= matrix
-    ///  lhs[i][j] <- lhs[i][j] + rhs[i][j]
-    ///  O(nm)
+    //  # operator+=(rhs)
+    //  行列を足す。lhs[i][j] <- lhs[i][j] + rhs[i][j]
+    //  行数と列数が同じでないと壊れる
+    //  O(hw)
     Matrix& operator+=(const Matrix& rhs) {
         assert(h_ == rhs.h_ && w_ == rhs.w_);
         for (int i = 0; i < h_; i++) {
@@ -132,9 +143,10 @@ class Matrix {
         return *this;
     }
 
-    ///  # operator-= matrix
-    ///  lhs[i][j] <- lhs[i][j] - rhs[i][j]
-    ///  O(nm)
+    //  # operator-=(rhs)
+    //  行列を引く。lhs[i][j] <- lhs[i][j] - rhs[i][j]
+    //  行数と列数が同じでないと壊れる
+    //  O(hw)
     Matrix& operator-=(const Matrix& rhs) {
         assert(h_ == rhs.h_ && w_ == rhs.w_);
         for (int i = 0; i < h_; i++) {
@@ -145,9 +157,10 @@ class Matrix {
         return *this;
     }
 
-    ///  # operator*= matrix
-    ///  lhs[i][j] <- sum[for k in [0, w)](lhs[i][k] * rhs[k][j])
-    ///  O(nml)
+    //  # operator*=(rhs)
+    //  行列を右から掛ける。lhs[i][j] <- sum[for k in [0, w)](lhs[i][k] * rhs[k][j])
+    //  lhsの列数とrhsの行数が同じでないと壊れる
+    //  O(h * w * rhsの列数)
     Matrix& operator*=(const Matrix& rhs) {
         assert(w_ == rhs.h_);
         std::vector<std::vector<T>> mat(h_, std::vector<T>(rhs.w_));
@@ -173,9 +186,10 @@ class Matrix {
         return Matrix(lhs) *= rhs;
     }
 
-    ///  # pow(exp)
-    ///  return (data) ** exp
-    ///  O(n^3 log exp)
+    //  # pow(exp)
+    //  return (data) ** exp。exp <= 0 なら単位行列を返す
+    //  正方行列でないと壊れる
+    //  O(h^3 log exp)
     [[nodiscard]] Matrix pow(long long exp) const {
         assert(h_ == w_);
         Matrix result(h_, w_);
@@ -193,9 +207,9 @@ class Matrix {
         return result;
     }
 
-    ///  # rotate()
-    ///  多分時計周り
-    ///  O(nm)
+    //  # rotate()
+    //  時計回りに90度回した、w行h列の行列を返す
+    //  O(hw)
     [[nodiscard]] Matrix rotate() const {
         std::vector<std::vector<T>> result(w_, std::vector<T>(h_));
         for (int i = 0; i < h_; i++) {
@@ -206,9 +220,9 @@ class Matrix {
         return Matrix(result);
     }
 
-    ///  # transpose()
-    ///  転置
-    ///  O(nm)
+    //  # transpose()
+    //  転置
+    //  O(hw)
     [[nodiscard]] Matrix transpose() const {
         std::vector<std::vector<T>> result(w_, std::vector<T>(h_));
         for (int i = 0; i < h_; i++) {
@@ -219,12 +233,14 @@ class Matrix {
         return Matrix(result);
     }
 
-    ///  # row()
+    //  # row()
+    //  行数
     int row() const {
         return h_;
     }
 
-    ///  # column()
+    //  # column()
+    //  列数
     int column() const {
         return w_;
     }

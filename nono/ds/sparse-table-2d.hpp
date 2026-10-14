@@ -8,15 +8,19 @@
 
 namespace nono {
 
-///  # 二次元sparse table
-///  静的な矩形領域積クエリを前処理O(n(logn)^2), クエリ O(1)で.
-///  メモリ使用量がバカ.
+//  # SparseTable2D
+//  二次元sparse table。静的な矩形領域積クエリを前処理O(hw log h log w), クエリ O(1)で.
+//  Mはモノイド。opが冪等かつ可換でないと壊れる
+//  メモリ使用量がバカ.
 template <class M>
 class SparseTable2D {
     using T = M::Value;
 
   public:
     SparseTable2D() {}
+    //  # SparseTable2D(data)
+    //  dataが空だと壊れる
+    //  O(hw log h log w)
     SparseTable2D(std::vector<std::vector<T>> data): h_(data.size()), w_(data.front().size()) {
         const int log = std::bit_width(static_cast<unsigned>(h_));
         std::vector<std::vector<std::vector<T>>> temp(log);
@@ -47,9 +51,10 @@ class SparseTable2D {
         }
     }
 
-    ///  # prod(h1, w1, h2, w2)
-    ///  return op[for i in [h1, h2), for j in [w1, w2)](data[i][j])
-    ///  O(1)
+    //  # prod(h1, w1, h2, w2)
+    //  return op[for i in [h1, h2), for j in [w1, w2)](data[i][j])
+    //  0 <= h1 <= h2 <= h, 0 <= w1 <= w2 <= w でないと壊れる
+    //  O(1)
     T prod(int h1, int w1, int h2, int w2) const {
         assert(0 <= h1 && h1 <= h2 && h2 <= h_);
         assert(0 <= w1 && w1 <= w2 && w2 <= w_);

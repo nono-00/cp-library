@@ -8,8 +8,8 @@
 
 namespace nono {
 
-///  operator+を持たない辺重み型でもProductableTreeが構築できることを確認する回帰テスト
-///  (issue #13: 辺重みTにoperator+を要求してしまっていた問題)
+//  operator+を持たない辺重み型でもProductableTreeが構築できることを確認する回帰テスト
+//  (issue #13: 辺重みTにoperator+を要求してしまっていた問題)
 struct NoAddWeight {
     int label = 0;
 };

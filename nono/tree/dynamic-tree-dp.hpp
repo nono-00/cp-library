@@ -7,6 +7,11 @@
 
 namespace nono {
 
+//  # TreeDPInfoTemplate
+//  DynamicTreeDPに渡すInfoが満たすべきインターフェース(説明用)
+//  Point : 頂点の値と、部分木をまとめた値の型
+//  Edge  : 辺の値の型
+//  Path  : heavy pathをまとめた値の型。pointメンバを持つこと
 struct TreeDPInfoTemplate {
     using Point = int;
     using Edge = int;
@@ -26,8 +31,9 @@ struct TreeDPInfoTemplate {
     static Point rake(Point lhs, Point rhs);
 };
 
-///  # DynamicTreeDP
-///  木dpで辺重みや頂点重みを変更するやつ
+//  # DynamicTreeDP
+//  木DPの値を、頂点や辺の値を変更するたびに更新する。static top treeの上で計算する
+//  InfoはTreeDPInfoTemplateの形で渡す
 template <class Info>
 class DynamicTreeDP {
     using Point = Info::Point;
@@ -37,10 +43,12 @@ class DynamicTreeDP {
     using NodeType = static_top_tree::NodeType;
 
   public:
-    ///  # DynamicTreeDP(n, init, vertexs, edges, root)
-    ///  init := 木構造を保持したやつ
-    ///  vertexs := 頂点重み列
-    ///  edges := 辺重み列
+    //  # DynamicTreeDP(n, init, vertexs, edges, root)
+    //  init    : 木の辺のリスト
+    //  vertexs : 頂点の値の列。vertexs[i] が頂点iの値
+    //  edges   : 辺の値の列。edges[i] が init[i] の値
+    //  initが木でないと壊れる
+    //  O(n log n)
     template <class T>
     DynamicTreeDP(int n, const std::vector<EdgeBase<T>>& init, const std::vector<Point>& vertexs,
                   const std::vector<Edge>& edges, int root = 0)
@@ -58,14 +66,16 @@ class DynamicTreeDP {
         dfs(stt_.root);
     }
 
-    ///  # all_prod()
-    ///  O(1)
+    //  # all_prod()
+    //  木全体の値
+    //  O(1)
     Point all_prod() {
         return tot_[stt_.root].point;
     }
 
-    ///  # set_edge(i, edge)
-    ///  O(log n) ?
+    //  # set_edge(i, edge)
+    //  i番目の辺(init[i])の値をedgeにする
+    //  O(log n)
     void set_edge(int i, Edge edge) {
         int u = stt_.edges[i];
         edges_[u] = edge;
@@ -76,8 +86,9 @@ class DynamicTreeDP {
         }
     }
 
-    ///  # set vertex(i, point)
-    ///  O(log n) ?
+    //  # set_vertex(i, point)
+    //  頂点iの値をpointにする
+    //  O(log n)
     void set_vertex(int i, Point point) {
         int u = stt_.vertexs[i];
         vertexs_[u] = point;

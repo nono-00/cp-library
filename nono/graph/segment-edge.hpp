@@ -7,10 +7,9 @@
 
 namespace nono {
 
-///  # Segment Edge
-///  from := [a, b)
-///  to := [c, d)
-///  Segment Edge := { (u, v, w) | u in [a, b), v in [c, d), w := weight }
+//  # SegmentEdge
+//  区間辺。from = [a, b) の各頂点から to = [c, d) の各頂点へ、重みweightの辺を張ることを表す
+//  { (u, v, weight) | u in [a, b), v in [c, d) }
 template <class T>
 struct SegmentEdge {
     std::pair<int, int> from;
@@ -18,18 +17,13 @@ struct SegmentEdge {
     T weight;
 };
 
-///  # to segment graph(n, segment edges)
-///  区間辺集合から有向グラフを構築する
-///
-///  返り値のstd::vector<int>は構築後のグラフの頂点に
-///  対応する元のグラフの頂点を表す
-///
-///  mapping: vertex(segment-graph) -> vertex(original-graph)
-///
-///  mapping[i] = -1ならば対応する頂点は存在しない
-///  元のグラフにおける頂点iに対応する頂点はmapping[j] = iを満たすj
-///
-///  作られたグラフの頂点数が3 * n + mであることに注意
+//  # to_segment_graph(n, seg_edges)
+//  区間辺の集合から、元の頂点どうしの距離が変わらない有向グラフを作る。nは元の頂点数
+//  first  : 作ったグラフ。頂点数は 3 * n + m (m: 区間辺の数)
+//  second : 作ったグラフの頂点から元の頂点への対応。-1なら対応する元の頂点は無い
+//  元の頂点iは、作ったグラフの頂点 i + n に対応する
+//  各区間が 0 <= left <= right <= n でないと壊れる
+//  辺の数は O(n + m log n)
 template <class T>
 std::pair<Graph<T>, std::vector<int>> to_segment_graph(int n, const std::vector<SegmentEdge<T>>& seg_edges) {
     int m = seg_edges.size();

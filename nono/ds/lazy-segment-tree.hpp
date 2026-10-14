@@ -6,9 +6,10 @@
 
 namespace nono {
 
-///  # 遅延セグ木
-///  区間作用 区間取得のsegment tree. acl のインターフェースを少し変えただけ.
-///  https://atcoder.github.io/ac-library/master/document_ja/lazysegtree.html
+//  # LazySegmentTree
+//  遅延セグ木。区間作用 区間取得のsegment tree. acl のインターフェースを少し変えただけ.
+//  https://atcoder.github.io/ac-library/master/document_ja/lazysegtree.html
+//  Mはact-monoid。添字が範囲外だと壊れる(pは [0, n)、l, rは 0 <= l <= r <= n)
 template <class M>
 struct LazySegmentTree {
     using T = M::Value;
@@ -17,6 +18,9 @@ struct LazySegmentTree {
   public:
     LazySegmentTree(): LazySegmentTree(0) {}
     explicit LazySegmentTree(int n): LazySegmentTree(std::vector<T>(n, M::e())) {}
+    //  # LazySegmentTree(v)
+    //  vの内容で初期化する
+    //  O(n)
     explicit LazySegmentTree(const std::vector<T>& v): n_(int(v.size())) {
         size_ = std::bit_ceil((unsigned int)(n_));
         log_ = std::countr_zero((unsigned int)size_);
@@ -28,9 +32,9 @@ struct LazySegmentTree {
         }
     }
 
-    ///  # set(p, x)
-    ///  data[p] <= x
-    ///  O(logn)
+    //  # set(p, x)
+    //  data[p] <= x
+    //  O(log n)
     void set(int p, T x) {
         assert(0 <= p && p < n_);
         p += size_;
@@ -39,9 +43,9 @@ struct LazySegmentTree {
         for (int i = 1; i <= log_; i++) update(p >> i);
     }
 
-    ///  # get(p)
-    ///  return data[p]
-    ///  O(logn)
+    //  # get(p)
+    //  return data[p]
+    //  O(log n)
     T get(int p) {
         assert(0 <= p && p < n_);
         p += size_;
@@ -49,9 +53,9 @@ struct LazySegmentTree {
         return data_[p];
     }
 
-    ///  # prod(l, r)
-    ///  return op[for i in [l, r)](data[i])
-    ///  O(logn)
+    //  # prod(l, r)
+    //  return op[for i in [l, r)](data[i])
+    //  O(log n)
     T prod(int l, int r) {
         assert(0 <= l && l <= r && r <= n_);
         if (l == r) return M::e();
@@ -75,15 +79,16 @@ struct LazySegmentTree {
         return M::op(sml, smr);
     }
 
-    ///  # all_prod()
-    ///  O(1)
+    //  # all_prod()
+    //  return op[for i in [0, n)](data[i])
+    //  O(1)
     T all_prod() {
         return data_[1];
     }
 
-    ///  # apply(p, f)
-    ///  data[p] <= mapping(f, data[p])
-    ///  O(logn)
+    //  # apply(p, f)
+    //  data[p] <= mapping(f, data[p])
+    //  O(log n)
     void apply(int p, F f) {
         assert(0 <= p && p < n_);
         p += size_;
@@ -91,9 +96,9 @@ struct LazySegmentTree {
         data_[p] = M::mapping(f, data_[p]);
         for (int i = 1; i <= log_; i++) update(p >> i);
     }
-    ///  # apply(l, r, f)
-    ///  [for i in [l, r)](data[i] <= mapping(f, data[i])
-    ///  O(logn)
+    //  # apply(l, r, f)
+    //  [for i in [l, r)](data[i] <= mapping(f, data[i]))
+    //  O(log n)
     void apply(int l, int r, F f) {
         assert(0 <= l && l <= r && r <= n_);
         if (l == r) return;
@@ -124,9 +129,10 @@ struct LazySegmentTree {
         }
     }
 
-    ///  # max_right(l, f)
-    ///  return max { r | r in (l, n], G(prod(l, r)) is true}
-    ///  O(logn)
+    //  # max_right(l, g)
+    //  g(op[for i in [l, r)](data[i])) == trueを満たす最大のrを返す
+    //  g(M::e()) がtrueでないと壊れる
+    //  O(log n)
     template <class G>
     int max_right(int l, G g) {
         assert(0 <= l && l <= n_);
@@ -154,9 +160,10 @@ struct LazySegmentTree {
         return n_;
     }
 
-    ///  # min_left(r, f)
-    ///  return min { l | l in [0, r), G(prod(l, r)) is true}
-    ///  O(logn)
+    //  # min_left(r, g)
+    //  g(op[for i in [l, r)](data[i])) == trueを満たす最小のlを返す
+    //  g(M::e()) がtrueでないと壊れる
+    //  O(log n)
     template <class G>
     int min_left(int r, G g) {
         assert(0 <= r && r <= n_);

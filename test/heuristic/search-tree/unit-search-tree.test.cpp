@@ -24,14 +24,14 @@ void undo(State& state, const Action& action) {
     state[action.index] -= action.delta;
 }
 
-///  根からidまでのActionを素直に適用した状態
+//  根からidまでのActionを素直に適用した状態
 State reference_state(const SearchTree<Action>& tree, int id) {
     State state(WIDTH, 0);
     for (const Action& action: tree.path(id)) apply(state, action);
     return state;
 }
 
-///  親を辿るだけの素朴な実装
+//  親を辿るだけの素朴な実装
 std::vector<Action> reference_path(const SearchTree<Action>& tree, int id) {
     std::vector<Action> result;
     while (id != SearchTree<Action>::ROOT) {
@@ -109,7 +109,7 @@ void test(unsigned seed, int node_count) {
     }
 }
 
-///  一本道の木。fromとtoが祖先子孫関係にある場合
+//  一本道の木。fromとtoが祖先子孫関係にある場合
 void test_path_graph() {
     SearchTree<Action> tree;
     int previous = SearchTree<Action>::ROOT;

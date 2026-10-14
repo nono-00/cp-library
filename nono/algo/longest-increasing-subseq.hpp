@@ -7,9 +7,12 @@
 
 namespace nono {
 
-///  # 最長増加部分列, LIS
-///  [for i in [0, |LIS| - 1)](compare(seq[LIS[i]], seq[LIS[i + 1]]) = true)
-///  添え字列を返す
+//  # longest_increasing_subseq(seq, compare)
+//  最長増加部分列(LIS)。隣り合う要素が compare(seq[LIS[i]], seq[LIS[i + 1]]) = true を満たす
+//  最長の部分列を1つ求め、その添字の列を返す
+//  compareが std::less なら狭義単調増加、std::less_equal なら広義単調増加、std::greater なら狭義単調減少
+//  seqが空だと壊れる
+//  O(n log n)
 template <class T, class Compare>
 std::vector<int> longest_increasing_subseq(const std::vector<T>& seq, Compare compare) {
     int n = seq.size();
@@ -36,9 +39,10 @@ std::vector<int> longest_increasing_subseq(const std::vector<T>& seq, Compare co
     return result;
 }
 
-///  # 最長増加部分列, LIS
-///  [for i in [0, |LIS| - 1)](seq[LIS[i]] < seq[LIS[i + 1]])
-///  狭義. 添え字列を返す
+//  # longest_increasing_subseq(seq)
+//  狭義単調増加な最長の部分列を1つ求め、その添字の列を返す
+//  seqが空だと壊れる
+//  O(n log n)
 template <class T>
 std::vector<int> longest_increasing_subseq(const std::vector<T>& seq) {
     return longest_increasing_subseq(seq, std::less<T>());

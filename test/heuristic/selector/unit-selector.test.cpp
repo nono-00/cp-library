@@ -23,8 +23,8 @@ std::vector<int> count(const auto& selector, Rng& rng) {
     return counter;
 }
 
-///  UniformSelectorが[0, N)を一様に返すこと。
-///  Nが2冪でない場合も含めて確認する(乗算シフトの丸め)
+//  UniformSelectorが[0, N)を一様に返すこと。
+//  Nが2冪でない場合も含めて確認する(乗算シフトの丸め)
 template <int N, class Rng>
 void test_uniform(Rng& rng) {
     auto counter = count<N>(UniformSelector<N>{}, rng);
@@ -34,7 +34,7 @@ void test_uniform(Rng& rng) {
     }
 }
 
-///  Selectorが重みに比例して返すこと
+//  Selectorが重みに比例して返すこと
 template <int N, class Rng>
 void test_weighted(const std::array<double, N>& weights, Rng& rng) {
     double sum = 0;
@@ -52,8 +52,8 @@ void test_weighted(const std::array<double, N>& weights, Rng& rng) {
     }
 }
 
-///  デフォルト構築したSelectorが一様であること。
-///  以前は重みが未初期化のまま参照されていた
+//  デフォルト構築したSelectorが一様であること。
+//  以前は重みが未初期化のまま参照されていた
 template <int N, class Rng>
 void test_default_constructed(Rng& rng) {
     auto counter = count<N>(Selector<N>{}, rng);

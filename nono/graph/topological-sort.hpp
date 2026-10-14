@@ -8,8 +8,10 @@
 
 namespace nono {
 
-///  # topological sort(graph)
-///  if G is not DAG, return empty vector
+//  # topological_sort(graph)
+//  トポロジカルソートした頂点の列を1つ返す。閉路があれば空の列を返す
+//  有向グラフでないと壊れる
+//  O(n + m)
 template <class T>
 std::vector<int> topological_sort(const Graph<T>& graph) {
     assert(graph.is_directed());

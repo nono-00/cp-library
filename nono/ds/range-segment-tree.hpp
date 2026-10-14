@@ -10,16 +10,18 @@
 
 namespace nono {
 
-///  # 領域木segment tree盛り
-///  一点変更座標が事前にわかる場合に使える二次元 segment tree.
+//  # RangeSegmentTree
+//  領域木segment tree盛り
+//  一点変更座標が事前にわかる場合に使える二次元 segment tree.
+//  Mはモノイド。opが可換でないと壊れる
 template <class M, class Index>
 class RangeSegmentTree {
     using T = M::Value;
 
   public:
-    ///  # RangeSegmentTree(points)
-    ///  points: 変更クエリが来る場所
-    ///  O(N(logN)^2)
+    //  # RangeSegmentTree(points)
+    //  points: 変更クエリが来る場所
+    //  O(n (log n)^2)
     RangeSegmentTree(const std::vector<std::pair<Index, Index>>& points): trees_(1), coord_y_(1) {
         std::vector<Index> xs;
         for (auto [x, y]: points) {
@@ -46,9 +48,10 @@ class RangeSegmentTree {
         }
     }
 
-    ///  # set(x, y, elem)
-    ///  data[x][y] <= elem
-    ///  O((logN)^2)
+    //  # set(x, y, w)
+    //  data[x][y] <= w
+    //  (x, y) がコンストラクタに渡したpointsに含まれていないと壊れる
+    //  O((log n)^2)
     void set(Index x, Index y, T w) {
         assert(coord_x_.contains(x));
         int i = coord_x_.compress(x);
@@ -68,9 +71,10 @@ class RangeSegmentTree {
         }
     }
 
-    ///  # get(x, y)
-    ///  return data[x][y]
-    ///  O((logN)^2)
+    //  # get(x, y)
+    //  return data[x][y]
+    //  (x, y) がコンストラクタに渡したpointsに含まれていないと壊れる
+    //  O((log n)^2)
     T get(Index x, Index y) {
         assert(coord_x_.contains(x));
         int i = coord_x_.compress(x);
@@ -79,9 +83,9 @@ class RangeSegmentTree {
         return trees_[i].get(coord_y_[i].compress(y));
     }
 
-    ///  # prod(x1, y1, x2, y2)
-    ///  return op[for i in [x1, x2), for j in [y1, y2)](data[i][j])
-    ///  O((logN)^2)
+    //  # prod(x1, y1, x2, y2)
+    //  return op[for i in [x1, x2), for j in [y1, y2)](data[i][j])
+    //  O((log n)^2)
     T prod(Index x1, Index y1, Index x2, Index y2) {
         int left = coord_x_.compress(x1);
         int right = coord_x_.compress(x2);

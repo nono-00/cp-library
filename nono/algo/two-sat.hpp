@@ -9,19 +9,21 @@
 
 namespace nono {
 
-///  # 2sat
-///  (A_1 or A_2) and (A_3 or A_4) ... が真となる割り当てが存在するか
+//  # TwoSat
+//  2-SAT。(A_1 or A_2) and (A_3 or A_4) ... を真にする割り当てが存在するか判定する
+//  変数はコンストラクタに渡したn個で、0からn - 1の番号で指定する
 class TwoSat {
   public:
     TwoSat() {}
     TwoSat(int n): n_(n), ans_(n) {}
 
-    ///  # add_clause(i, j)
-    ///  (i or j)を追加する
-    ///  肯定リテラル  i
-    ///  否定リテラル ~i
-    ///  iを恒真にしたい => add_clause(i, i)
-    ///  O(1)
+    //  # add_clause(i, j)
+    //  (i or j)を追加する
+    //  肯定リテラル  i
+    //  否定リテラル ~i
+    //  iを恒真にしたい => add_clause(i, i)
+    //  i, j が x または ~x (0 <= x < n) の形でないと壊れる
+    //  O(1)
     void add_clause(int i, int j) {
         assert((0 <= i && i < n_) || (0 <= ~i && ~i < n_));
         assert((0 <= j && j < n_) || (0 <= ~j && ~j < n_));
@@ -29,9 +31,9 @@ class TwoSat {
         edges_.emplace_back((j < 0 ? 2 * ~j : 2 * j + 1), (i < 0 ? 2 * ~i + 1 : 2 * i));
     }
 
-    ///  # satisfiable()
-    ///  条件を満たす割り当てが存在するか
-    ///  O(N + M)
+    //  # satisfiable()
+    //  条件を満たす割り当てが存在するか
+    //  O(n + m)  (m: 追加した節の数)
     bool satisfiable() {
         auto groups = strongly_connected_components(to_directed_graph(2 * n_, edges_));
         std::vector<int> id(n_, -1);
@@ -47,9 +49,10 @@ class TwoSat {
         return true;
     }
 
-    ///  # answer()
-    ///  実際の割り当てを返す
-    ///  存在しない場合、壊れる
+    //  # answer()
+    //  条件を満たす割り当てを1つ返す
+    //  存在しない場合、壊れる
+    //  O(n + m)
     std::vector<bool> answer() {
         bool exist = satisfiable();
         assert(exist);

@@ -7,9 +7,10 @@
 
 namespace nono {
 
-///  # is bipartite(graph)
-///  whether graph is bipartite
-///  O(n + m)
+//  # is_bipartite(graph)
+//  二部グラフか。非連結でもよい
+//  無向グラフでないと壊れる(正しく判定できない)
+//  O(n + m)
 template <class T>
 bool is_bipartite(const Graph<T>& graph) {
     int n = graph.size();

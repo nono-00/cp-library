@@ -10,8 +10,13 @@ namespace nono {
 
 namespace beats_monoid {
 
-///  # RangeChminBootRangeSum
-///  https://codeforces.com/contest/855/problem/F
+//  # RangeChminBootRangeSum
+//  区間chmin、区間和。要素ごとに、和へ含めるかどうかを後から有効にできる
+//  https://codeforces.com/contest/855/problem/F
+//  Value(val, 0) で作った要素は和に含まれず、Act::boot() を作用させると含まれるようになる
+//  作用は Act::chmin(val), Act::boot() で作る
+//  boot()を複数要素の区間に作用させると壊れる(1点にだけ作用させること)
+//  mappingは、actが2番目に大きい値以下のとき nullopt を返す(子に降りて計算し直す)
 template <class T>
 struct RangeChminBootRangeSum {
   private:
@@ -22,11 +27,11 @@ struct RangeChminBootRangeSum {
     struct Value {
         Value(): max_top2({MIN, MIN}), num(0), sum(0) {}
         Value(T val, int num = 1): max_top2({val, MIN}), num(num), sum(val * num) {}
-        //  v[0]: maximum value, v[1]: second maximum value
+        //  [0]: 最大値, [1]: 2番目に大きい値
         std::array<T, 2> max_top2;
-        //  n: num of maximum value
+        //  最大値の個数
         int num;
-        //  s: sum of segment
+        //  区間の和
         T sum;
     };
     struct Act {

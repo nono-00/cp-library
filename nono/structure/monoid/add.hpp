@@ -4,7 +4,8 @@ namespace nono {
 
 namespace monoid {
 
-///  # Add
+//  # Add
+//  和。op(a, b) = a + b, e() = 0
 template <class T>
 struct Add {
     using Value = T;

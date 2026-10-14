@@ -4,7 +4,9 @@ namespace nono {
 
 namespace monoid {
 
-///  # Rev
+//  # Rev
+//  モノイドMについて、順方向の積(ord)と逆方向の積(rev)を同時に持つラッパー
+//  opが可換でないモノイドで、列を逆向きに並べた積も必要なときに使う
 template <class M>
 struct Rev {
     using T = M::Value;

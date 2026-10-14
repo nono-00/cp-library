@@ -2,7 +2,7 @@
 
 #include <bits/stdc++.h>
 
-#include "../../../nono/math/floor-sum.hpp"
+#include "nono/math/floor-sum.hpp"
 
 int main() {
     std::cin.tie(0)->sync_with_stdio(0);

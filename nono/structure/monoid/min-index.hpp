@@ -6,13 +6,14 @@ namespace nono {
 
 namespace monoid {
 
-///  # MinIndex
-///  (a, i), (b, j)
-///  [1] if a <= b:
-///      return (a, i)
-///  [2] else
-///      return (b, j)
-///  同じなら左側
+//  # MinIndex
+//  (a, i), (b, j)
+//  [1] if a <= b:
+//      return (a, i)
+//  [2] else
+//      return (b, j)
+//  同じなら左側
+//  indexが-1の値は単位元として扱う
 template <class T>
 struct MinIndex {
     struct Value {

@@ -32,9 +32,9 @@ void solve() {
         assert(s1.size() == 1 && s1.top() == 1);
     }
 
-    //  persistent::stack:: の生ノードAPI
+    //  persistent::stack_internal:: の生ノードAPI
     {
-        using namespace persistent::stack;
+        using namespace persistent::stack_internal;
         NodePtr<int> n0 = nullptr;
         assert(empty(n0));
         assert(size(n0) == 0);

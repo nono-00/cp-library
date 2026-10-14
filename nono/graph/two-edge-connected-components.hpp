@@ -8,10 +8,11 @@
 
 namespace nono {
 
-///  # two edge connected components
-///  二辺連結成分分解する.
-///  連結非連結, 単純非単純を問わない.
-///  O(n + m)
+//  # two_edge_connected_components(graph)
+//  二辺連結成分分解。成分ごとの頂点の列を返す。成分の順序は不定
+//  非連結でも、多重辺や自己ループがあってもよい
+//  無向グラフでないと壊れる
+//  O(n + m)
 template <class T>
 std::vector<std::vector<int>> two_edge_connected_components(const Graph<T>& graph) {
     assert(graph.is_undirected());

@@ -1,7 +1,7 @@
 // competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/associative_array
 #include <iostream>
 
-#include "../../../nono/ds/ordered-map.hpp"
+#include "nono/ds/ordered-map.hpp"
 
 void solve() {
     int q;

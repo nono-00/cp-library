@@ -6,32 +6,36 @@
 #include <utility>
 #include <vector>
 
-#include "nono/heuristic/search-selector.hpp"
-#include "nono/heuristic/search-tree.hpp"
+#include "./search-selector.hpp"
+#include "./search-tree.hpp"
 
 namespace nono {
 
-///  # BeamSearchConfig
+//  # BeamSearchConfig
+//  beam_searchに渡す設定
 struct BeamSearchConfig {
-    ///  最大何手進めるか
+    //  最大何手進めるか
     int max_turn;
-    ///  各手で残す候補数
+    //  各手で残す候補数
     int beam_width;
 };
 
-///  # BeamSearchResult
+//  # BeamSearchResult
+//  beam_searchの結果。答えは、展開先がなかったノード(終端)と最後の手で残った候補のうち、スコア最良のもの
 template <class Action>
 struct BeamSearchResult {
+    //  初期状態から答えのノードまでのAction列
     std::vector<Action> actions;
+    //  答えのノードのスコア
     double score;
 };
 
 namespace beam_search_internal {
 
-///  探索木の同じ深さのノードは、id順に並べるとDFS順になる。
-///  子は親を処理した順に連続して作られるので、深さd-1をid順に辿っていれば
-///  深さdのidも(親の順, 子の順)の辞書順になっているため。
-///  この順で辿ると、隣接するノード間の移動距離が最小になる
+//  探索木の同じ深さのノードは、id順に並べるとDFS順になる。
+//  子は親を処理した順に連続して作られるので、深さd-1をid順に辿っていれば
+//  深さdのidも(親の順, 子の順)の辞書順になっているため。
+//  この順で辿ると、隣接するノード間の移動距離が最小になる
 template <class Frontier>
 void sort_by_id(Frontier& frontier) {
     std::sort(frontier.begin(), frontier.end(), [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
@@ -39,21 +43,21 @@ void sort_by_id(Frontier& frontier) {
 
 }  //  namespace beam_search_internal
 
-///  # beam_search<Action, Hash>(state, score, config, expand, apply, undo)
-///  単一のStateをEuler tourに沿って動かす版。ノードはActionしか持たないので、
-///  メモリは O(生成ノード数 * sizeof(Action))。
-///  applyとundoが互いに逆であることが必要
-///
-///  ## 利用者が渡すもの
-///  expand(state, f) : 遷移候補ごとに f(action, score, hash) を呼ぶ。
-///                     scoreは遷移後の絶対スコア、hashは遷移後の状態の重複排除キー。
-///                     いずれも「次の状態を作らずに」求めること。
-///                     一度もfを呼ばなければ、そのノードは終端として扱われる
-///  apply(state, action) : stateにactionを適用する
-///  undo(state, action)  : applyを打ち消す
-///
-///  ## Actionにはundoに必要な情報を持たせる
-///  遷移で壊れるが復元が高価な値はActionに退避しておくとundoが軽くなる
+//  # beam_search<Action, Hash>(initial_state, initial_score, config, expand, apply, undo)
+//  単一のStateをEuler tourに沿って動かす版。ノードはActionしか持たないので、
+//  メモリは O(生成ノード数 * sizeof(Action))。
+//  applyとundoが互いに逆でないと壊れる。config.beam_width > 0 でないと壊れる
+//
+//  ## 利用者が渡すもの
+//  expand(state, f) : 遷移候補ごとに f(action, score, hash) を呼ぶ。
+//                     scoreは遷移後の絶対スコア、hashは遷移後の状態の重複排除キー。
+//                     いずれも「次の状態を作らずに」求めること。
+//                     一度もfを呼ばなければ、そのノードは終端として扱われる
+//  apply(state, action) : stateにactionを適用する
+//  undo(state, action)  : applyを打ち消す
+//
+//  ## Actionにはundoに必要な情報を持たせる
+//  遷移で壊れるが復元が高価な値はActionに退避しておくとundoが軽くなる
 template <class Action, class Hash, class State, class Expand, class Apply, class Undo>
 BeamSearchResult<Action> beam_search(const State& initial_state, double initial_score, const BeamSearchConfig& config,
                                      Expand expand, Apply apply, Undo undo) {
@@ -103,11 +107,12 @@ BeamSearchResult<Action> beam_search(const State& initial_state, double initial_
     return BeamSearchResult<Action>{tree.path(best_id), best_score};
 }
 
-///  # beam_search<Action, Hash>(state, score, config, expand, apply)
-///  undoを書けない場合に使う版。選ばれた候補のぶんだけStateをコピーして持つ。
-///  メモリは O(beam_width * sizeof(State))で、1手あたりbeam_width回のコピーが走る。
-///  expandとapplyに求めるものはundoあり版と同じなので、
-///  undoを書けるようになったらundoを渡すだけで切り替えられる
+//  # beam_search<Action, Hash>(initial_state, initial_score, config, expand, apply)
+//  undoを書けない場合に使う版。選ばれた候補のぶんだけStateをコピーして持つ。
+//  メモリは O(beam_width * sizeof(State))で、1手あたりbeam_width回のコピーが走る。
+//  expandとapplyに求めるものはundoあり版と同じなので、
+//  undoを書けるようになったらundoを渡すだけで切り替えられる
+//  config.beam_width > 0 でないと壊れる
 template <class Action, class Hash, class State, class Expand, class Apply>
 BeamSearchResult<Action> beam_search(const State& initial_state, double initial_score, const BeamSearchConfig& config,
                                      Expand expand, Apply apply) {

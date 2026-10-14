@@ -6,7 +6,9 @@ namespace nono {
 
 namespace monoid {
 
-///  # MaxIndex
+//  # MaxIndex
+//  (value, index) の組で、valueが最大のものを残す。同じなら左側
+//  indexが-1の値は単位元として扱う
 template <class T>
 struct MaxIndex {
     struct Value {

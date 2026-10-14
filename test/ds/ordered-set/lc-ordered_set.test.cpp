@@ -1,7 +1,7 @@
 // competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/ordered_set
 #include <iostream>
 
-#include "../../../nono/ds/ordered-set.hpp"
+#include "nono/ds/ordered-set.hpp"
 
 void solve() {
     int n, q;

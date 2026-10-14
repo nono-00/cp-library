@@ -6,8 +6,11 @@ namespace nono {
 
 namespace act_monoid {
 
-///  # RangeAddCountMin
-///  区間に含まれる最小値とその出現回数
+//  # RangeAddCountMin
+//  区間加算、区間に含まれる最小値とその出現回数
+//  op      : 最小値が小さいほうを残す。等しければ出現回数を足す
+//  mapping : 最小値にactを足す。出現回数は変わらない
+//  1要素は Value(val) で作る
 template <class T, class Count = unsigned>
 struct RangeAddCountMin {
     //  (min, count)

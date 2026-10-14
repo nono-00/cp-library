@@ -8,9 +8,9 @@
 
 namespace nono {
 
-///  # LiChao木
-///  直線, 線分追加, ある地点での最小値/最大値取得ができる
-///  MinLiChaoTree, MaxLiChaoTreeを定義してあるので使うと良い
+//  # LiChaoTree
+//  LiChao木。直線, 線分追加, ある地点での最小値/最大値取得ができる
+//  MinLiChaoTree, MaxLiChaoTreeを定義してあるので使うと良い
 template <class T, bool minimum = true>
 class LiChaoTree {
     static constexpr T compare = minimum ? 1 : -1;
@@ -23,23 +23,29 @@ class LiChaoTree {
     };
 
   public:
+    //  # LiChaoTree(n)
+    //  xが [0, n) の整数である範囲を扱う
     LiChaoTree(int n): n_(std::bit_ceil((unsigned)n)), data_(2 * n_) {}
-    ///  # add_line(a, b)
-    ///  [0, n)にax + bを追加する
-    ///  O(logn)
+
+    //  # add_line(a, b)
+    //  [0, n)にax + bを追加する
+    //  O(log n)
     void add_line(T a, T b) {
         add_segment(0, n_, a, b);
     }
-    ///  # add_segment
-    ///  [l, r)にax+bを追加
-    ///  O(log n)
+    //  # add_segment(l, r, a, b)
+    //  [l, r)にax+bを追加
+    //  0 <= l < r <= n でないと壊れる
+    //  O((log n)^2)
     void add_segment(int l, int r, T a, T b) {
         assert(0 <= l && l < r && r <= n_);
         add(0, n_, l, r, 1, Line(compare * a, compare * b));
     }
-    ///  # get(x)
-    ///  min/max[forall (a, b) in {Line or Segment}](ax + b)
-    ///  線分、直線が存在しない場合、nullopt
+    //  # get(i)
+    //  x = i での、追加した直線と線分の a * i + b の最小値(Maxなら最大値)
+    //  線分、直線が存在しない場合、nullopt
+    //  0 <= i < n でないと壊れる
+    //  O(log n)
     std::optional<T> get(int i) {
         assert(0 <= i && i < n_);
         auto result = get(0, n_, i, 1);

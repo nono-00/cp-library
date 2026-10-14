@@ -6,10 +6,13 @@
 
 namespace nono {
 
-///  # Segment Tree Beats
-///  時々作用がミスるlazy segment tree.
-///  ミスったときに愚直に計算する.
-///  だいたいこれ. <https://rsm9.hatenablog.com/entry/2021/02/01/220408>
+//  # SegmentTreeBeats
+//  時々作用がミスるlazy segment tree.
+//  ミスったときに愚直に計算する.
+//  だいたいこれ. <https://rsm9.hatenablog.com/entry/2021/02/01/220408>
+//  Mはbeats-monoid。M::mappingが nullopt を返したら、子に降りて計算し直す
+//  添字が範囲外だと壊れる(pは [0, n)、l, rは 0 <= l <= r <= n)
+//  以下の計算量は、計算し直しが起きない場合のもの。全体の計算量はMの解析による
 template <class M>
 struct SegmentTreeBeats {
     using T = M::Value;
@@ -18,6 +21,9 @@ struct SegmentTreeBeats {
   public:
     SegmentTreeBeats(): SegmentTreeBeats(0) {}
     explicit SegmentTreeBeats(int n): SegmentTreeBeats(std::vector<T>(n, M::e())) {}
+    //  # SegmentTreeBeats(v)
+    //  vの内容で初期化する
+    //  O(n)
     explicit SegmentTreeBeats(const std::vector<T>& v): n_(int(v.size())) {
         size_ = std::bit_ceil((unsigned int)(n_));
         log_ = std::countr_zero((unsigned int)size_);
@@ -29,9 +35,9 @@ struct SegmentTreeBeats {
         }
     }
 
-    ///  # set(p, x)
-    ///  data[p] <= x
-    ///  O(logn)
+    //  # set(p, x)
+    //  data[p] <= x
+    //  O(log n)
     void set(int p, T x) {
         assert(0 <= p && p < n_);
         p += size_;
@@ -40,9 +46,9 @@ struct SegmentTreeBeats {
         for (int i = 1; i <= log_; i++) update(p >> i);
     }
 
-    ///  # get(p)
-    ///  return data[p]
-    ///  O(logn)
+    //  # get(p)
+    //  return data[p]
+    //  O(log n)
     T get(int p) {
         assert(0 <= p && p < n_);
         p += size_;
@@ -50,9 +56,9 @@ struct SegmentTreeBeats {
         return data_[p];
     }
 
-    ///  # prod(l, r)
-    ///  return op[for i in [l, r)](data[i])
-    ///  O(logn)
+    //  # prod(l, r)
+    //  return op[for i in [l, r)](data[i])
+    //  O(log n)
     T prod(int l, int r) {
         assert(0 <= l && l <= r && r <= n_);
         if (l == r) return M::e();
@@ -76,15 +82,16 @@ struct SegmentTreeBeats {
         return M::op(sml, smr);
     }
 
-    ///  # all_prod()
-    ///  O(1)
+    //  # all_prod()
+    //  return op[for i in [0, n)](data[i])
+    //  O(1)
     T all_prod() {
         return data_[1];
     }
 
-    ///  # apply(p, f)
-    ///  data[p] <= mapping(f, data[p])
-    ///  O(logn)
+    //  # apply(p, f)
+    //  data[p] <= mapping(f, data[p])
+    //  O(log n)
     void apply(int p, F f) {
         assert(0 <= p && p < n_);
         p += size_;
@@ -93,9 +100,9 @@ struct SegmentTreeBeats {
         for (int i = 1; i <= log_; i++) update(p >> i);
     }
 
-    ///  # apply(l, r, f)
-    ///  [for i in [l, r)](data[i] <= mapping(f, data[i])
-    ///  O(logn)
+    //  # apply(l, r, f)
+    //  [for i in [l, r)](data[i] <= mapping(f, data[i]))
+    //  O(log n)
     void apply(int l, int r, F f) {
         assert(0 <= l && l <= r && r <= n_);
         if (l == r) return;
@@ -126,9 +133,10 @@ struct SegmentTreeBeats {
         }
     }
 
-    ///  # max_right(l, f)
-    ///  return max { r | r in (l, n], G(prod(l, r)) is true}
-    ///  O(logn)
+    //  # max_right(l, g)
+    //  g(op[for i in [l, r)](data[i])) == trueを満たす最大のrを返す
+    //  g(M::e()) がtrueでないと壊れる
+    //  O(log n)
     template <class G>
     int max_right(int l, G g) {
         assert(0 <= l && l <= n_);
@@ -156,9 +164,10 @@ struct SegmentTreeBeats {
         return n_;
     }
 
-    ///  # min_left(r, f)
-    ///  return min { l | l in [0, r), G(prod(l, r)) is true}
-    ///  O(logn)
+    //  # min_left(r, g)
+    //  g(op[for i in [l, r)](data[i])) == trueを満たす最小のlを返す
+    //  g(M::e()) がtrueでないと壊れる
+    //  O(log n)
     template <class G>
     int min_left(int r, G g) {
         assert(0 <= r && r <= n_);

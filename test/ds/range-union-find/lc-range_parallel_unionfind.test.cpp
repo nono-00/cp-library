@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "../../../nono/ds/range-union-find.hpp"
-#include "../../../nono/math/modint.hpp"
+#include "nono/ds/range-union-find.hpp"
+#include "nono/math/modint.hpp"
 
 namespace nono {
 

@@ -8,72 +8,79 @@
 
 namespace nono {
 
-///  real vertex := 元の木に存在する頂点. 値を持っていたりいなかったり.
-///
-///  virtual vertex := 元の木に存在する頂点から値の情報を抜いた仮想頂点.
-///                    たくさん複製される.
-///
-///  cluster := 分解の過程でできる部分木みたいな何か. 部分木とは言い難いものができるので代わりの用語として使用.
-///
-///  path cluster := real vertex を根に持つ cluster を heavy edge でくっつけた cluster.
-///  point cluster := 同一の virtual vertex を根とする cluster をくっつけた cluster.
-///
-///  分解過程での操作
-///
-///  [1] 根に繋がる heavy edge が存在する場合
-///      path cluster なので 分解する
-///
-///  [2] 根に繋がる heavy edge が存在せず, real cluster の場合
-///      根の real vertex を取り除いて virtual vertex を生やし point cluster にする
-///
-///  [3] light edge が複数個繋がっている場合
-///      point cluster なので virtual vertex を複製, 分解する
-///
-///  [4] light edge が一つの場合
-///      virtual vertex, light edge を取り除く
-///
-///
-///  対応する逆操作
-///  [1] compress
-///      隣接する path cluster を heavy edge でくっつける
-///
-///  [2] add_vertex
-///      根の virtual vertex を取り除いて, 対応する real vertex を生やす
-///
-///  [3] rake
-///      同一の virtual vertex を根に持つ cluster をくっつける
-///
-///  [4] add_edge
-///      light edge をくっつけて もう一つの端点に virtual vertex を生やす
-///
-///  path cluster は heavy edge の 集約値と現状のcluster の値を持つ
-///  point cluster は cluster の値を持つ
-///
-///  path cluster の合成 compress は
-///  [1] heavy edge の集約値 の合成
-///  [2] (根に近い方の path cluster の集約値) +
-///      ({根に近い方の path cluster のheavy edge の集約値} と {根から遠い方の path cluster の集約値})
-///  で構成される
-///
-///  point cluster の合成 rake は
-///  [1] clueter の集約値 の 演算
-///  で構成される
-///
-///  各頂点には対応する値が入っている
-///
-///  compress(u)
-///      サイズ 1 だった場合は対応する cluster を返す.
-///      heavy edge path 上の頂点に対して rake して (rake vertex, size) 配列を管理する
-///      これらを merge する.
-///
-///  rake(u)
-///      graph[u][1:] が空の場合は 単位 cluster を返す.
-///      graph[u][1:] の各頂点に対して compress して (compress vertex, size) 配列を管理する
-///      これらを merge する.
-///
+//  real vertex := 元の木に存在する頂点. 値を持っていたりいなかったり.
+//
+//  virtual vertex := 元の木に存在する頂点から値の情報を抜いた仮想頂点.
+//                    たくさん複製される.
+//
+//  cluster := 分解の過程でできる部分木みたいな何か. 部分木とは言い難いものができるので代わりの用語として使用.
+//
+//  path cluster := real vertex を根に持つ cluster を heavy edge でくっつけた cluster.
+//  point cluster := 同一の virtual vertex を根とする cluster をくっつけた cluster.
+//
+//  分解過程での操作
+//
+//  [1] 根に繋がる heavy edge が存在する場合
+//      path cluster なので 分解する
+//
+//  [2] 根に繋がる heavy edge が存在せず, real cluster の場合
+//      根の real vertex を取り除いて virtual vertex を生やし point cluster にする
+//
+//  [3] light edge が複数個繋がっている場合
+//      point cluster なので virtual vertex を複製, 分解する
+//
+//  [4] light edge が一つの場合
+//      virtual vertex, light edge を取り除く
+//
+//
+//  対応する逆操作
+//  [1] compress
+//      隣接する path cluster を heavy edge でくっつける
+//
+//  [2] add_vertex
+//      根の virtual vertex を取り除いて, 対応する real vertex を生やす
+//
+//  [3] rake
+//      同一の virtual vertex を根に持つ cluster をくっつける
+//
+//  [4] add_edge
+//      light edge をくっつけて もう一つの端点に virtual vertex を生やす
+//
+//  path cluster は heavy edge の 集約値と現状のcluster の値を持つ
+//  point cluster は cluster の値を持つ
+//
+//  path cluster の合成 compress は
+//  [1] heavy edge の集約値 の合成
+//  [2] (根に近い方の path cluster の集約値) +
+//      ({根に近い方の path cluster のheavy edge の集約値} と {根から遠い方の path cluster の集約値})
+//  で構成される
+//
+//  point cluster の合成 rake は
+//  [1] clueter の集約値 の 演算
+//  で構成される
+//
+//  各頂点には対応する値が入っている
+//
+//  compress(u)
+//      サイズ 1 だった場合は対応する cluster を返す.
+//      heavy edge path 上の頂点に対して rake して (rake vertex, size) 配列を管理する
+//      これらを merge する.
+//
+//  rake(u)
+//      graph[u][1:] が空の場合は 単位 cluster を返す.
+//      graph[u][1:] の各頂点に対して compress して (compress vertex, size) 配列を管理する
+//      これらを merge する.
+//
 
 namespace static_top_tree {
 
+//  # NodeType
+//  static top treeのノードの種類
+//  Vertex    : 子を持たない、頂点1つだけのノード
+//  AddVertex : leftをまとめたものに頂点を付ける
+//  AddEdge   : leftをまとめたものに辺を付ける
+//  Compress  : leftとrightを辺でつなぐ
+//  Rake      : leftとrightをまとめる
 enum class NodeType {
     Vertex,
     AddVertex,
@@ -82,6 +89,8 @@ enum class NodeType {
     Rake
 };
 
+//  # Node
+//  static top treeのノード。left, right, parentはノード番号で、無ければ-1
 struct Node {
     NodeType type;
     int left;
@@ -91,6 +100,12 @@ struct Node {
 
 }  //  namespace static_top_tree
 
+//  # StaticTopTree
+//  to_static_top_treeの結果
+//  root       : 根のノード番号
+//  nodes      : ノードの列。ノード数は O(n)、高さは O(log n)
+//  vertexs[v] : 元の木の頂点vに対応するノード(Vertex または AddVertex)の番号
+//  edges[i]   : 元の木のi番目の辺に対応するノード(AddEdge または Compress)の番号
 struct StaticTopTree {
     int root;
     std::vector<static_top_tree::Node> nodes;
@@ -230,8 +245,9 @@ class StaticTopTreeBuilder {
 
 }  //  namespace static_top_tree_internal
 
-///  # to static top tree(n, edges, root)
-///  build static top tree
+//  # to_static_top_tree(n, edges, root)
+//  static top treeを構築する
+//  edgesが木でないと壊れる
 template <class T>
 StaticTopTree to_static_top_tree(int n, const std::vector<T>& edges, int root = 0) {
     return static_top_tree_internal::StaticTopTreeBuilder(n, edges, root).static_top_tree();

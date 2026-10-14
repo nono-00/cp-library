@@ -6,15 +6,18 @@
 
 namespace nono {
 
-///  # Sparse Table
-///  静的な区間積クエリを前処理 O(nlogn), クエリ O(1)で.
-///  だいたいDisjointを使った方が良い
+//  # SparseTable
+//  静的な区間積クエリを前処理 O(n log n), クエリ O(1)で.
+//  Mはモノイド。opが冪等(op(a, a) = a)でないと壊れる
+//  だいたいDisjointを使った方が良い
 template <class M>
 class SparseTable {
     using T = M::Value;
 
   public:
     SparseTable() {}
+    //  # SparseTable(data)
+    //  O(n log n)
     SparseTable(std::vector<T> data): n_(data.size()) {
         const int log = std::bit_width((unsigned)n_);
         data_.resize(log);
@@ -29,9 +32,10 @@ class SparseTable {
         }
     }
 
-    ///  # prod(l, r)
-    ///  return op[for i in [l, r)](data[i])
-    ///  O(1)
+    //  # prod(left, right)
+    //  return op[for i in [left, right)](data[i])
+    //  0 <= left <= right <= n でないと壊れる
+    //  O(1)
     T prod(int left, int right) const {
         assert(0 <= left && left <= n_);
         assert(left <= right && right <= n_);

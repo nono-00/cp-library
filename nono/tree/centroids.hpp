@@ -8,9 +8,11 @@
 
 namespace nono {
 
-///  # centroids(graph)
-///  木の重心を行きがけ順で列挙する.
-///  木ではないと壊れる
+//  # centroids(graph)
+//  重心分解。木全体の重心、それを取り除いてできる各部分木の重心、... の順に、
+//  分解の浅いほうから並べた長さnの列を返す
+//  木でないと壊れる
+//  O(n log n)
 template <class T>
 std::vector<int> centroids(const Graph<T>& graph) {
     assert(is_tree(graph));

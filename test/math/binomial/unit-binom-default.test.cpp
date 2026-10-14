@@ -17,9 +17,9 @@ long long modpow(long long base, long long exp, long long mod) {
     return res;
 }
 
-///  unit-binom-naive.test.cpp（issue #20の回帰テスト、THRESHOLD=1でnaive経路のみ検証）とは別に、
-///  実運用で使われるデフォルトTHRESHOLD（extend()による前計算配列）経路のbinom/fact/fact_inv/perm、
-///  および法が小さい場合のbinom_lucas経路を検証する
+//  unit-binom-naive.test.cpp（issue #20の回帰テスト、THRESHOLD=1でnaive経路のみ検証）とは別に、
+//  実運用で使われるデフォルトTHRESHOLD（extend()による前計算配列）経路のbinom/fact/fact_inv/perm、
+//  および法が小さい場合のbinom_lucas経路を検証する
 void solve() {
     constexpr long long MOD = 998244353;
     constexpr int LIM = 300;

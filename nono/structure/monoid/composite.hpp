@@ -4,8 +4,10 @@ namespace nono {
 
 namespace monoid {
 
-///  # Composite
-///  (ax + b) 関数の合成
+//  # Composite
+//  (ax + b) 関数の合成
+//  op(lhs, rhs) は「lhsを適用してからrhsを適用する」関数になる
+//  1要素は Value(a, b) で作り、Value::eval(x) で a * x + b を計算する
 template <class T>
 struct Composite {
     struct Value {

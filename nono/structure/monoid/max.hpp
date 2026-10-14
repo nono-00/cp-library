@@ -7,7 +7,9 @@ namespace nono {
 
 namespace monoid {
 
-///  # Max
+//  # Max
+//  最大値。op(a, b) = max(a, b), e() = Tの最小値
+//  Tが浮動小数点数だと壊れる(numeric_limits<T>::min() が正の最小値になるため)
 template <class T>
 struct Max {
     using Value = T;

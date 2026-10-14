@@ -6,25 +6,27 @@
 
 namespace nono {
 
-///  # 区間加算FenwickTree
-///  区間加算区間取得 Fenwick Tree.
-///  lazy segment tree よりも定数倍が良い(はず).
+//  # RangeAddFenwickTree
+//  区間加算区間取得 Fenwick Tree.
 template <class T>
 class RangeAddFenwickTree {
   public:
+    //  # RangeAddFenwickTree(n)
+    //  長さnで、全要素を0にする
     RangeAddFenwickTree(int n = 0): n_(n), data1_(n), data2_(n) {}
 
-    ///  # add(i, elem)
-    ///  data[i] <= data[i] + elem
-    ///  O(logn)
+    //  # add(i, elem)
+    //  data[i] <= data[i] + elem
+    //  O(log n)
     void add(int i, T elem) {
         assert(0 <= i && i < n_);
         data1_.add(i, elem);
     }
 
-    ///  # add(l, r, elem)
-    ///  [for i in [l, r)](data[i] <= data[i] + elem)
-    ///  O(logn)
+    //  # add(left, right, elem)
+    //  [for i in [left, right)](data[i] <= data[i] + elem)
+    //  0 <= left <= right <= n でないと壊れる
+    //  O(log n)
     void add(int left, int right, T elem) {
         assert(0 <= left && left <= n_);
         assert(left <= right && right <= n_);
@@ -36,34 +38,35 @@ class RangeAddFenwickTree {
         }
     }
 
-    ///  # set(i, elem)
-    ///  data[i] <= elem
-    ///  O(logn)
+    //  # set(i, elem)
+    //  data[i] <= elem
+    //  O(log n)
     void set(int i, T elem) {
         assert(0 <= i && i < n_);
         add(i, elem - get(i));
     }
 
-    ///  # sum(r)
-    ///  return sum[for i in [0, r)](data[i])
-    ///  O(logn)
+    //  # sum(i)
+    //  return sum[for j in [0, i)](data[j])
+    //  O(log n)
     T sum(int i) const {
         assert(0 <= i && i <= n_);
         return data1_.sum(i) + i * data2_.sum(i);
     }
 
-    ///  # sum(l, r)
-    ///  return sum[for i in [l, r)](data[i])
-    ///  O(logn)
+    //  # sum(left, right)
+    //  return sum[for i in [left, right)](data[i])
+    //  0 <= left <= right <= n でないと壊れる
+    //  O(log n)
     T sum(int left, int right) const {
         assert(0 <= left && left <= n_);
         assert(left <= right && right <= n_);
         return sum(right) - sum(left);
     }
 
-    ///  # get(i)
-    ///  return data[i]
-    ///  O(logn)
+    //  # get(i)
+    //  return data[i]
+    //  O(log n)
     T get(int i) const {
         assert(0 <= i && i < n_);
         return sum(i, i + 1);

@@ -6,7 +6,7 @@
 
 namespace nono {
 
-///  progressが単調非減少で、制限時間を超えた時点でexpiredが立つこと
+//  progressが単調非減少で、制限時間を超えた時点でexpiredが立つこと
 void test_progress() {
     constexpr double LIMIT = 100;
     Timer timer(LIMIT);
@@ -25,9 +25,9 @@ void test_progress() {
     assert(timer.progress() > 1.0);
 }
 
-///  progressがミリ秒に量子化されていないこと。
-///  以前はduration_cast<milliseconds>で切り捨てていたため、
-///  progressが階段状になり、焼きなましの温度もその粒度でしか動かなかった
+//  progressがミリ秒に量子化されていないこと。
+//  以前はduration_cast<milliseconds>で切り捨てていたため、
+//  progressが階段状になり、焼きなましの温度もその粒度でしか動かなかった
 void test_sub_millisecond_resolution() {
     Timer timer(1000);
     std::set<double> values;
@@ -39,7 +39,7 @@ void test_sub_millisecond_resolution() {
     assert(values.size() > 100);
 }
 
-///  経過時間が制限時間の指定に依存しないこと
+//  経過時間が制限時間の指定に依存しないこと
 void test_elapsed_is_independent_of_limit() {
     Timer fast(1);
     Timer slow(1000000);

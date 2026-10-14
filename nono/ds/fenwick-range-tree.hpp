@@ -8,14 +8,15 @@
 
 namespace nono {
 
-///  # 領域木fenwick tree盛り.
-///  一点加算座標が事前にわかる場合に使える二次元 fenwick tree.
+//  # FenwickRangeTree
+//  領域木fenwick tree盛り.
+//  一点加算座標が事前にわかる場合に使える二次元 fenwick tree.
 template <class T, class Index>
 class FenwickRangeTree {
   public:
-    ///  # FenwickRangeTree(points)
-    ///  points: 加算クエリが来る場所
-    ///  O(N(logN)^2)
+    //  # FenwickRangeTree(points)
+    //  points: 加算クエリが来る場所
+    //  O(n (log n)^2)
     FenwickRangeTree(const std::vector<std::pair<Index, Index>>& points) {
         std::vector<Index> xs;
         for (auto [x, y]: points) {
@@ -39,9 +40,10 @@ class FenwickRangeTree {
         }
     }
 
-    ///  #add(x, y, elem)
-    ///  data[x][y] <= data[x][y] + elem
-    ///  O((logN)^2)
+    //  # add(x, y, elem)
+    //  data[x][y] <= data[x][y] + elem
+    //  (x, y) がコンストラクタに渡したpointsに含まれていないと壊れる
+    //  O((log n)^2)
     void add(Index x, Index y, T elem) {
         int i = coord_x_.compress(x);
         for (i++; i <= coord_x_.size(); i += i & -i) {
@@ -49,23 +51,24 @@ class FenwickRangeTree {
         }
     }
 
-    ///  #set(x, y, elem)
-    ///  data[x][y] <= elem
-    ///  O((logN)^2)
+    //  # set(x, y, elem)
+    //  data[x][y] <= elem
+    //  (x, y) がコンストラクタに渡したpointsに含まれていないと壊れる
+    //  O((log n)^2)
     void set(Index x, Index y, T elem) {
         add(x, y, elem - get(x, y));
     }
 
-    ///  # sum
-    ///  return sum[for i in [x1, x2), for j in [y1, y2)]
-    ///  O((logN)^2)
+    //  # sum(x1, y1, x2, y2)
+    //  return sum[for i in [x1, x2), for j in [y1, y2)](data[i][j])
+    //  O((log n)^2)
     T sum(Index x1, Index y1, Index x2, Index y2) const {
         return sum(x2, y1, y2) - sum(x1, y1, y2);
     }
 
-    ///  # get(x, y)
-    ///  return data[x][y]
-    ///  O((logN)^2)
+    //  # get(x, y)
+    //  return data[x][y]
+    //  O((log n)^2)
     T get(Index x, Index y) const {
         return sum(x, y, x + 1, y + 1);
     }

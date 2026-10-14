@@ -9,9 +9,10 @@
 
 namespace nono {
 
-///  # to rooted tree(n, edges, root)
-///  rootから有向木に
-///  O(n)
+//  # to_rooted_tree(n, edges, root)
+//  辺の向きを、rootから葉へ向かう向き(親 -> 子)に揃えた有向グラフを返す。辺の番号は変わらない
+//  edgesが木でないと壊れる。rootが [0, n) でないと壊れる
+//  O(n)
 template <class T>
 Graph<T> to_rooted_tree(int n, std::vector<EdgeBase<T>> edges, int root = 0) {
     auto graph = to_undirected_graph(n, edges);

@@ -7,7 +7,8 @@ namespace nono {
 
 namespace monoid {
 
-///  # Min
+//  # Min
+//  最小値。op(a, b) = min(a, b), e() = Tの最大値
 template <class T>
 struct Min {
     using Value = T;

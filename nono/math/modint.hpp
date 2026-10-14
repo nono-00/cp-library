@@ -5,14 +5,12 @@
 #include <type_traits>
 #include <utility>
 
-///  brief : aclベースのmodint. cin, coutによる入出力に対応.
-
 namespace nono {
 
 namespace modint_internal {
 
-//  @param m `1 <= m`
-//  @return x mod m
+//  x mod m を [0, m) で返す
+//  1 <= m でないと壊れる
 constexpr long long safe_mod(long long x, long long m) {
     x %= m;
     if (x < 0) x += m;
@@ -26,17 +24,16 @@ struct barrett {
     unsigned int _m;
     unsigned long long im;
 
-    //  @param m `1 <= m`
+    //  1 <= m でないと壊れる
     explicit barrett(unsigned int m): _m(m), im((unsigned long long)(-1) / m + 1) {}
 
-    //  @return m
+    //  mを返す
     unsigned int umod() const {
         return _m;
     }
 
-    //  @param a `0 <= a < m`
-    //  @param b `0 <= b < m`
-    //  @return `a * b % m`
+    //  a * b % m を返す
+    //  0 <= a < m, 0 <= b < m でないと壊れる
     unsigned int mul(unsigned int a, unsigned int b) const {
         //  [1] m = 1
         //  a = b = im = 0, so okay
@@ -56,9 +53,8 @@ struct barrett {
     }
 };
 
-//  @param n `0 <= n`
-//  @param m `1 <= m`
-//  @return `(x ** n) % m`
+//  (x ** n) % m を返す
+//  0 <= n, 1 <= m でないと壊れる
 constexpr long long pow_mod_constexpr(long long x, long long n, int m) {
     if (m == 1) return 0;
     unsigned int _m = (unsigned int)(m);
@@ -75,7 +71,7 @@ constexpr long long pow_mod_constexpr(long long x, long long n, int m) {
 //  Reference:
 //  M. Forisek and J. Jancina,
 //  Fast Primality Testing for Integers That Fit into a Machine Word
-//  @param n `0 <= n`
+//  0 <= n でないと壊れる
 constexpr bool is_prime_constexpr(int n) {
     if (n <= 1) return false;
     if (n == 2 || n == 7 || n == 61) return true;
@@ -99,8 +95,8 @@ constexpr bool is_prime_constexpr(int n) {
 template <int n>
 constexpr bool is_prime = is_prime_constexpr(n);
 
-//  @param b `1 <= b`
-//  @return pair(g, x) s.t. g = gcd(a, b), xa = g (mod b), 0 <= x < b/g
+//  g = gcd(a, b), xa = g (mod b), 0 <= x < b/g を満たす pair(g, x) を返す
+//  1 <= b でないと壊れる
 constexpr std::pair<long long, long long> inv_gcd(long long a, long long b) {
     a = safe_mod(a, b);
     if (a == 0) return {b, 0};
@@ -184,14 +180,24 @@ using to_unsigned_t = typename to_unsigned<T>::type;
 
 namespace nono {
 
+//  # StaticModint<m>
+//  mod m の整数。aclベースのmodint. cin, coutによる入出力に対応.
+//  四則演算、++, --、単項の+, -、==, != が使える。除算は逆元を掛けるので、inv()と同じ条件で壊れる
+//  mはコンパイル時定数で、1 <= m
 template <int m, std::enable_if_t<(1 <= m)>* = nullptr>
 struct StaticModint {
     using Mint = StaticModint;
 
   public:
+    //  # mod()
+    //  mを返す
     static constexpr int mod() {
         return m;
     }
+
+    //  # raw(v)
+    //  vを、modを取らずにそのまま値にする
+    //  0 <= v < m でないと壊れる
     static Mint raw(int v) {
         Mint x;
         x._v = v;
@@ -199,6 +205,8 @@ struct StaticModint {
     }
 
     StaticModint(): _v(0) {}
+    //  # StaticModint(v)
+    //  vを mod m で [0, m) に直して持つ。負の値でもよい
     template <class T, modint_internal::is_signed_int_t<T>* = nullptr>
     StaticModint(T v) {
         long long x = (long long)(v % (long long)(umod()));
@@ -210,6 +218,8 @@ struct StaticModint {
         _v = (unsigned int)(v % umod());
     }
 
+    //  # val()
+    //  値を [0, m) で返す
     unsigned int val() const {
         return _v;
     }
@@ -262,6 +272,10 @@ struct StaticModint {
         return Mint() - *this;
     }
 
+    //  # pow(n)
+    //  n乗
+    //  0 <= n でないと壊れる
+    //  O(log n)
     Mint pow(long long n) const {
         assert(0 <= n);
         Mint x = *this, r = 1;
@@ -272,6 +286,11 @@ struct StaticModint {
         }
         return r;
     }
+
+    //  # inv()
+    //  逆元
+    //  mが素数のときは、値が0だと壊れる。素数でないときは、値とmが互いに素でないと壊れる
+    //  O(log m)
     Mint inv() const {
         if (prime) {
             assert(_v);
@@ -319,18 +338,31 @@ struct StaticModint {
     static constexpr bool prime = modint_internal::is_prime<m>;
 };
 
+//  # DynamicModint<id>
+//  modを実行時に決めるmodint。idごとに別のmodを持てる。使い方はStaticModintと同じ
+//  modの初期値は998244353
 template <int id>
 struct DynamicModint {
     using Mint = DynamicModint;
 
   public:
+    //  # mod()
+    //  現在のmodを返す
     static int mod() {
         return (int)(bt.umod());
     }
+
+    //  # set_mod(m)
+    //  modをmにする。すでに作った値は、新しいmodで取り直されない
+    //  1 <= m でないと壊れる
     static void set_mod(int m) {
         assert(1 <= m);
         bt = modint_internal::barrett(m);
     }
+
+    //  # raw(v)
+    //  vを、modを取らずにそのまま値にする
+    //  0 <= v < mod() でないと壊れる
     static Mint raw(int v) {
         Mint x;
         x._v = v;
@@ -338,6 +370,8 @@ struct DynamicModint {
     }
 
     DynamicModint(): _v(0) {}
+    //  # DynamicModint(v)
+    //  vを現在のmodで [0, mod()) に直して持つ。負の値でもよい
     template <class T, modint_internal::is_signed_int_t<T>* = nullptr>
     DynamicModint(T v) {
         long long x = (long long)(v % (long long)(mod()));
@@ -349,6 +383,8 @@ struct DynamicModint {
         _v = (unsigned int)(v % mod());
     }
 
+    //  # val()
+    //  値を [0, mod()) で返す
     unsigned int val() const {
         return _v;
     }
@@ -399,6 +435,10 @@ struct DynamicModint {
         return Mint() - *this;
     }
 
+    //  # pow(n)
+    //  n乗
+    //  0 <= n でないと壊れる
+    //  O(log n)
     Mint pow(long long n) const {
         assert(0 <= n);
         Mint x = *this, r = 1;
@@ -409,6 +449,11 @@ struct DynamicModint {
         }
         return r;
     }
+
+    //  # inv()
+    //  逆元
+    //  値とmodが互いに素でないと壊れる
+    //  O(log mod())
     Mint inv() const {
         auto eg = modint_internal::inv_gcd(_v, mod());
         assert(eg.first == 1);
@@ -453,6 +498,8 @@ struct DynamicModint {
 template <int id>
 modint_internal::barrett DynamicModint<id>::bt(998244353);
 
+//  Modint998244353, Modint1000000007, Modint
+//  よく使うmodの別名。Modintは実行時にmodを決める版
 using Modint998244353 = StaticModint<998244353>;
 using Modint1000000007 = StaticModint<1000000007>;
 using Modint = DynamicModint<-1>;

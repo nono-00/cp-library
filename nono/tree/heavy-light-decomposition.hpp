@@ -10,7 +10,10 @@
 
 namespace nono {
 
-///  # Heavy Light Deomposition
+//  # HeavyLightDecomposition
+//  HL分解。頂点0を根として、パスや部分木を「列の上の区間」に変換する
+//  返す区間はすべて半開区間 [l, r) で、添字は頂点の行きがけ順
+//  辺は、深いほうの端点の添字で表す
 template <class T>
 class HeavyLightDecomposition {
     static constexpr int NONE = -1;
@@ -19,6 +22,9 @@ class HeavyLightDecomposition {
     using Intervals = std::vector<std::pair<int, int>>;
 
   public:
+    //  # HeavyLightDecomposition(graph)
+    //  graphが木でないと壊れる
+    //  O(n)
     HeavyLightDecomposition(Graph<T> graph)
         : graph_(std::move(graph)),
           n_(graph_.size()),
@@ -32,6 +38,9 @@ class HeavyLightDecomposition {
         dfs(0, NONE, 0);
     }
 
+    //  # lowest_common_ancester(u, v)
+    //  最小共通祖先(LCA)
+    //  O(log n)
     int lowest_common_ancester(int u, int v) {
         assert(0 <= u && u < n_);
         assert(0 <= v && v < n_);
@@ -42,32 +51,50 @@ class HeavyLightDecomposition {
         return (depth_[u] < depth_[v] ? u : v);
     }
 
+    //  # distance(u, v)
+    //  uからvへのパスの辺数
+    //  O(log n)
     int distance(int u, int v) {
         return depth_[u] + depth_[v] - 2 * depth_[lowest_common_ancester(u, v)];
     }
 
+    //  # vertex(v)
+    //  頂点vに対応する添字
     Point vertex(int v) {
         return in_[v];
     }
 
+    //  # edge(u, v)
+    //  辺(u, v)に対応する添字
+    //  uとvが隣接していないと壊れる
     Point edge(int u, int v) {
         if (depth_[u] > depth_[v]) std::swap(u, v);
         assert(parent_[v] == u);
         return in_[v];
     }
 
+    //  # vertices_for_subtree(u)
+    //  uの部分木の頂点に対応する区間
     Interval vertices_for_subtree(int u) {
         return subtree(u, true);
     }
 
+    //  # edges_for_subtree(u)
+    //  uの部分木の辺に対応する区間
     Interval edges_for_subtree(int u) {
         return subtree(u, false);
     }
 
+    //  # vertices_for_path(u, v)
+    //  uからvへのパス上の頂点に対応する区間の列。区間の数は O(log n)
+    //  区間の並びはパスを辿る順とは一致しない。空の区間を含むことがある
     Intervals vertices_for_path(int u, int v) {
         return path(u, v, true);
     }
 
+    //  # edges_for_path(u, v)
+    //  uからvへのパス上の辺に対応する区間の列。区間の数は O(log n)
+    //  区間の並びはパスを辿る順とは一致しない。空の区間を含むことがある
     Intervals edges_for_path(int u, int v) {
         return path(u, v, false);
     }

@@ -14,8 +14,8 @@ using Hash = unsigned long long;
 
 //  ---------------- BeamSelector ----------------
 
-///  hashごとにスコア最良を残し、上位widthを降順に並べる素朴な実装。
-///  同スコアのときは先にpushされた方を残す(BeamSelectorと同じ規則)
+//  hashごとにスコア最良を残し、上位widthを降順に並べる素朴な実装。
+//  同スコアのときは先にpushされた方を残す(BeamSelectorと同じ規則)
 struct NaiveBeam {
     struct Entry {
         double score;
@@ -44,7 +44,7 @@ struct NaiveBeam {
     }
 };
 
-///  スコアをすべて相異なるようにして、順序を一意に定める
+//  スコアをすべて相異なるようにして、順序を一意に定める
 void test_beam_selector(unsigned seed, int candidates, int distinct_hashes, int width) {
     std::mt19937 mt(seed);
     std::vector<double> scores(candidates);
@@ -78,7 +78,7 @@ void test_beam_selector(unsigned seed, int candidates, int distinct_hashes, int 
     assert(std::unique(hashes.begin(), hashes.end()) == hashes.end());
 }
 
-///  push順に関わらず、同じhashではスコア最良が残ること
+//  push順に関わらず、同じhashではスコア最良が残ること
 void test_beam_selector_keeps_best() {
     for (int order = 0; order < 2; order++) {
         BeamSelector<Hash> selector;
@@ -114,7 +114,7 @@ void test_beam_selector_keeps_best() {
 
 //  ---------------- BestFirstQueue ----------------
 
-///  有効な要素(hashごとの最良と一致するもの)から最大スコアを線形に探す素朴な実装
+//  有効な要素(hashごとの最良と一致するもの)から最大スコアを線形に探す素朴な実装
 struct NaiveQueue {
     struct Entry {
         double score;

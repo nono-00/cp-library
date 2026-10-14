@@ -6,64 +6,70 @@
 #include <utility>
 #include <vector>
 
-#include "nono/heuristic/search-selector.hpp"
-#include "nono/heuristic/search-tree.hpp"
-#include "nono/heuristic/timer.hpp"
+#include "./search-selector.hpp"
+#include "./search-tree.hpp"
+#include "./timer.hpp"
 
 namespace nono {
 
-///  # ChokudaiSearchConfig
+//  # ChokudaiSearchConfig
+//  chokudai_searchに渡す設定
 struct ChokudaiSearchConfig {
-    ///  最大何手進めるか
+    //  最大何手進めるか
     int max_turn;
-    ///  1回のパスで各階層から取り出す数
+    //  1回のパスで各階層から取り出す数
     int chokudai_width;
-    ///  ミリ秒。1秒なら1000
+    //  ミリ秒。1秒なら1000
     double time_limit;
 };
 
-///  # ChokudaiSearchResult
+//  # ChokudaiSearchResult
+//  chokudai_searchの結果。答えは、展開先がなかったノード(終端)のうちスコア最良のもの。
+//  終端に一度も到達しなかった場合は、最も深い階層に残っているスコア最良のノード
 template <class Action>
 struct ChokudaiSearchResult {
+    //  初期状態から答えのノードまでのAction列
     std::vector<Action> actions;
+    //  答えのノードのスコア
     double score;
-    ///  何回パスを回せたか
+    //  何回パスを回せたか
     int passes;
 };
 
-///  # chokudai_search<Action, Hash>(state, score, config, expand, apply, undo)
-///  ビームサーチが「1階層ずつ、上位widthだけを残して1回で進む」のに対し、
-///  chokudaiサーチは「各階層に優先度付きキューを持ち、階層0から順に
-///  chokudai_width個ずつ取り出して次の階層へ送る」パスを時間まで繰り返す。
-///  探索木も評価も重複排除も共通で、違うのは選択方針と走査順だけ。
-///
-///  ## 利用者が渡すもの
-///  beam_searchと同じ。
-///  expand(state, f) : 遷移候補ごとに f(action, score, hash) を呼ぶ。
-///                     scoreは遷移後の絶対スコア、hashは遷移後の状態の重複排除キー。
-///                     いずれも「次の状態を作らずに」求めること。
-///                     一度もfを呼ばなければ、そのノードは終端として扱われる
-///  apply(state, action) : stateにactionを適用する
-///  undo(state, action)  : applyを打ち消す
-///
-///  ## undoが必須なこと
-///  beam_searchにはStateをコピーして持つundo不要版があるが、こちらには用意していない。
-///  ビームサーチが常に2階層ぶんしかノードを抱えないのに対し、chokudaiサーチは
-///  抱えるノードが減らないため。重複排除がよく効く問題(状態空間が小さい問題)なら
-///  ノード数は飽和するが、状態空間が広くて重複排除が効きにくい問題では
-///  パス数に比例して増え続ける。60x60グリッドでの実測では、
-///  位置をhashにすると2560パスでも7760ノードで飽和したのに対し、
-///  経路ごとに一意なhashにすると1543974ノードまで伸びた。
-///  Actionだけならノード1個あたり12バイトなので後者でも18MiB程度で収まるが、
-///  Stateを持たせると破綻する
-///
-///  ## chokudai_widthと状態移動のコスト
-///  ビームサーチと違い、取り出すノードは木の中に散らばるので、
-///  move_state()の移動距離が大きくなる。60x60グリッド(深さ118)での
-///  1取り出しあたりのapply/undo回数の実測:
-///    幅1  : 16.0回   幅3  : 40.3回   幅10 : 34.3回   幅100: 23.2回
-///  幅1が最も小さいのは、階層t+1で取り出すノードが「直前に作った子」に
-///  なりやすいため。apply/undoが重い問題では、この点も幅の選択に効く
+//  # chokudai_search<Action, Hash>(initial_state, initial_score, config, expand, apply, undo)
+//  ビームサーチが「1階層ずつ、上位widthだけを残して1回で進む」のに対し、
+//  chokudaiサーチは「各階層に優先度付きキューを持ち、階層0から順に
+//  chokudai_width個ずつ取り出して次の階層へ送る」パスを時間まで繰り返す。
+//  探索木も評価も重複排除も共通で、違うのは選択方針と走査順だけ。
+//  applyとundoが互いに逆でないと壊れる。config.max_turn > 0, config.chokudai_width > 0 でないと壊れる
+//
+//  ## 利用者が渡すもの
+//  beam_searchと同じ。
+//  expand(state, f) : 遷移候補ごとに f(action, score, hash) を呼ぶ。
+//                     scoreは遷移後の絶対スコア、hashは遷移後の状態の重複排除キー。
+//                     いずれも「次の状態を作らずに」求めること。
+//                     一度もfを呼ばなければ、そのノードは終端として扱われる
+//  apply(state, action) : stateにactionを適用する
+//  undo(state, action)  : applyを打ち消す
+//
+//  ## undoが必須なこと
+//  beam_searchにはStateをコピーして持つundo不要版があるが、こちらには用意していない。
+//  ビームサーチが常に2階層ぶんしかノードを抱えないのに対し、chokudaiサーチは
+//  抱えるノードが減らないため。重複排除がよく効く問題(状態空間が小さい問題)なら
+//  ノード数は飽和するが、状態空間が広くて重複排除が効きにくい問題では
+//  パス数に比例して増え続ける。60x60グリッドでの実測では、
+//  位置をhashにすると2560パスでも7760ノードで飽和したのに対し、
+//  経路ごとに一意なhashにすると1543974ノードまで伸びた。
+//  Actionだけならノード1個あたり12バイトなので後者でも18MiB程度で収まるが、
+//  Stateを持たせると破綻する
+//
+//  ## chokudai_widthと状態移動のコスト
+//  ビームサーチと違い、取り出すノードは木の中に散らばるので、
+//  move_state()の移動距離が大きくなる。60x60グリッド(深さ118)での
+//  1取り出しあたりのapply/undo回数の実測:
+//    幅1  : 16.0回   幅3  : 40.3回   幅10 : 34.3回   幅100: 23.2回
+//  幅1が最も小さいのは、階層t+1で取り出すノードが「直前に作った子」に
+//  なりやすいため。apply/undoが重い問題では、この点も幅の選択に効く
 template <class Action, class Hash, class State, class Expand, class Apply, class Undo>
 ChokudaiSearchResult<Action> chokudai_search(const State& initial_state, double initial_score,
                                              const ChokudaiSearchConfig& config, Expand expand, Apply apply,

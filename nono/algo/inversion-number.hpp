@@ -7,12 +7,10 @@
 
 namespace nono {
 
-///  # 反転数
-///  ## output
-///  |{ (i, j) | i < j and A_i > A_j}|
-///  i < j and A_i > A_jとなるような(i, j)の組みの数
-///
-///  dataがdistinctかどうか問わない(はず)
+//  # inversion_number(data)
+//  転倒数。i < j かつ data[i] > data[j] となる組 (i, j) の個数を返す
+//  値が等しい組は数えない
+//  O(n log n)
 template <class T>
 long long inversion_number(const std::vector<T>& data) {
     FenwickTree<long long> tree(data.size());

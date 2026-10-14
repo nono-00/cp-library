@@ -2,10 +2,10 @@
 
 namespace nono {
 
-
 namespace group {
 
-///  # Add
+//  # Add
+//  加法群。op(a, b) = a + b, e() = 0, inv(a) = -a
 template <class T>
 struct Add {
     using Value = T;

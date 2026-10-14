@@ -1,9 +1,9 @@
 // competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/point_set_range_composite_large_array
 #include <iostream>
 
-#include "../../../nono/ds/dynamic-segment-tree.hpp"
-#include "../../../nono/math/modint.hpp"
-#include "../../../nono/structure/monoid/composite.hpp"
+#include "nono/ds/dynamic-segment-tree.hpp"
+#include "nono/math/modint.hpp"
+#include "nono/structure/monoid/composite.hpp"
 
 namespace nono {
 

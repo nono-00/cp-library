@@ -13,7 +13,8 @@ namespace nono {
 
 namespace diameter_internal {
 
-///  # diameter result
+//  # DiameterResult
+//  diameterの結果
 template <class T>
 class DiameterResult {
   public:
@@ -23,27 +24,27 @@ class DiameterResult {
           vertex_id_(std::move(vertex_id)),
           edge_id_(std::move(edge_id)) {}
 
-    ///  # dist()
-    ///  |diameter|
+    //  # dist()
+    //  直径の長さ(辺の重みの総和)
     T dist() const {
         return dist_;
     }
 
-    ///  # endpoints()
-    ///  endpoints of diameter
+    //  # endpoints()
+    //  直径の両端の頂点
     std::array<int, 2> endpoints() const {
         return endpoints_;
     }
 
-    ///  # vertex id()
-    ///  endpoints[0] -> ... -> ... -> endpoints[1]
+    //  # vertex_id()
+    //  直径上の頂点の列。endpoints()[0] から endpoints()[1] へ向かう順に並ぶ
     std::vector<int> vertex_id() const {
         return vertex_id_;
     }
 
-    ///  # edge id()
-    ///  edge id seq of diameter
-    ///  v[0] -> e[0] -> v[1] -> e[1] -> ... -> e[n - 2] -> v[n - 1]
+    //  # edge_id()
+    //  直径上の辺の番号の列。vertex_id()と同じ向きに並ぶ
+    //  v[0] -> e[0] -> v[1] -> e[1] -> ... -> e[k - 2] -> v[k - 1]
     std::vector<int> edge_id() const {
         return edge_id_;
     }
@@ -57,10 +58,10 @@ class DiameterResult {
 
 }  //  namespace diameter_internal
 
-///  # diameter(graph)
-///  木の直径を求める
-///  木でないと壊れる
-///  O(n)
+//  # diameter(graph)
+//  木の直径(最も遠い2頂点を結ぶパス)を求める。辺の重みを距離として使う
+//  木でないと壊れる。負の重みの辺があると壊れる(直径にならない)
+//  O(n)
 template <class T>
 diameter_internal::DiameterResult<T> diameter(const Graph<T>& graph) {
     assert(is_tree(graph));

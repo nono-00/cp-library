@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../../../nono/ds/ordered-map.hpp"
+#include "nono/ds/ordered-map.hpp"
 
 namespace nono {
 

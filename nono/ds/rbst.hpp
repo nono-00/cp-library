@@ -5,23 +5,23 @@
 
 namespace nono {
 
-namespace rbst {
+namespace rbst_internal {
 
 inline std::mt19937 rng(std::random_device{}());
 
-///  NodePtrは->left, ->right, ->size(int)を持つこと
-///  push(NodePtr)/update(NodePtr)はNode型ごとに呼び出し側の名前空間でADLにより解決される
+//  NodePtrは->left, ->right, ->size(int)を持つこと
+//  push(NodePtr)/update(NodePtr)はNode型ごとに呼び出し側の名前空間でADLにより解決される
 
-///  # size(root)
-///  O(1)
+//  # size(root)
+//  O(1)
 template <class NodePtr>
 int size(NodePtr root) {
     return root ? root->size : 0;
 }
 
-///  # merge(lhs, rhs)
-///  return root of (lhs + rhs)
-///  O(log n)
+//  # merge(lhs, rhs)
+//  lhs + rhs の根を返す
+//  O(log n)
 template <class NodePtr>
 NodePtr merge(NodePtr lhs, NodePtr rhs) {
     if (!lhs) return rhs;
@@ -39,10 +39,10 @@ NodePtr merge(NodePtr lhs, NodePtr rhs) {
     }
 }
 
-///  # split by size(root, k)
-///  return (root of S[:k], root of S[k:])
-///  if size(S) < k, return {S, empty set}
-///  O(log n)
+//  # split_by_size(root, k)
+//  (S[:k] の根, S[k:] の根) を返す
+//  size(S) < k なら (S, 空) を返す
+//  O(log n)
 template <class NodePtr>
 std::pair<NodePtr, NodePtr> split_by_size(NodePtr root, int k) {
     if (!root) return {nullptr, nullptr};
@@ -60,10 +60,10 @@ std::pair<NodePtr, NodePtr> split_by_size(NodePtr root, int k) {
     }
 }
 
-///  # find by size(root, k)
-///  return S[k]
-///  if not exist, return nullptr
-///  O(log n)
+//  # find_by_size(root, k)
+//  return S[k]
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class NodePtr>
 NodePtr find_by_size(NodePtr root, int k) {
     while (root) {
@@ -80,6 +80,6 @@ NodePtr find_by_size(NodePtr root, int k) {
     return nullptr;
 }
 
-}  //  namespace rbst
+}  //  namespace rbst_internal
 
 }  //  namespace nono

@@ -6,8 +6,10 @@ namespace nono {
 
 namespace monoid {
 
-///  # MaxSubSeq
-///  max[for r in [0, n), for r in [l + 1, n]](sum[for i in [l, r)](data[i]))
+//  # MaxSubSeq
+//  連続部分列の和の最大値。空の部分列(和0)も候補に含むので、0以上になる
+//  max[for l in [0, n], for r in [l, n]](sum[for i in [l, r)](data[i]))
+//  1要素は Value(v) で作り、結果は Value::max_subseq_sum() で取り出す
 template <class T>
 struct MaxSubSeq {
     struct Value {

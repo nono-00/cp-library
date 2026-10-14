@@ -8,8 +8,14 @@
 
 namespace nono {
 
+//  # THRESHOLD
+//  is_primeとprime_factorsが、試し割りと乱択アルゴリズムを切り替える境界
 constexpr unsigned THRESHOLD = 100000;
 
+//  # prime_sieve<N>()
+//  エラトステネスの篩。result[i] は、iが素数かどうか (0 <= i < N)
+//  N >= 2 でないと壊れる
+//  O(N log log N)
 template <unsigned N>
 std::array<bool, N> prime_sieve() {
     std::array<bool, N> sieve{};
@@ -26,6 +32,9 @@ std::array<bool, N> prime_sieve() {
     return sieve;
 }
 
+//  # min_prime_factor_sieve<N>()
+//  result[i] は、iの最小の素因数 (0 <= i < N)。result[0] = 0, result[1] = 1
+//  O(N log log N)
 template <unsigned N>
 std::array<unsigned, N> min_prime_factor_sieve() {
     std::array<unsigned, N> sieve{};
@@ -41,6 +50,11 @@ std::array<unsigned, N> min_prime_factor_sieve() {
     return sieve;
 }
 
+//  # prime_factors<N>(min_pfs, n)
+//  min_prime_factor_sieve<N>() の結果を使って、nの素因数を重複込みで昇順に返す
+//  Nは引数から推論できないので、明示的に指定する
+//  n < N でないと壊れる
+//  O(log n)
 template <unsigned N>
 std::vector<unsigned> prime_factors(const std::array<unsigned, N>& min_pfs, unsigned n) {
     assert(n < N);
@@ -52,6 +66,9 @@ std::vector<unsigned> prime_factors(const std::array<unsigned, N>& min_pfs, unsi
     return result;
 }
 
+//  # is_prime_probabilistic(p)
+//  ミラー・ラビン法による素数判定。底を7個に固定しており、64bitの範囲では誤判定しない
+//  O(log p)
 bool is_prime_probabilistic(unsigned long long p) {
     using u64 = unsigned long long;
     using u128 = __uint128_t;
@@ -91,6 +108,9 @@ bool is_prime_probabilistic(unsigned long long p) {
     return true;
 }
 
+//  # is_prime_deterministic(p)
+//  試し割りによる素数判定
+//  O(sqrt(p))
 bool is_prime_deterministic(unsigned long long p) {
     using u64 = unsigned long long;
     if (p < 2) return false;
@@ -102,6 +122,8 @@ bool is_prime_deterministic(unsigned long long p) {
     return true;
 }
 
+//  # is_prime(p)
+//  pが素数か。p <= THRESHOLD なら試し割り、そうでなければミラー・ラビン法を使う
 bool is_prime(unsigned long long p) {
     if (p <= THRESHOLD) {
         return is_prime_deterministic(p);
@@ -110,6 +132,9 @@ bool is_prime(unsigned long long p) {
     }
 }
 
+//  # prime_factors_probabilistic(n)
+//  ポラードのロー法(乱択)による素因数分解。素因数を重複込みで返す。順序は不定
+//  n >= 1 でないと壊れる(n = 0 では終了しない)
 std::vector<unsigned long long> prime_factors_probabilistic(unsigned long long n) {
     using u64 = unsigned long long;
     using u128 = __uint128_t;
@@ -155,6 +180,10 @@ std::vector<unsigned long long> prime_factors_probabilistic(unsigned long long n
     return result;
 }
 
+//  # prime_factors_deterministic(n)
+//  試し割りによる素因数分解。素因数を重複込みで昇順に返す
+//  n = 1 なら空、n = 0 なら {0} を返す
+//  O(sqrt(n))
 std::vector<unsigned long long> prime_factors_deterministic(unsigned long long n) {
     using u64 = unsigned long long;
     std::vector<u64> result;
@@ -168,6 +197,9 @@ std::vector<unsigned long long> prime_factors_deterministic(unsigned long long n
     return result;
 }
 
+//  # prime_factors(n)
+//  nの素因数を重複込みで返す。n <= THRESHOLD なら試し割り、そうでなければポラードのロー法を使う
+//  順序は不定(試し割りのときだけ昇順になる)
 std::vector<unsigned long long> prime_factors(unsigned long long n) {
     if (n <= THRESHOLD) {
         return prime_factors_deterministic(n);

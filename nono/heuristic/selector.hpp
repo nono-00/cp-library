@@ -8,6 +8,8 @@
 
 namespace nono {
 
+//  # SelectionStrategy<Selector, Rng>
+//  selector(rng) がintに変換できる値を返す型。UniformSelectorとSelectorが満たす
 template <class Selector, class Rng = std::mt19937>
 concept SelectionStrategy = std::uniform_random_bit_generator<Rng> && requires(const Selector selector, Rng& rng) {
     { selector(rng) } -> std::convertible_to<int>;
@@ -15,7 +17,7 @@ concept SelectionStrategy = std::uniform_random_bit_generator<Rng> && requires(c
 
 namespace selector_internal {
 
-///  Rngが返す値の有効ビット幅
+//  Rngが返す値の有効ビット幅
 template <class Rng>
 constexpr int rng_bits() {
     auto range = Rng::max() - Rng::min();
@@ -27,8 +29,8 @@ constexpr int rng_bits() {
     return bits;
 }
 
-///  Rngの出力を[0, 2^32)へ均等に写す。
-///  値域が2^k - 1でないRngは扱わない(偏りが出るため)
+//  Rngの出力を[0, 2^32)へ均等に写す。
+//  値域が2^k - 1でないRngは扱わない(偏りが出るため)
 template <std::uniform_random_bit_generator Rng>
 inline std::uint64_t sample32(Rng& rng) {
     constexpr int BITS = rng_bits<Rng>();
@@ -43,20 +45,20 @@ inline std::uint64_t sample32(Rng& rng) {
     }
 }
 
-///  重みを[0, 2^32)の整数に写すためのスケール
+//  重みを[0, 2^32)の整数に写すためのスケール
 constexpr std::uint64_t SCALE = std::uint64_t(1) << 32;
 
 }  //  namespace selector_internal
 
-///  # UniformSelector<N>
-///  [0, N)を一様に返す
+//  # UniformSelector<N>
+//  [0, N)を一様に返す
 template <int N>
 class UniformSelector {
     static_assert(N > 0);
 
   public:
-    ///  # operator()(rng)
-    ///  O(1)
+    //  # operator()(rng)
+    //  O(1)
     template <std::uniform_random_bit_generator Rng = std::mt19937>
     inline int operator()(Rng& rng) const {
         //  剰余は除算命令を伴い、焼きなましのように毎イテレーション呼ぶ箇所では
@@ -67,23 +69,24 @@ class UniformSelector {
 
 static_assert(SelectionStrategy<UniformSelector<4>>);
 
-///  # Selector<N>
-///  重み付きで[0, N)を返す。重み0の要素は選ばれない
+//  # Selector<N>
+//  重み付きで[0, N)を返す。重み0の要素は選ばれない
 template <int N>
 class Selector {
     static_assert(N > 0);
 
   public:
-    ///  # Selector()
-    ///  一様
+    //  # Selector()
+    //  一様
     Selector() {
         for (int i = 0; i < N; i++) {
             threshold_[i] = static_cast<std::uint64_t>(selector_internal::SCALE * (i + 1) / N);
         }
     }
 
-    ///  # Selector(weights)
-    ///  weightsは非負で、総和が正であること
+    //  # Selector(weights)
+    //  weights[i]に比例する確率でiを返すようにする
+    //  weightsに負の値がある、または総和が0だと壊れる
     explicit Selector(const std::array<double, N>& weights) {
         double sum = 0;
         for (double weight: weights) {
@@ -100,8 +103,8 @@ class Selector {
         }
     }
 
-    ///  # operator()(rng)
-    ///  O(N)
+    //  # operator()(rng)
+    //  O(N)
     template <std::uniform_random_bit_generator Rng = std::mt19937>
     inline int operator()(Rng& rng) const {
         std::uint64_t value = selector_internal::sample32(rng);
@@ -113,7 +116,7 @@ class Selector {
     }
 
   private:
-    ///  threshold_[i] = 重みの累積和(0以上i以下)を[0, 2^32]に写した値
+    //  threshold_[i] = 重みの累積和(0以上i以下)を[0, 2^32]に写した値
     std::array<std::uint64_t, N> threshold_{};
 };
 

@@ -8,24 +8,31 @@
 
 namespace nono {
 
-///  これをコピペしていい感じに埋める
+//  # ReRootingInfoTemplate
+//  rerootingに渡すInfoが満たすべきインターフェース(説明用)。これをコピペしていい感じに埋める
+//  各関数はstaticにする
 struct ReRootingInfoTemplate {
-    ///  各頂点が持つ値だったり
+    //  各頂点が持つ値だったり
     using Value = int;
-    ///  辺重み
+    //  辺重み
     using Edge = int;
-    ///  mergeの単位元
+    //  mergeの単位元
     Value e();
-    ///  subtree同士のmerge
+    //  subtree同士のmerge
     Value merge(Value lhs, Value rhs);
-    ///  辺重みを加える
+    //  辺重みを加える
     Value add_edge(Edge edge, Value vertex);
-    ///  virtual vertex に頂点重みを与える
+    //  virtual vertex に頂点重みを与える
     Value add_vertex(Value vertex, Value value);
 };
 
-///  # rerooting(graph, vertex)
-///  O(n)
+//  # rerooting<Info>(graph, vertex)
+//  全方位木DP。各頂点uについて、uを根としたときの木全体の値を求め、その列を返す
+//  vertex[u]は頂点uが持つ値。uを根とする部分木の値は、各子の部分木の値を
+//  add_edge(辺の重み, 子の値) で辺に載せ、mergeでまとめ、add_vertex(vertex[u], まとめた値) で求める
+//  mergeが結合的で、e()がその単位元でないと壊れる
+//  graphが木でないと壊れる
+//  O(n)
 template <class Info>
 std::vector<typename Info::Value> rerooting(const Graph<typename Info::Edge>& graph,
                                             const std::vector<typename Info::Value>& vertex) {

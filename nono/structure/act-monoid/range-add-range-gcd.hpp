@@ -7,24 +7,24 @@ namespace nono {
 
 namespace act_monoid {
 
-///  # RangeAddRangeGcd
-///    gcd(A_0, A_1, A_2, ...)
-///  = gcd(A_0, A_1 - A_0, A_2 - A_1, ...)
-///
-///  tot := gcd(A_1 - A_0, A_2 - A_1, ...)
-///  answer := gcd(A_0, tot)
-///
-///  op lhs rhs :=
-///     left <- lhs.left,
-///     right <- rhs.right,
-///     tot <- gcd(left.tot, right.tot, lhs.right - rhs.left)
-///
-//// ## range add
-///  mapping act value :=
-///     left <- left + act,
-///     right <- right + act,
-///     tot <- tot
-///     (totは差分のgcd, すべての値にact足しても差分は不変)
+//  # RangeAddRangeGcd
+//    gcd(A_0, A_1, A_2, ...)
+//  = gcd(A_0, A_1 - A_0, A_2 - A_1, ...)
+//
+//  tot := gcd(A_1 - A_0, A_2 - A_1, ...)
+//  answer := gcd(A_0, tot)
+//
+//  op lhs rhs :=
+//     left <- lhs.left,
+//     right <- rhs.right,
+//     tot <- gcd(left.tot, right.tot, lhs.right - rhs.left)
+//
+//  ## range add
+//  mapping act value :=
+//     left <- left + act,
+//     right <- right + act,
+//     tot <- tot
+//     (totは差分のgcd, すべての値にact足しても差分は不変)
 template <class T>
 struct RangeAddRangeGcd {
     struct Value {

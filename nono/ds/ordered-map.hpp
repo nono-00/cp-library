@@ -8,7 +8,7 @@
 
 namespace nono {
 
-namespace ordered_map_node {
+namespace ordered_map_internal {
 
 template <class Key, class Value>
 struct Node {
@@ -28,55 +28,55 @@ struct Node {
 template <class Key, class Value>
 using NodePtr = Node<Key, Value>*;
 
-///  # empty()
-///  whether S is empty
-///  O(1)
+//  # empty(root)
+//  Sが空か
+//  O(1)
 template <class Key, class Value>
 bool empty(NodePtr<Key, Value> root) {
     return !root;
 }
 
-///  # size()
-///  |S|
-///  O(1)
+//  # size(root)
+//  |S|
+//  O(1)
 template <class Key, class Value>
 int size(NodePtr<Key, Value> root) {
     return root ? root->size : 0;
 }
 
-///  # update(root)
-///  update size of S
+//  # update(root)
+//  Sのsizeを更新する
 template <class Key, class Value>
 void update(NodePtr<Key, Value> root) {
     root->size = 1 + size(root->left) + size(root->right);
 }
 
-///  # push(root)
-///  Key比較のみで完結するため伝播すべき遅延情報は無い（rbst::merge/split_by_sizeから
-///  ADLで呼ばれるためのno-op）
+//  # push(root)
+//  Key比較のみで完結するため伝播すべき遅延情報は無い（rbst_internal::merge/split_by_sizeから
+//  ADLで呼ばれるためのno-op）
 template <class Key, class Value>
 void push(NodePtr<Key, Value>) {}
 
-///  # merge(lhs, rhs)
-///  return root of (lhs + rhs)
-///  O(log n)
+//  # merge(lhs, rhs)
+//  lhs + rhs の根を返す
+//  O(log n)
 template <class Key, class Value>
 NodePtr<Key, Value> merge(NodePtr<Key, Value> lhs, NodePtr<Key, Value> rhs) {
-    return rbst::merge(lhs, rhs);
+    return rbst_internal::merge(lhs, rhs);
 }
 
-///  # split by size(root, k)
-///  return (root of S[:k], root of S[k:])
-///  if size(S) < k, return {S, empty set}
-///  O(log n)
+//  # split_by_size(root, k)
+//  (S[:k] の根, S[k:] の根) を返す
+//  size(S) < k なら (S, 空) を返す
+//  O(log n)
 template <class Key, class Value>
 std::pair<NodePtr<Key, Value>, NodePtr<Key, Value>> split_by_size(NodePtr<Key, Value> root, int k) {
-    return rbst::split_by_size(root, k);
+    return rbst_internal::split_by_size(root, k);
 }
 
-///  # split by key(root, key)
-///  return ({ x | x < key }, { x | key <= x })
-///  O(log n)
+//  # split_by_key(root, key)
+//  return ({ x | x < key }, { x | key <= x })
+//  O(log n)
 template <class Key, class Value>
 std::pair<NodePtr<Key, Value>, NodePtr<Key, Value>> split_by_key(NodePtr<Key, Value> root, Key key) {
     if (!root) return {nullptr, nullptr};
@@ -93,9 +93,9 @@ std::pair<NodePtr<Key, Value>, NodePtr<Key, Value>> split_by_key(NodePtr<Key, Va
     }
 }
 
-///  # set(root, key)
-///  return root of (S or {key})
-///  O(log n)
+//  # set(root, key)
+//  S or {key} の根を返す
+//  O(log n)
 template <class Key, class Value>
 NodePtr<Key, Value> set(NodePtr<Key, Value> root, Key key, Value value) {
     auto node = find_by_key(root, key);
@@ -108,9 +108,9 @@ NodePtr<Key, Value> set(NodePtr<Key, Value> root, Key key, Value value) {
     }
 }
 
-///  # erase(root, key)
-///  return root of (S - {key})
-///  O(log n)
+//  # erase(root, key)
+//  S - {key} の根を返す
+//  O(log n)
 template <class Key, class Value>
 NodePtr<Key, Value> erase(NodePtr<Key, Value> root, Key key) {
     if (!contains(root, key)) return root;
@@ -120,19 +120,19 @@ NodePtr<Key, Value> erase(NodePtr<Key, Value> root, Key key) {
     return merge(lhs, rhs);
 }
 
-///  # find by size(root, k)
-///  return S[k]
-///  if not exist, return nullptr
-///  O(log n)
+//  # find_by_size(root, k)
+//  return S[k]
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class Key, class Value>
 NodePtr<Key, Value> find_by_size(NodePtr<Key, Value> root, int k) {
-    return rbst::find_by_size(root, k);
+    return rbst_internal::find_by_size(root, k);
 }
 
-///  # find by key(root, key)
-///  return key node
-///  if not exist, return nullptr
-///  O(log n)
+//  # find_by_key(root, key)
+//  keyを持つノードを返す
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class Key, class Value>
 NodePtr<Key, Value> find_by_key(NodePtr<Key, Value> root, Key key) {
     while (root) {
@@ -147,17 +147,17 @@ NodePtr<Key, Value> find_by_key(NodePtr<Key, Value> root, Key key) {
     return nullptr;
 }
 
-///  # contains(root, key)
-///  return whether key in S
-///  O(log n)
+//  # contains(root, key)
+//  keyがSに含まれるか
+//  O(log n)
 template <class Key, class Value>
 bool contains(NodePtr<Key, Value> root, Key key) {
     return find_by_key(root, key);
 }
 
-///  # rank(root, key)
-///  return |{ x in S | x < key }|
-///  O(log n)
+//  # rank(root, key)
+//  return |{ x in S | x < key }|
+//  O(log n)
 template <class Key, class Value>
 int rank(NodePtr<Key, Value> root, Key key) {
     int result = 0;
@@ -172,39 +172,39 @@ int rank(NodePtr<Key, Value> root, Key key) {
     return result;
 }
 
-///  # min(root)
-///  return min node
-///  if not exist, return nullptr
-///  O(log n)
+//  # min(root)
+//  最小の要素のノードを返す
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class Key, class Value>
 NodePtr<Key, Value> min(NodePtr<Key, Value> root) {
     while (root->left) root = root->left;
     return root;
 }
 
-///  # max(root)
-///  return max node
-///  if not exist, return nullptr
-///  O(log n)
+//  # max(root)
+//  最大の要素のノードを返す
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class Key, class Value>
 NodePtr<Key, Value> max(NodePtr<Key, Value> root) {
     while (root->right) root = root->right;
     return root;
 }
 
-///  # kth(root, k)
-///  return S[k]
-///  if not exist, return nullptr
-///  O(log n)
+//  # kth(root, k)
+//  return S[k]
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class Key, class Value>
 NodePtr<Key, Value> kth(NodePtr<Key, Value> root, int k) {
     return find_by_size(root, k);
 }
 
-///  # successor(node)
-///  return next value
-///  if not exist, return nullptr
-///  O(log n)
+//  # successor(root, key)
+//  keyより大きい最小の要素を返す
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class Key, class Value>
 NodePtr<Key, Value> successor(NodePtr<Key, Value> root, Key key) {
     NodePtr<Key, Value> result = nullptr;
@@ -219,10 +219,10 @@ NodePtr<Key, Value> successor(NodePtr<Key, Value> root, Key key) {
     return result;
 }
 
-///  # predecessor(node)
-///  return prev value
-///  if not exist, return nullptr
-///  O(log n)
+//  # predecessor(root, key)
+//  keyより小さい最大の要素を返す
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class Key, class Value>
 NodePtr<Key, Value> predecessor(NodePtr<Key, Value> root, Key key) {
     NodePtr<Key, Value> result = nullptr;
@@ -237,11 +237,11 @@ NodePtr<Key, Value> predecessor(NodePtr<Key, Value> root, Key key) {
     return result;
 }
 
-}  //  namespace ordered_map_node
+}  //  namespace ordered_map_internal
 
-///  # OrderedMap
-///  RBST
-///  ordered_map_nodeのラッパー
+//  # OrderedMap
+//  順序付き連想配列。RBSTで実装している
+//  ordered_map_internalのラッパー
 template <class Key, class Value>
 class OrderedMap {
   public:
@@ -250,107 +250,110 @@ class OrderedMap {
         delete root_;
     }
 
-    ///  # set(key, value)
-    ///  S[key] <= value
-    ///  O(log n)
+    //  # set(key, value)
+    //  S[key] <= value
+    //  O(log n)
     void set(Key key, Value value) {
-        root_ = ordered_map_node::set(root_, key, value);
+        root_ = ordered_map_internal::set(root_, key, value);
     }
 
-    ///  # get(key)
-    ///  return S[key]
-    ///  if key is not in S, fail
-    ///  O(log n)
+    //  # get(key)
+    //  return S[key]
+    //  keyがSに無いと壊れる
+    //  O(log n)
     Value get(Key key) {
-        auto node = ordered_map_node::find_by_key(root_, key);
+        auto node = ordered_map_internal::find_by_key(root_, key);
         assert(node);
         return node->value;
     }
 
-    ///  # erase(key)
-    ///  S <= S - key
-    ///  if key is not in S, do nothing
-    ///  O(log n)
+    //  # erase(key)
+    //  S <= S - key
+    //  keyがSに無ければ何もしない
+    //  O(log n)
     void erase(Key key) {
-        root_ = ordered_map_node::erase(root_, key);
+        root_ = ordered_map_internal::erase(root_, key);
     }
 
-    ///  # empty()
-    ///  whether S is empty
-    ///  O(1)
+    //  # empty()
+    //  Sが空か
+    //  O(1)
     bool empty() {
-        return ordered_map_node::empty(root_);
+        return ordered_map_internal::empty(root_);
     }
 
-    ///  # size()
-    ///  |S|
-    ///  O(1)
+    //  # size()
+    //  |S|
+    //  O(1)
     int size() {
-        return ordered_map_node::size(root_);
+        return ordered_map_internal::size(root_);
     }
 
-    ///  # min()
-    ///  min(S)
-    ///  O(log n)
+    //  # min()
+    //  キーが最小の (key, value)
+    //  空だと壊れる
+    //  O(log n)
     std::pair<Key, Value> min() {
         assert(!empty());
-        auto node = ordered_map_node::min(root_);
+        auto node = ordered_map_internal::min(root_);
         return {node->key, node->value};
     }
 
-    ///  # max()
-    ///  max(S)
-    ///  O(log n)
+    //  # max()
+    //  キーが最大の (key, value)
+    //  空だと壊れる
+    //  O(log n)
     std::pair<Key, Value> max() {
         assert(!empty());
-        auto node = ordered_map_node::max(root_);
+        auto node = ordered_map_internal::max(root_);
         return {node->key, node->value};
     }
 
-    ///  # kth(k)
-    ///  k番目に小さい値
-    ///  0-index
-    ///  O(log n)
+    //  # kth(k)
+    //  キーがk番目に小さい (key, value)
+    //  0-index
+    //  0 <= k < size() でないと壊れる
+    //  O(log n)
     std::pair<Key, Value> kth(int k) {
         assert(0 <= k && k < size());
-        auto node = ordered_map_node::kth(root_, k);
+        auto node = ordered_map_internal::kth(root_, k);
         return {node->key, node->value};
     }
 
-    ///  # contains(key)
-    ///  whether key in S
-    ///  O(log n)
+    //  # contains(key)
+    //  keyがSに含まれるか
+    //  O(log n)
     bool contains(Key key) {
-        return ordered_map_node::contains(root_, key);
+        return ordered_map_internal::contains(root_, key);
     }
 
-    ///  # rank(key)
-    ///  |{ (a, b) in S | a < key }|
-    ///  O(log n)
+    //  # rank(key)
+    //  |{ (a, b) in S | a < key }|
+    //  O(log n)
     int rank(Key key) {
-        return ordered_map_node::rank(root_, key);
+        return ordered_map_internal::rank(root_, key);
     }
 
-    ///  # successor(key)
-    ///  return next value
-    ///  if not exist, return std::optional
-    ///  O(log n)
+    //  # successor(key)
+    //  keyより大きい最小の要素を返す
+    //  存在しなければnulloptを返す
+    //  O(log n)
     std::optional<std::pair<Key, Value>> successor(Key key) {
-        auto node = ordered_map_node::successor(root_, key);
+        auto node = ordered_map_internal::successor(root_, key);
         return node ? std::optional<std::pair<Key, Value>>({node->key, node->value}) : std::nullopt;
     }
 
-    ///  # predecessor(key)
-    ///  return prev value
-    ///  if not exist, return std::optional
-    ///  O(log n)
+    //  # predecessor(key)
+    //  keyより小さい最大の要素を返す
+    //  存在しなければnulloptを返す
+    //  O(log n)
     std::optional<std::pair<Key, Value>> predecessor(Key key) {
-        auto node = ordered_map_node::predecessor(root_, key);
+        auto node = ordered_map_internal::predecessor(root_, key);
         return node ? std::optional<std::pair<Key, Value>>({node->key, node->value}) : std::nullopt;
     }
 
   private:
-    ordered_map_node::NodePtr<Key, Value> root_ = nullptr;
+    ordered_map_internal::NodePtr<Key, Value> root_ = nullptr;
 };
 
 }  //  namespace nono

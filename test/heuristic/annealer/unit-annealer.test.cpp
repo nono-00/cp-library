@@ -18,7 +18,7 @@ namespace nono {
 //  [2] 差分で積み上げたbest_score()が、ベスト状態を再計算したスコアと一致すること
 //  [3] 最適解が既知の小さな問題で最適解に到達すること
 
-///  [1] 受理率が理論値と一致するか
+//  [1] 受理率が理論値と一致するか
 void test_accept_probability() {
     constexpr int TRIAL = 1 << 20;
 
@@ -45,7 +45,7 @@ void test_accept_probability() {
     assert(std::abs(rate(10.0, -10.0) - rate(1.0, -1.0)) < 0.02);
 }
 
-///  巡回セールスマン問題。最大化に揃えるためスコアは経路長の符号反転
+//  巡回セールスマン問題。最大化に揃えるためスコアは経路長の符号反転
 struct Tsp {
     int n;
     std::vector<std::vector<double>> dist;
@@ -65,7 +65,7 @@ struct Tsp {
         return -sum;
     }
 
-    ///  [i + 1, j]を反転したときのスコア差分
+    //  [i + 1, j]を反転したときのスコア差分
     double delta(const std::vector<int>& tour, int i, int j) const {
         int a = tour[i], b = tour[(i + 1) % n], c = tour[j], d = tour[(j + 1) % n];
         return -(dist[a][c] + dist[b][d] - dist[a][b] - dist[c][d]);
@@ -121,7 +121,7 @@ void test_tsp(unsigned seed) {
     assert(!oss.str().empty());
 }
 
-///  accept / commitを直接使う経路
+//  accept / commitを直接使う経路
 void test_manual_commit() {
     constexpr int N = 8;
     Tsp tsp(N, 7);
@@ -152,7 +152,7 @@ void test_manual_commit() {
     assert(sa.best_score() > optimal - 1e-6);
 }
 
-///  progressとtemperatureが単調に進むこと
+//  progressとtemperatureが単調に進むこと
 void test_schedule() {
     int state = 0;
     Xorshift<unsigned> rng(1);

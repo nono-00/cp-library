@@ -9,17 +9,20 @@ namespace nono {
 
 namespace beats_monoid {
 
-///  # RangeChminRangeSum
+//  # RangeChminRangeSum
+//  区間chmin、区間和。Actはchminする値 (x <- min(x, act))
+//  1要素は Value(val) で作る
+//  mappingは、actが2番目に大きい値以下のとき nullopt を返す(子に降りて計算し直す)
 template <class T, class Count = unsigned>
 struct RangeChminRangeSum {
     struct Value {
         Value(): top2({std::numeric_limits<T>::min(), std::numeric_limits<T>::min()}), num(0), sum(0) {}
         Value(T val, Count num = 1): top2({val, std::numeric_limits<T>::min()}), num(num), sum(val) {}
-        //  v[0]: maximum value, v[1]: second maximum value
+        //  top2[0]: 最大値, top2[1]: 2番目に大きい値(最大値と異なるもの)
         std::array<T, 2> top2;
-        //  n: num of maximum value
+        //  最大値の個数
         Count num;
-        //  s: sum of segment
+        //  区間の和
         T sum;
     };
     using Act = T;

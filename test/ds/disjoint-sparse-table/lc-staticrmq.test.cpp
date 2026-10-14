@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 
-#include "../../../nono/ds/disjoint-sparse-table.hpp"
-#include "../../../nono/structure/monoid/min.hpp"
+#include "nono/ds/disjoint-sparse-table.hpp"
+#include "nono/structure/monoid/min.hpp"
 
 namespace nono {
 

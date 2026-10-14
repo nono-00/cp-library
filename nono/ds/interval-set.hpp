@@ -6,8 +6,9 @@
 
 namespace nono {
 
-///  # IntervalSet
-///  集合を区間で管理するやつ
+//  # IntervalSet
+//  集合を区間で管理するやつ
+//  整数の集合Sを、互いに重ならない半開区間 [left, right) の列として持つ
 template <class Index = int>
 class IntervalSet {
     struct Interval {
@@ -33,14 +34,15 @@ class IntervalSet {
     using iterator = std::set<Interval>::iterator;
     using const_iterator = std::set<Interval>::const_iterator;
 
-    ///  # IntervalSet()
-    ///  空のinterval setを構築する
-    ///  O(1)
+    //  # IntervalSet()
+    //  空のinterval setを構築する
+    //  O(1)
     IntervalSet() {}
 
-    ///  # add(left, right)
-    ///  S <= S or [left, right)
-    ///  ならし O(log n)
+    //  # add(left, right)
+    //  S <= S or [left, right)
+    //  left < right でないと壊れる
+    //  ならし O(log n)
     void add(Index left, Index right) {
         assert(left < right);
         Interval interval{left, right};
@@ -63,9 +65,10 @@ class IntervalSet {
         add_interval(interval);
     }
 
-    ///  # erase(left, right)
-    ///  S <= S - [left, right)
-    ///  ならし O(log n)
+    //  # erase(left, right)
+    //  S <= S - [left, right)
+    //  left < right でないと壊れる
+    //  ならし O(log n)
     void erase(Index left, Index right) {
         assert(left < right);
         auto it = dat_.upper_bound({left, right});
@@ -94,9 +97,9 @@ class IntervalSet {
         }
     }
 
-    ///  # contains(index)
-    ///  whether index is in S
-    ///  O(log n)
+    //  # contains(index)
+    //  indexがSに含まれるか
+    //  O(log n)
     bool contains(Index index) {
         auto it = dat_.upper_bound({index, index});
         if (it == dat_.begin()) return false;
@@ -104,25 +107,27 @@ class IntervalSet {
         return it->contains(index);
     }
 
-    /// # empty()
-    /// whether S is emtpy
+    //  # empty()
+    //  Sが空か
     bool empty() {
         return dat_.empty();
     }
 
-    /// # size()
-    /// |S|
+    //  # size()
+    //  |S|
     Index size() {
         return size_;
     }
 
-    /// # clear()
-    /// S <= {}
+    //  # clear()
+    //  S <= {}
     void clear() {
         dat_.clear();
         size_ = 0;
     }
 
+    //  # begin()
+    //  Sを構成する区間を、左端の昇順に辿るイテレータ。各要素は left, right を持つ
     iterator begin() noexcept {
         return dat_.begin();
     }

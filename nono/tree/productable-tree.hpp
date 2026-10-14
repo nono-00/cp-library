@@ -10,11 +10,10 @@
 
 namespace nono {
 
-///  # Productable Tree
-///  tree + (prod path) + (prod subtree) + (apply path) + (apply subtree)
-///  if edge base, EDGE = true
-///
-///  辺重みはコンストラクタで初期化できないので注意
+//  # ProductableTree
+//  Treeに、パスと部分木に対する総積(prod)と作用(apply)を加えたもの
+//  Mはact-monoid。EDGE = false なら頂点に、EDGE = true なら辺に値を持つ
+//  辺に持たせる場合、値はコンストラクタで初期化できないので set(u, v, value) で設定する
 template <class M, class T, bool EDGE = false>
 class ProductableTree: public Tree<T> {
     using Rev = act_monoid::Rev<M>;
@@ -31,8 +30,18 @@ class ProductableTree: public Tree<T> {
 
   public:
     ProductableTree() {}
+
+    //  # ProductableTree(n, edges, root)
+    //  全ての値を M::e() で初期化する
+    //  edgesが木でないと壊れる
+    //  O(n)
     ProductableTree(int n, const std::vector<EdgeBase<T>>& edges, int root = 0)
         : ProductableTree(n, edges, std::vector<Value>(n, M::e()), root) {}
+
+    //  # ProductableTree(n, edges, value, root)
+    //  頂点iの値を value[i] で初期化する
+    //  edgesが木でないと壊れる
+    //  O(n)
     ProductableTree(int n, const std::vector<EdgeBase<T>>& edges, const std::vector<Value>& value, int root = 0)
         : Tree<T>(n, edges, root) {
         std::vector<RevValue> rev_value(n);
@@ -40,41 +49,44 @@ class ProductableTree: public Tree<T> {
         segtree_ = LazySegmentTree<Rev>(rev_value);
     }
 
-    ///  # set(x, value)
-    ///  vertex_x weight <- value
-    ///  O(log n)
+    //  # set(x, value)
+    //  頂点xの値 <- value
+    //  O(log n)
     void set(int x, Value value) {
         segtree_.set(in_[x], value);
     }
 
-    ///  # set(u, v, value)
-    ///  edge (u, v) weight <- value
-    ///  O(log n)
+    //  # set(u, v, value)
+    //  辺(u, v)の値 <- value。EDGE = true のときだけ使える
+    //  O(log n)
     void set(int u, int v, Value value) {
         static_assert(EDGE);
         if (depth_[u] < depth_[v]) std::swap(u, v);
         segtree_.set(in_[u], value);
     }
 
-    ///  # apply(x, act)
-    ///  vertex x weight <- mapping(act, vertex_x weight)
-    ///  O(log n)
+    //  # apply(x, act)
+    //  頂点xの値 <- mapping(act, 頂点xの値)
+    //  O(log n)
     void apply(int x, Act act) {
         segtree_.apply(in_[x], act);
     }
 
-    ///  # apply(u, v, act)
-    ///  edge (u, v) weight <- mapping(act, edge (u, v) weight)
-    ///  O(log n)
+    //  # apply(u, v, act)
+    //  辺(u, v)の値 <- mapping(act, 辺(u, v)の値)。EDGE = true のときだけ使える
+    //  O(log n)
     void apply(int u, int v, Act act) {
         static_assert(EDGE);
         if (depth_[u] < depth_[v]) std::swap(u, v);
         segtree_.apply(in_[u], act);
     }
 
-    ///  # apply path(u, v, act)
-    ///  [for w in path(u, v)](w_weight <- mapping(act, w_weight))
-    ///  O((log n)^2)
+    //  # apply_path(lhs, rhs, act)
+    //  lhsからrhsへのパス上の値すべてにactを作用させる
+    //  [for w in path(lhs, rhs)](w_weight <- mapping(act, w_weight))
+    //  不具合があり、正しく動かない。最後に処理する区間で、深いほうの端の値に作用が届かない。
+    //  EDGE = true では、区間が逆転して壊れることもある
+    //  O((log n)^2)
     void apply_path(int lhs, int rhs, Act act) {
         while (head_[lhs] != head_[rhs]) {
             if (in_[lhs] > in_[rhs]) std::swap(lhs, rhs);
@@ -85,16 +97,17 @@ class ProductableTree: public Tree<T> {
         segtree_.apply(in_[lhs] + EDGE, in_[rhs], act);
     }
 
-    ///  # apply subtree(x, act)
-    ///  [for w in subtree(x)](w_weight <- mapping(act, w_weight))
-    ///  O(log n)
+    //  # apply_subtree(x, act)
+    //  xの部分木の値すべてにactを作用させる
+    //  [for w in subtree(x)](w_weight <- mapping(act, w_weight))
+    //  O(log n)
     void apply_subtree(int x, Act act) {
         segtree_.apply(in_[x] + EDGE, out_[x], act);
     }
 
-    ///  # prod path(from, to)
-    ///  [for w in path(from, to)](w_weight <- mapping(act, w_weight))
-    ///  O((log n)^2)
+    //  # prod_path(from, to)
+    //  fromからtoへのパス上の値を、fromからtoへ向かう順に並べた総積を返す
+    //  O((log n)^2)
     Value prod_path(int from, int to) {
         Value sml = M::e();
         Value smr = M::e();
@@ -115,9 +128,9 @@ class ProductableTree: public Tree<T> {
         return M::op(sml, smr);
     }
 
-    ///  # prod subtree(x)
-    ///  [for w in subtree(x)](w_weight <- mapping(act, w_weight))
-    ///  O(log n)
+    //  # prod_subtree(x)
+    //  xの部分木の値を、行きがけ順に並べた総積を返す
+    //  O(log n)
     Value prod_subtree(int x) {
         return segtree_.prod(in_[x] + EDGE, out_[x]).ord;
     }

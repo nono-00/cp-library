@@ -9,8 +9,13 @@
 
 namespace nono {
 
-//  querys := 辺追加/削除クエリなら辺. そうでないなら適当に(0, 0)にしておけば良い
-//  func := func(query_i, UnfoUnionFind&)
+//  # offline_dynamic_connectivity(n, querys, func)
+//  オフラインの動的連結性。辺の追加と削除を時系列で受け取り、各クエリの時点の連結状態でfuncを呼ぶ
+//  querys[i]    : i番目のクエリが辺の追加/削除なら、その辺。無向辺として扱う
+//                 同じ辺が現れるたびに、追加と削除が交互に切り替わる(多重辺は扱えない)
+//                 そうでないなら適当に(0, 0)にしておけば良い
+//  func(i, uf)  : i = 0, 1, ... の順に呼ばれる。ufは、i番目のクエリを反映した時点の UndoUnionFind&
+//  O(q log q log n)  (q: クエリ数)
 template <class F>
 void offline_dynamic_connectivity(int n, const std::vector<std::pair<int, int>>& querys, F func) {
     int t = std::bit_ceil(querys.size());

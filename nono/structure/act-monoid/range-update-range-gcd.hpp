@@ -7,7 +7,9 @@ namespace nono {
 
 namespace act_monoid {
 
-///  # RangeUpdateRangeGcd
+//  # RangeUpdateRangeGcd
+//  区間更新(代入)、区間gcd
+//  Actは std::optional<T> で、値があればその値を代入し、nulloptなら何もしない
 template <class T>
 struct RangeUpdateRangeGcd {
     using Value = T;

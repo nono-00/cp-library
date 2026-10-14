@@ -15,9 +15,10 @@ struct RLEPair {
 
 }  //  namespace run_length_encoding_internal
 
-///  # run length encoding
-///  aababbba => [(a, 2), (b, 1), (a, 1), (b, 3), (a, 1)]
-///  O(|seq|)
+//  # run_length_encoding(sequence)
+//  ランレングス圧縮。同じ値が連続する区間ごとに (value, count) へまとめた列を返す
+//  aababbba => [(a, 2), (b, 1), (a, 1), (b, 3), (a, 1)]
+//  O(|sequence|)
 template <std::ranges::random_access_range R>
 std::vector<run_length_encoding_internal::RLEPair<typename R::value_type>> run_length_encoding(const R& sequence) {
     if (std::ranges::empty(sequence)) return {};

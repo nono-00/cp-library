@@ -7,8 +7,12 @@ namespace nono {
 
 namespace act_monoid {
 
-///  # RangeChminChmaxAddRangeMinMax
-///  Act (low, high, add) (x) -> min(high, max(low, x + add))
+//  # RangeChminChmaxAddRangeMinMax
+//  区間chmin・chmax・加算、区間の最小値と最大値
+//  Act (low, high, add) (x) -> min(high, max(low, x + add))
+//  作用は Act::chmin(a), Act::chmax(a), Act::clamp(low, high), Act::add(b) で作る
+//  clamp(low, high) は low <= high でないと壊れる
+//  Tが浮動小数点数だと壊れる(numeric_limits<T>::min() が正の最小値になるため)
 template <class T>
 struct RangeChminChmaxAddRangeMinMax {
   private:

@@ -1,9 +1,9 @@
 // competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/range_reverse_range_sum
 #include <iostream>
 
-#include "../../../nono/ds/dynamic-sequence.hpp"
-#include "../../../nono/structure/act-monoid/act-monoid.hpp"
-#include "../../../nono/structure/monoid/add.hpp"
+#include "nono/ds/dynamic-sequence.hpp"
+#include "nono/structure/act-monoid/act-monoid.hpp"
+#include "nono/structure/monoid/add.hpp"
 
 namespace nono {
 

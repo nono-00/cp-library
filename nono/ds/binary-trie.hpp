@@ -7,7 +7,7 @@
 
 namespace nono {
 
-namespace binary_trie {
+namespace binary_trie_internal {
 
 template <class T = unsigned, int W = std::numeric_limits<T>::digits>
 struct Node {
@@ -37,6 +37,7 @@ struct Node {
 template <class T, int W>
 using NodePtr = Node<T, W>*;
 
+//  valueを1個追加する
 template <class T, int W>
 NodePtr<T, W> insert(NodePtr<T, W> node, T value, int w = W - 1) {
     if (!node) node = new Node<T, W>();
@@ -128,6 +129,7 @@ std::pair<NodePtr<T, W>, NodePtr<T, W>> split(NodePtr<T, W> node, int k, int w =
     }
 }
 
+//  全ての要素にxor valueする(遅延させる)
 template <class T, int W>
 NodePtr<T, W> apply_xor(NodePtr<T, W> node, T value) {
     if (node) node->lazy ^= value;
@@ -209,12 +211,13 @@ int count_gt(NodePtr<T, W> node, T value, int w = W - 1) {
     }
 }
 
-}  //  namespace binary_trie
+}  //  namespace binary_trie_internal
 
-///  # BinaryTrie
-///  binary_trie::Nodeのwrapper.
-///  非負整数用の多重集合.
-///  kth, min, max, xor_applyなどができる.
+//  # BinaryTrie
+//  binary_trie_internal::Nodeのwrapper.
+//  非負整数用の多重集合.
+//  kth, min, max, xor_applyなどができる.
+//  Wは扱うビット数
 template <class T = unsigned, int W = std::numeric_limits<T>::digits>
 class BinaryTrie {
   public:
@@ -222,89 +225,90 @@ class BinaryTrie {
     ~BinaryTrie() {
         delete root_;
     }
-    ///  # insert(value)
-    ///  valueを一個追加する.
-    ///  O(W)
+    //  # insert(value)
+    //  valueを一個追加する.
+    //  O(W)
     void insert(T value) {
-        root_ = binary_trie::insert(root_, value);
+        root_ = binary_trie_internal::insert(root_, value);
     }
-    ///  # erase(value)
-    ///  valueを一個削除する.
-    ///  存在しない場合、何もしない
-    ///  O(W)
+    //  # erase(value)
+    //  valueを一個削除する.
+    //  存在しない場合、何もしない
+    //  O(W)
     void erase(T value) {
-        root_ = binary_trie::erase(root_, value);
+        root_ = binary_trie_internal::erase(root_, value);
     }
-    ///  # kth(k, value = 0)
-    ///  0-indexでk番目の値を返す.
-    ///  空だと壊れる
-    ///  O(W)
+    //  # kth(k, value)
+    //  各要素に xor value した値を昇順に並べたときの、k番目(0-index)の値を返す
+    //  0 <= k < size() でないと壊れる
+    //  O(W)
     T kth(int k, T value = 0) {
         assert(!empty());
         assert(0 <= k && k < size());
-        return binary_trie::kth(root_, k, value);
+        return binary_trie_internal::kth(root_, k, value);
     }
-    ///  # min(value = 0)
-    ///  min[forall v in S] v xor value
-    ///  valueを適用した最小値を返す
-    ///  空だと壊れる
-    ///  O(W)
+    //  # min(value)
+    //  min[forall v in S] v xor value
+    //  valueを適用した最小値を返す
+    //  空だと壊れる
+    //  O(W)
     T min(T value = 0) {
         assert(!empty());
-        return binary_trie::min(root_, value);
+        return binary_trie_internal::min(root_, value);
     }
-    ///  # max(value = 0)
-    ///  max[forall v in S] v xor value
-    ///  valueを適用した最大値を返す
-    ///  空だと壊れる
-    ///  O(W)
+    //  # max(value)
+    //  max[forall v in S] v xor value
+    //  valueを適用した最大値を返す
+    //  空だと壊れる
+    //  O(W)
     T max(T value = 0) {
         assert(!empty());
-        return binary_trie::max(root_, value);
+        return binary_trie_internal::max(root_, value);
     }
-    ///  # size()
-    ///  O(1)
+    //  # size()
+    //  要素数(同じ値も個数ぶん数える)
+    //  O(1)
     int size() const {
         return root_ ? root_->size : 0;
     }
-    ///  # contains(value)
-    ///  O(W)
+    //  # contains(value)
+    //  valueが含まれるか
+    //  O(W)
     bool contains(T value) {
-        return binary_trie::count(root_, value) > 0;
+        return binary_trie_internal::count(root_, value) > 0;
     }
-    ///  # count(value)
-    ///  valueの個数
-    ///  O(W)
+    //  # count(value)
+    //  valueの個数
+    //  O(W)
     int count(T value) {
-        return binary_trie::count(root_, value);
+        return binary_trie_internal::count(root_, value);
     }
-    ///  # empty()
+    //  # empty()
+    //  空か
     bool empty() const {
         return !root_;
     }
-    ///  # count_lt(value)
-    ///  count less than value
-    ///  value未満の値の個数を返す
-    ///  O(W)
+    //  # count_lt(value)
+    //  value未満の値の個数を返す
+    //  O(W)
     int count_lt(T value) {
-        return binary_trie::count_lt(root_, value);
+        return binary_trie_internal::count_lt(root_, value);
     }
-    ///  # count_gt(value)
-    ///  count greater than value
-    ///  valueより大きい値の個数を返す
-    ///  O(W)
+    //  # count_gt(value)
+    //  valueより大きい値の個数を返す
+    //  O(W)
     int count_gt(T value) {
-        return binary_trie::count_gt(root_, value);
+        return binary_trie_internal::count_gt(root_, value);
     }
-    ///  # apply_xor(value)
-    ///  全ての要素にxor valueする
-    ///  O(1)
+    //  # apply_xor(value)
+    //  全ての要素にxor valueする
+    //  O(1)
     void apply_xor(T value) {
-        root_ = binary_trie::apply_xor(root_, value);
+        root_ = binary_trie_internal::apply_xor(root_, value);
     }
 
   private:
-    binary_trie::NodePtr<T, W> root_;
+    binary_trie_internal::NodePtr<T, W> root_;
 };
 
 }  //  namespace nono

@@ -7,9 +7,10 @@
 
 namespace nono {
 
-///  # Rolling Hash
-///  ロリハ.
-///  based on <https://ei1333.github.io/library/string/rolling-hash.hpp>
+//  # RollingHash
+//  ロリハ. modは 2^61 - 1
+//  based on <https://ei1333.github.io/library/string/rolling-hash.hpp>
+//  baseを省略すると乱数で決める。比べるハッシュは、同じbaseで計算したものでないと壊れる
 template <uint64_t THRESHOLD = 10000000>
 struct RollingHash {
     static constexpr unsigned long long mod = (1ull << 61ull) - 1;
@@ -18,9 +19,9 @@ struct RollingHash {
     std::vector<unsigned long long> power;
     explicit RollingHash(unsigned long long base = generate_base()): base(base), power{1} {}
 
-    ///  # table(seq)
-    ///  return hash table of seq
-    ///  O(|seq|)
+    //  # table(seq)
+    //  接頭辞のハッシュの表を返す。result[i] は seq[0:i] のハッシュで、長さは |seq| + 1
+    //  O(|seq|)
     template <std::ranges::random_access_range R>
     std::vector<unsigned long long> table(const R& seq) const {
         int n = seq.size();
@@ -30,9 +31,10 @@ struct RollingHash {
         }
         return hashed;
     }
-    ///  # hash(seq)
-    ///  return hash of seq
-    ///  O(|seq|)
+
+    //  # hash(seq)
+    //  seq全体のハッシュを返す
+    //  O(|seq|)
     template <std::ranges::random_access_range R>
     unsigned long long hash(const R& seq) {
         int n = seq.size();
@@ -43,19 +45,21 @@ struct RollingHash {
         return val;
     }
 
-    ///  # hash(seq)
-    ///  return hash of seq (using table)
-    ///  O(1)
+    //  # hash(s, l, r)
+    //  sは table(seq) が返した表。seq[l:r] のハッシュを返す
+    //  0 <= l <= r <= |seq| でないと壊れる
+    //  O(1)。baseの累乗の表が足りないときだけ、伸ばす分の時間がかかる
     unsigned long long hash(const std::vector<unsigned long long>& s, int l, int r) {
         expand(r - l);
         return add(s[r], mod - mul(s[l], power[r - l]));
     }
 
-    ///  # combine(h1, h2, h2len)
-    ///  hash(s1) = h1
-    ///  hash(s2) = h2
-    ///  return hash of (s1 + s2)
-    ///  O(1) or O(log |s2|)
+    //  # combine(h1, h2, h2len)
+    //  hash(s1) = h1
+    //  hash(s2) = h2
+    //  return hash of (s1 + s2)
+    //  h2lenはs2の長さ
+    //  h2len <= THRESHOLD なら累乗の表を使って O(1)、そうでなければ O(log h2len)
     unsigned long long combine(unsigned long long h1, unsigned long long h2, unsigned long long h2len) {
         if (h2len <= THRESHOLD) {
             expand(h2len);
@@ -65,12 +69,11 @@ struct RollingHash {
         }
     }
 
-    ///  # lcp(a, l1, r1, b, l2, r2)
-    ///  a := hash table of s
-    ///  b := hash table of t
-    ///  return lcp(s[l1:r1], t[l2:r2])
-    ///  lcp := longest common prefix
-    ///  O(log |seq|)
+    //  # lcp(a, l1, r1, b, l2, r2)
+    //  a := table(s)
+    //  b := table(t)
+    //  return s[l1:r1] と t[l2:r2] の最長共通接頭辞の長さ
+    //  O(log min(r1 - l1, r2 - l2))
     int lcp(const std::vector<unsigned long long>& a, int l1, int r1, const std::vector<unsigned long long>& b, int l2,
             int r2) {
         int len = std::min(r1 - l1, r2 - l2);
@@ -85,7 +88,9 @@ struct RollingHash {
         return low;
     }
 
-    ///  # expand(n)
+    //  # expand(n)
+    //  baseの累乗の表を、n乗まで計算しておく
+    //  O(n)
     inline void expand(int n) {
         if ((int)power.size() < n + 1) {
             int pre_n = (int)power.size();

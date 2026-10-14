@@ -8,9 +8,9 @@
 
 namespace nono {
 
-///  OrderedMultiSet::count(key)が実際の出現回数を正しく返すことを確認する回帰テスト
-///  (count()がsuccessorのrankをそのまま返してしまい、
-///   query key未満の要素数を引き忘れていたバグの修正)
+//  OrderedMultiSet::count(key)が実際の出現回数を正しく返すことを確認する回帰テスト
+//  (count()がsuccessorのrankをそのまま返してしまい、
+//   query key未満の要素数を引き忘れていたバグの修正)
 void solve() {
     std::mt19937 rng(20260821);
     OrderedMultiSet<int> set;

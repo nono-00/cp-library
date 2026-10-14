@@ -6,8 +6,9 @@
 
 namespace nono {
 
-///  # 動的セグ木
-///  座圧せずに使えるsegment tree. とても遅い.
+//  # DynamicSegmentTree
+//  動的セグ木。座圧せずに使えるsegment tree. とても遅い.
+//  Mはモノイド。設定していない位置の値は M::e()
 template <class M, class Index = int>
 class DynamicSegmentTree {
     using T = M::Value;
@@ -38,9 +39,10 @@ class DynamicSegmentTree {
     };
 
   public:
-    ///  # DynamicSegmentTree(lb, ub)
-    ///  [lb, ub)を扱うセグ木を作る
-    ///  O(1)
+    //  # DynamicSegmentTree(lb, ub)
+    //  [lb, ub)を扱うセグ木を作る
+    //  lb < ub でないと壊れる
+    //  O(1)
     DynamicSegmentTree(Index lb = std::numeric_limits<Index>::min(), Index ub = std::numeric_limits<Index>::max())
         : root_(nullptr),
           lb_(lb),
@@ -51,33 +53,36 @@ class DynamicSegmentTree {
         delete root_;
     }
 
-    ///  # set(pos, value)
-    ///  data[pos] <= value
-    ///  O(log (ub - lb))
+    //  # set(pos, value)
+    //  data[pos] <= value
+    //  lb <= pos < ub でないと壊れる
+    //  O(log (ub - lb))
     void set(Index pos, T value) {
         assert(lb_ <= pos && pos < ub_);
         set(root_, lb_, ub_, pos, value);
     }
 
-    ///  # get(pos)
-    ///  return data[pos]
-    ///  O(log (ub - lb))
+    //  # get(pos)
+    //  return data[pos]
+    //  lb <= pos < ub でないと壊れる
+    //  O(log (ub - lb))
     T get(Index pos) {
         assert(lb_ <= pos && pos < ub_);
         return get(root_, lb_, ub_, pos);
     }
 
-    ///  # get(pos)
-    ///  return prod[for i in [lb, ub)](data[i])
-    ///  O(log (ub - lb))
+    //  # prod(lb, ub)
+    //  return op[for i in [lb, ub)](data[i])
+    //  引数の区間が、コンストラクタに渡した区間に収まっていないと壊れる
+    //  O(log (ub - lb))
     T prod(Index lb, Index ub) {
         assert(lb_ <= lb && lb <= ub && ub <= ub_);
         return prod(root_, lb_, ub_, lb, ub);
     }
 
-    ///  # all_prod()
-    ///  return prod[for i in [lb, ub)](data[i])
-    ///  O(1)
+    //  # all_prod()
+    //  全体の積を返す
+    //  O(1)
     T all_prod() {
         return root_ ? root_->value : M::e();
     }

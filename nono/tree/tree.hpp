@@ -11,13 +11,19 @@
 
 namespace nono {
 
-///  # Tree
-///  graph + lca + la + jump + dist + depth + height + centroid + diameter ...
-///  Weighted版はWeightedTreeへ分離（辺重みTにoperator+を要求しないため）
+//  # Tree
+//  根付き木。graph + lca + la + jump + dist + depth + height + centroid + diameter ...
+//  Weighted版はWeightedTreeへ分離（辺重みTにoperator+を要求しないため）
+//  各メンバ関数に渡す頂点が [0, n) でないと壊れる
 template <class T>
 class Tree: public Graph<T> {
   public:
     Tree() {}
+
+    //  # Tree(n, edges, root)
+    //  頂点数がn、辺がedges、根がrootの木を作る
+    //  edgesが木でないと壊れる
+    //  O(n)
     Tree(int n, const std::vector<EdgeBase<T>>& edges, int root = 0)
         : Graph<T>(to_undirected_graph(n, edges)),
           n_(n),
@@ -32,8 +38,10 @@ class Tree: public Graph<T> {
         set_heavy_edge(root_, -1);
         dfs(root_, -1, 0);
     }
-    ///  # least common ancester
-    ///  O(log n)
+
+    //  # lca(lhs, rhs)
+    //  最小共通祖先(LCA)
+    //  O(log n)
     int lca(int lhs, int rhs) {
         assert(0 <= lhs && lhs < n_);
         assert(0 <= rhs && rhs < n_);
@@ -44,21 +52,19 @@ class Tree: public Graph<T> {
         return (depth_[lhs] < depth_[rhs] ? lhs : rhs);
     }
 
-    ///  # dist(lhs, rhs)
-    ///  distance from lhs to rhs (without weight)
-    ///  num of edges of path
-    ///  O(log n)
+    //  # dist(lhs, rhs)
+    //  lhsからrhsへのパスの辺数(重みは見ない)
+    //  O(log n)
     int dist(int lhs, int rhs) {
         assert(0 <= lhs && lhs < n_);
         assert(0 <= rhs && rhs < n_);
         return depth_[lhs] + depth_[rhs] - 2 * depth_[lca(lhs, rhs)];
     }
 
-    ///  # jump(x, k)
-    ///  level ancester
-    ///  根方向にk回移動
-    ///  移動できないと壊れる
-    ///  O(log n)
+    //  # jump(x, k)
+    //  level ancestor。xから根の方向へk回移動した頂点
+    //  0 <= k <= depth(x) でないと壊れる
+    //  O(log n)
     int jump(int x, int k) {
         assert(0 <= x && x < n_);
         assert(0 <= k && k <= depth_[x]);
@@ -70,11 +76,10 @@ class Tree: public Graph<T> {
         return tour_[in_[head_[x]] + depth_[x] - depth_[head_[x]] - k];
     }
 
-    ///  # jump(from, to, k)
-    ///  jump on tree
-    ///  fromからtoに向かってk回移動
-    ///  移動できないと壊れる
-    ///  O(log n)
+    //  # jump(from, to, k)
+    //  fromからtoへ向かうパス上を、k回移動した頂点
+    //  0 <= k <= dist(from, to) でないと壊れる
+    //  O(log n)
     int jump(int from, int to, int k) {
         assert(0 <= from && from < n_);
         assert(0 <= to && to < n_);
@@ -87,39 +92,40 @@ class Tree: public Graph<T> {
         }
     }
 
-    ///  # depth(x)
-    ///  distance from x to root (without weight)
-    ///  num of edges of path
-    ///  O(1)
+    //  # depth(x)
+    //  根からxまでの辺数(重みは見ない)
+    //  O(1)
     int depth(int x) {
         assert(0 <= x && x < n_);
         return depth_[x];
     }
 
-    ///  # height(x)
-    ///  height of vertex x (without weight)
-    ///  O(1)
+    //  # height(x)
+    //  xの部分木の高さ。xから、部分木内で最も遠い頂点までの辺数
+    //  O(1)
     int height(int x) {
         assert(0 <= x && x < n_);
         return height_[x];
     }
 
-    ///  # subtree(x)
-    ///  num of subtree (include x)
-    ///  O(1)
+    //  # subtree(x)
+    //  xの部分木の頂点数(x自身を含む)
+    //  O(1)
     int subtree(int x) {
         assert(0 <= x && x < n_);
         return out_[x] - in_[x];
     }
 
-    ///  # diameter()
-    ///  O(n)
+    //  # diameter()
+    //  木の直径。nono::diameter(graph) の結果を返す
+    //  O(n)
     auto diameter() {
         return nono::diameter(*this);
     }
 
-    ///  # centroids()
-    ///  O(n)
+    //  # centroids()
+    //  重心分解。nono::centroids(graph) の結果を返す
+    //  O(n log n)
     auto centroids() {
         return nono::centroids(*this);
     }

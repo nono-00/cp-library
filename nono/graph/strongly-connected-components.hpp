@@ -8,11 +8,12 @@
 
 namespace nono {
 
-///  # SCC (strongly connected component)(graph)
-///  強連結成分分解
-///  O(V + E)
-///  有向グラフ. 単純非単純を問わない
-///  強連結成分ごとの頂点配列をトポロジカルソートした配列
+//  # strongly_connected_components(graph)
+//  強連結成分分解(SCC)。成分ごとの頂点の列を、トポロジカル順に並べて返す
+//  (成分Aから成分Bへ辺があれば、AはBより前に来る)
+//  多重辺や自己ループがあってもよい
+//  有向グラフでないと壊れる
+//  O(n + m)
 template <class T>
 std::vector<std::vector<int>> strongly_connected_components(const Graph<T>& graph) {
     assert(graph.is_directed());

@@ -52,7 +52,7 @@ void undo(State& state, const Action& action) {
     state.column -= (action.direction == 0);
 }
 
-///  次の状態を作らずにscoreとhashを渡す
+//  次の状態を作らずにscoreとhashを渡す
 template <class F>
 void expand(const State& state, F f) {
     if (state.column + 1 < W) {
@@ -77,7 +77,7 @@ double optimum() {
     return dp[H - 1][W - 1];
 }
 
-///  返ってきたActionの列を実際に辿り直したスコア
+//  返ってきたActionの列を実際に辿り直したスコア
 double replay(const std::vector<Action>& actions) {
     State state{0, 0, value[0][0]};
     for (const Action& action: actions) apply(state, action);
@@ -174,7 +174,7 @@ void expand(const State& state, F f) {
     }
 }
 
-///  根から葉への最大重み和
+//  根から葉への最大重み和
 double optimum(int node) {
     if (children[node].empty()) return 0;
     double best = -1e18;

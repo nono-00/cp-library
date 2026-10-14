@@ -12,10 +12,12 @@
 
 namespace nono {
 
+//  # Polygon
+//  多角形。頂点を周に沿った順に並べた点列
 using Polygon = Points;
 
-//  ccw -> +
-//  cw -> -
+//  # area(poly)
+//  符号付き面積。頂点が反時計回りなら正、時計回りなら負
 Real area(Polygon poly) {
     int n = poly.size();
     Real result = 0;
@@ -25,6 +27,8 @@ Real area(Polygon poly) {
     return result / 2;
 }
 
+//  # perimeter(poly)
+//  周長
 Real perimeter(Polygon poly) {
     int n = poly.size();
     Real result = 0;
@@ -34,6 +38,9 @@ Real perimeter(Polygon poly) {
     return result;
 }
 
+//  # convex(poly)
+//  頂点が反時計回りに並んだ凸多角形か。連続する3頂点が同一直線上にあってもよい
+//  時計回りに並んだ凸多角形はfalseになる
 bool convex(Polygon poly) {
     int n = poly.size();
     for (int i = 0; i < n; i++) {
@@ -42,10 +49,11 @@ bool convex(Polygon poly) {
     return true;
 }
 
-//  not require convex
-//   0 -> not contain
-//   1 -> on segment
-//   2 -> internal
+//  # contain(poly, p)
+//  多角形polyに対する点pの位置を返す。polyは凸でなくてよい
+//  0 : 外部
+//  1 : 辺上(頂点を含む)
+//  2 : 内部
 int contain(Polygon poly, Point p) {
     int n = poly.size();
     bool parity = false;
@@ -59,8 +67,11 @@ int contain(Polygon poly, Point p) {
     return (parity ? 2 : 0);
 }
 
-//  x座標最小, y座標最小の頂点から
-//  半時計周りの凸包
+//  # convex_hull(points)
+//  凸包。最も左の点(xが同じならyが小さい点)から反時計回りに並べて返す
+//  辺上にある点も結果に含める。pointsが2点以下なら、ソートしただけの列を返す
+//  pointsに同じ点が複数あると壊れる(結果に同じ点が重複して入る)
+//  O(n log n)
 Polygon convex_hull(Points points) {
     std::sort(points.begin(), points.end());
     if (points.size() < 3) return points;
@@ -90,7 +101,9 @@ Polygon convex_hull(Points points) {
     return lower;
 }
 
-//  凸多角形を線分で区切った左側
+//  # convex_cut(poly, l)
+//  凸多角形polyを直線lで切り、l.p0からl.p1へ向かって左側の部分を返す。l上の点は左側に含める
+//  polyが反時計回りの凸多角形でないと壊れる
 Polygon convex_cut(Polygon poly, Line l) {
     DEBUG_ASSERT(convex(poly));
     int n = poly.size();
@@ -106,7 +119,9 @@ Polygon convex_cut(Polygon poly, Line l) {
     return res;
 }
 
-//  多角形pが線分sを内包しているか
+//  # contain(ps, s)
+//  線分sが多角形psの内部と辺上に収まっているか。psは凸でなくてよい
+//  O(n^2)
 bool contain(Polygon ps, Segment s) {
     if (contain(ps, s.p0) == 0 || contain(ps, s.p1) == 0) return false;
     int n = ps.size();
@@ -129,10 +144,11 @@ bool contain(Polygon ps, Segment s) {
     return true;
 }
 
-//  凸多角形psを下側・上側の折れ線に分割する
-//  下側: 最も右の点から最も左の点まで反時計回りに辿ったときの下半分
-//  上側: 最も左の点から最も右の点まで反時計回りに辿ったときの上半分
-//  require: psは反時計回りの凸包
+//  # lower_and_upper_convex_hull(ps)
+//  凸多角形psを、先頭の点と最も右の点(xが同じならyが大きい点)で2本の折れ線に分ける
+//  first  : 下側の折れ線。先頭の点から最も右の点まで
+//  second : 上側の折れ線。先頭の点から最も右の点まで
+//  psが convex_hull の返す形(最も左の点から始まる反時計回りの凸多角形)でないと壊れる
 std::pair<Points, Points> lower_and_upper_convex_hull(Polygon ps) {
     DEBUG_ASSERT(convex(ps));
     auto it = std::max_element(ps.begin(), ps.end());
@@ -143,9 +159,12 @@ std::pair<Points, Points> lower_and_upper_convex_hull(Polygon ps) {
     return {lower, upper};
 }
 
-//  凸多角形どうしの共通部分（凸多角形）
-//  rhsの各辺（半平面）でlhsを順にconvex_cutしていく（Sutherland-Hodgman法）
-//  require lhs and rhs convex and ccw
+//  # common_polygon(lhs, rhs)
+//  凸多角形どうしの共通部分(凸多角形)
+//  rhsの各辺でlhsを順にconvex_cutしていく(Sutherland-Hodgman法)
+//  どちらかが2点以下なら空を返す
+//  lhs, rhsが反時計回りの凸多角形でないと壊れる
+//  O(m(n + m))  (n = |lhs|, m = |rhs|)
 Polygon common_polygon(Polygon lhs, Polygon rhs) {
     DEBUG_ASSERT(convex(lhs) && convex(rhs));
     if (lhs.size() < 3 || rhs.size() < 3) return {};
@@ -157,6 +176,9 @@ Polygon common_polygon(Polygon lhs, Polygon rhs) {
     return result;
 }
 
+//  # intersect(lhs, rhs)
+//  凸多角形どうしの共通部分が正の面積を持つか。辺や頂点で接するだけならfalse
+//  lhs, rhsが反時計回りの凸多角形でないと壊れる
 bool intersect(Polygon lhs, Polygon rhs) {
     return lt(0, area(common_polygon(lhs, rhs)));
 }

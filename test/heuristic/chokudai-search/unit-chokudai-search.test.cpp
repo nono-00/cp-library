@@ -105,7 +105,7 @@ void test_grid(unsigned seed, int width, double time_limit, bool expect_optimal)
     if (expect_optimal) assert(result.score > optimum - 1e-6);
 }
 
-///  十分な時間と幅があれば、ビームサーチと同じ最適解に到達すること
+//  十分な時間と幅があれば、ビームサーチと同じ最適解に到達すること
 void test_matches_beam(unsigned seed) {
     grid::initialize(seed);
     grid::State initial{0, 0, grid::value[0][0]};
@@ -204,7 +204,7 @@ void test_tree(unsigned seed, int node_count, int width) {
     assert(result.score < optimum + 1e-6);
 }
 
-///  max_turnが足りず終端に到達できない場合でも、到達した中から答えを返すこと
+//  max_turnが足りず終端に到達できない場合でも、到達した中から答えを返すこと
 void test_truncated() {
     grid::initialize(1);
     grid::State initial{0, 0, grid::value[0][0]};

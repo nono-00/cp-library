@@ -7,14 +7,21 @@
 
 namespace nono {
 
-///  # 二次元SegmentTree
-///  二次元領域和を扱うsegment tree
+//  # SegmentTree2D
+//  二次元SegmentTree。二次元領域の積を扱うsegment tree
+//  Mはモノイド。opが可換でないと壊れる
 template <class M>
 class SegmentTree2D {
     using T = M::Value;
 
   public:
+    //  # SegmentTree2D(h, w)
+    //  h行w列で、全要素を M::e() にする
+    //  O(hw)
     SegmentTree2D(int h, int w): h_(h), w_(w), trees_(2 * h_, SegmentTree<M>(w_)) {}
+    //  # SegmentTree2D(data)
+    //  dataの内容で初期化する
+    //  不具合があり、使うとコンパイルエラーになる(行をまとめる箇所で、setに渡す引数が誤っている)
     SegmentTree2D(const std::vector<std::vector<T>>& data): h_(data.size()), w_(data.front().size()), trees_(2 * h_) {
         for (int i = 0; i < h_; i++) {
             trees_[i + h_] = SegmentTree<M>(data[i]);
@@ -25,9 +32,9 @@ class SegmentTree2D {
             }
         }
     }
-    ///  # set(i, j, elem)
-    ///  data[h][w] <= elem
-    ///  O(logh logw)
+    //  # set(i, j, elem)
+    //  data[i][j] <= elem
+    //  O(log h log w)
     void set(int i, int j, T elem) {
         assert(0 <= i && i < h_);
         assert(0 <= j && j < w_);
@@ -36,17 +43,17 @@ class SegmentTree2D {
         }
     }
 
-    ///  # get(i, j)
-    ///  return data[i][j]
-    ///  O(1)
+    //  # get(i, j)
+    //  return data[i][j]
+    //  O(1)
     T get(int i, int j) const {
         assert(0 <= i && i < h_);
         assert(0 <= j && j < w_);
         return trees_[i + h_].get(j);
     }
-    ///  # prod(i1, j1, i2, j2)
-    ///  return op[for i in [i1, i2), for j in [j1, j2)](data[i][j])
-    ///  O(logh logw)
+    //  # prod(i1, j1, i2, j2)
+    //  return op[for i in [i1, i2), for j in [j1, j2)](data[i][j])
+    //  O(log h log w)
     T prod(int i1, int j1, int i2, int j2) const {
         assert(0 <= i1 && i1 <= i2 && i2 <= h_);
         assert(0 <= j1 && j1 <= j2 && j2 <= w_);
@@ -62,8 +69,9 @@ class SegmentTree2D {
         return result;
     }
 
-    ///  # all_prod()
-    ///  O(1)
+    //  # all_prod()
+    //  return op[for i in [0, h), for j in [0, w)](data[i][j])
+    //  O(1)
     T all_prod() const {
         return trees_[1].all_prod();
     }

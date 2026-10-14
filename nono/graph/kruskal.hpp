@@ -12,20 +12,21 @@ namespace nono {
 
 namespace kruskal_internal {
 
-///  # kruskal result
+//  # KruskalResult
+//  kruskalの結果
 template <class T>
 class KruskalResult {
   public:
     KruskalResult(T cost, std::vector<int> edge_id): cost_(cost), edge_id_(std::move(edge_id)) {}
 
-    ///  # min cost
-    ///  cost of min spanning tree
+    //  # min_cost()
+    //  最小全域木の辺の重みの総和
     T min_cost() const {
         return cost_;
     }
 
-    ///  # edge id
-    ///  edge idof min spanning tree
+    //  # edge_id()
+    //  最小全域木に使う辺の番号(edgesでの添字)の列。重みの昇順に並ぶ
     std::vector<int> edge_id() const {
         return edge_id_;
     }
@@ -37,11 +38,11 @@ class KruskalResult {
 
 }  //  namespace kruskal_internal
 
-///  # kruskal(n, edges)
-///  最小全域木のコスト、使用する辺を取得する
-///  連結グラフでないと壊れる
-///  辺はソートされていなくても良い
-///  O(m log m)
+//  # kruskal(n, edges)
+//  クラスカル法で最小全域木を求める。nは頂点数
+//  辺はソートされていなくても良い
+//  連結グラフでないと壊れる
+//  O(m log m)
 template <class T>
 kruskal_internal::KruskalResult<T> kruskal(int n, const std::vector<EdgeBase<T>>& edges) {
     using Result = kruskal_internal::KruskalResult<T>;

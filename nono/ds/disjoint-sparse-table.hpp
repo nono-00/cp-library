@@ -6,15 +6,17 @@
 
 namespace nono {
 
-///  # disjoint sparse table
-///  静的な区間積クエリを扱う
-///  前処理O(nlogn), クエリO(1).
-///  冪等律を要求しない.
+//  # DisjointSparseTable
+//  静的な区間積クエリを扱う
+//  前処理O(n log n), クエリO(1).
+//  冪等律を要求しない.
 template <class M>
 class DisjointSparseTable {
     using T = M::Value;
 
   public:
+    //  # DisjointSparseTable(data)
+    //  O(n log n)
     DisjointSparseTable(const std::vector<T>& data): n_(data.size()) {
         const int log = std::bit_width(static_cast<unsigned>(n_)) + 1;
         data_.assign(log, std::vector<T>(n_ + 1, M::e()));
@@ -34,9 +36,10 @@ class DisjointSparseTable {
         }
     }
 
-    ///  # prod(l, r)
-    ///  return op[for i in [l, r)](data[i])
-    ///  O(1)
+    //  # prod(left, right)
+    //  return op[for i in [left, right)](data[i])
+    //  0 <= left <= right <= n でないと壊れる
+    //  O(1)
     T prod(int left, int right) const {
         assert(0 <= left && left <= right);
         assert(left <= right && right <= n_);

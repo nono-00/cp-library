@@ -4,10 +4,13 @@
 #include <array>
 #include <cassert>
 
-#include "primes.hpp"
+#include "./primes.hpp"
 
 namespace nono {
 
+//  # is_square_free(n)
+//  nが平方因子を持たない(1より大きい平方数で割り切れない)か
+//  計算量は prime_factors(n) と同じ
 bool is_square_free(unsigned long long n) {
     auto factors = prime_factors(n);
     std::sort(std::begin(factors), std::end(factors));
@@ -17,11 +20,10 @@ bool is_square_free(unsigned long long n) {
     return true;
 }
 
+//  # mobius_table<N>()
+//  メビウス関数の表。table[i] (1 <= i < N) は、
+//  iが平方因子を持つなら0、相異なる素因数が奇数個なら-1、偶数個なら1
 //  O(N log log N)
-//  table[i]:
-//      i is non square free = 0
-//      has odd num of primes = -1
-//      has even num of primes = 1
 template <unsigned N>
 std::array<int, N> mobius_table() {
     using u32 = unsigned;
@@ -45,7 +47,9 @@ std::array<int, N> mobius_table() {
     return table;
 }
 
-//  #[ x | x <= n, x is square free]
+//  # count_square_free(mobius, n)
+//  1以上n以下の、平方因子を持たない整数の個数を返す。mobiusは mobius_table の結果
+//  n > 0 でないと壊れる。sqrt(n) がmobiusの長さ以上だと壊れる
 //  O(sqrt(n))
 unsigned long long count_square_free(const auto& mobius, unsigned long long n) {
     assert(n > 0);
@@ -58,10 +62,12 @@ unsigned long long count_square_free(const auto& mobius, unsigned long long n) {
     return ans;
 }
 
-//  square free : 2, 3, 5, 6, 7, 10, 11, ...
-//  k : 1-origin
+//  # kth_square_free(mobius, k)
+//  平方因子を持たない整数 1, 2, 3, 5, 6, 7, 10, 11, ... のうち、k番目(1始まり)を返す
 //  ex.
-//  kth_square_free(_, 1) := 2
+//  kth_square_free(_, 1) := 1
+//  k > 0 でないと壊れる。答えが N^2 (N: mobiusの長さ) を超えると壊れる
+//  O(N log N)
 unsigned long long kth_square_free(const auto& mobius, unsigned long long k) {
     assert(k > 0);
     using u64 = unsigned long long;
@@ -79,9 +85,12 @@ unsigned long long kth_square_free(const auto& mobius, unsigned long long k) {
     return ok;
 }
 
-//  k : 1-origin
+//  # kth_non_square_free(mobius, k)
+//  平方因子を持つ整数 4, 8, 9, 12, 16, 18, ... のうち、k番目(1始まり)を返す
 //  ex.
-//  kth_non_square_free(_, 1) := 1
+//  kth_non_square_free(_, 1) := 4
+//  k > 0 でないと壊れる。答えが N^2 (N: mobiusの長さ) を超えると壊れる
+//  O(N log N)
 unsigned long long kth_non_square_free(const auto& mobius, unsigned long long k) {
     assert(k > 0);
     using u64 = unsigned long long;

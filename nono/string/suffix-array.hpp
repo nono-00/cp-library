@@ -6,8 +6,6 @@
 #include <string>
 #include <vector>
 
-///  # Suffix Array
-///  based on <https://atcoder.github.io/ac-library/master/document_ja/string.html>
 namespace nono {
 
 namespace suffix_array_internal {
@@ -174,6 +172,11 @@ std::vector<int> sa_is(const std::vector<int>& s, int upper) {
 
 }  //  namespace suffix_array_internal
 
+//  # suffix_array(s, upper)
+//  接尾辞配列。result[i] は、sの接尾辞を辞書順に並べたときi番目に来る接尾辞の開始位置
+//  based on <https://atcoder.github.io/ac-library/master/document_ja/string.html>
+//  sの要素が [0, upper] でないと壊れる
+//  O(|s| + upper)
 std::vector<int> suffix_array(const std::vector<int>& s, int upper) {
     assert(0 <= upper);
     for (int d: s) {
@@ -183,6 +186,9 @@ std::vector<int> suffix_array(const std::vector<int>& s, int upper) {
     return sa;
 }
 
+//  # suffix_array(s)
+//  要素を大小比較できる型の列に対する接尾辞配列
+//  O(|s| log |s|)
 template <class T>
 std::vector<int> suffix_array(const std::vector<T>& s) {
     int n = int(s.size());
@@ -198,6 +204,10 @@ std::vector<int> suffix_array(const std::vector<T>& s) {
     return suffix_array_internal::sa_is(s2, now);
 }
 
+//  # suffix_array(s)
+//  std::string版
+//  各文字の値が [0, 255] でないと壊れる(charが符号付きの環境では、128以上の文字コードが負になる)
+//  O(|s|)
 std::vector<int> suffix_array(const std::string& s) {
     int n = int(s.size());
     std::vector<int> s2(n);

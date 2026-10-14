@@ -10,38 +10,38 @@
 
 namespace nono {
 
-///  # Suffix Automaton
-///  部分文字列の種類数をincrementalに処理できたりする.
-///
-///  # 複数回出現する部分文字列の中で最長のものの長さ
-///      suffix link treeの葉ノード以外の最長の長さ
-///      suffix link をたどる <=> 出現回数が一回以上増える
-///
-///  # longest common substring
-///      普通にたどっていけば良い
-///
-///  # 複数回出現する部分文字列の個数
-///      <https://www.acmicpc.net/problem/10413>
-///      suffix link treeの葉ノード以外のsubstringsの個数
-///
-///  # cyclic shiftの最小
-///      <https://www.acmicpc.net/problem/3789>
-///      s + sを追加後, 長さ|s|の最小パスを探せば良い
-///      左端はnodes[pos].last - |s|
-///
-///  # K回以上登場する部分文字列の中で最長のもの
-///      <https://www.acmicpc.net/problem/6206>
-///      not clonedノードに重み1を割り当てたあと, 木dp.
-///      dp[u] = sum(dp[v]) + (not cloned(u))
-///      dp[u] >= kならばそのnodeがk回以上出現する
-///      freq関数でできたりする
+//  # SuffixAutomaton
+//  部分文字列の種類数をincrementalに処理できたりする.
+//
+//  ## 複数回出現する部分文字列の中で最長のものの長さ
+//      suffix link treeの葉ノード以外の最長の長さ
+//      suffix link をたどる <=> 出現回数が一回以上増える
+//
+//  ## longest common substring
+//      普通にたどっていけば良い
+//
+//  ## 複数回出現する部分文字列の個数
+//      <https://www.acmicpc.net/problem/10413>
+//      suffix link treeの葉ノード以外のsubstringsの個数
+//
+//  ## cyclic shiftの最小
+//      <https://www.acmicpc.net/problem/3789>
+//      s + sを追加後, 長さ|s|の最小パスを探せば良い
+//      左端はnodes[pos].last - |s|
+//
+//  ## K回以上登場する部分文字列の中で最長のもの
+//      <https://www.acmicpc.net/problem/6206>
+//      not clonedノードに重み1を割り当てたあと, 木dp.
+//      dp[u] = sum(dp[v]) + (not cloned(u))
+//      dp[u] >= kならばそのnodeがk回以上出現する
+//      freq関数でできたりする
 template <class T = char>
 class SuffixAutomaton {
     struct Node {
         Node(int len): len(len) {}
         int len;
         int link = -1;
-        //  何文字目でされたノードか？
+        //  このノードを作った時点での列の長さ
         int min_right = -1;
         bool cloned = false;
         std::map<T, int> to;
@@ -51,12 +51,18 @@ class SuffixAutomaton {
     SuffixAutomaton(): pos_(0), subseq_(0) {
         nodes_.emplace_back(0);
     }
+
+    //  # SuffixAutomaton(seq)
+    //  seqを追加した状態で作る
+    //  O(|seq| log σ)  (σ: 文字の種類数)
     template <std::ranges::random_access_range R>
     SuffixAutomaton(const R& seq): SuffixAutomaton() {
         add(seq);
     }
-    ///  # add(c)
-    ///  ならし O(1)
+
+    //  # add(c)
+    //  列の末尾にcを追加する
+    //  ならし O(log σ)
     void add(T c) {
         seq_.push_back(c);
         int next_pos = nodes_.size();
@@ -90,22 +96,26 @@ class SuffixAutomaton {
         }
         subseq_ += nodes_[pos_].len - nodes_[nodes_[pos_].link].len;
     }
-    ///  # add(seq)
-    ///  O(|seq|)
+
+    //  # add(seq)
+    //  列の末尾にseqを追加する
+    //  O(|seq| log σ)
     template <std::ranges::random_access_range R>
     void add(const R& seq) {
         static_assert(std::is_same_v<typename R::value_type, T>);
         for (auto c: seq) add(c);
     }
-    ///  # subseq()
-    ///  部分文字列の種類数
+
+    //  # subseq()
+    //  相異なる空でない部分文字列(連続部分列)の個数
     long long subseq() {
         return subseq_;
     }
-    ///  # match(seq)
-    ///  whether seq in (subseq of S)
-    ///  not verified
-    ///  O(|seq|)
+
+    //  # match(seq)
+    //  seqが、追加済みの列の部分文字列(連続部分列)として現れるか
+    //  not verified
+    //  O(|seq| log σ)
     template <std::ranges::random_access_range R>
     bool match(const R& seq) {
         static_assert(std::is_same_v<typename R::value_type, T>);
@@ -117,13 +127,14 @@ class SuffixAutomaton {
         return true;
     }
 
-    ///  # nodes()
+    //  # nodes()
+    //  ノード列を返す。0番が初期状態
     std::vector<Node> nodes() {
         return nodes_;
     }
 
-    ///  # suffix link tree()
-    ///  suffix linkで作る無向木
+    //  # suffix_link_tree()
+    //  suffix linkで作る無向木を、隣接リストで返す。頂点0が根
     std::vector<std::vector<int>> suffix_link_tree() {
         int n = nodes_.size();
         std::vector<std::vector<int>> graph(n);
@@ -134,11 +145,11 @@ class SuffixAutomaton {
         return graph;
     }
 
-    ///  # lcs(seq)
-    ///  longest common substring.
-    ///  最長共通部分列.
-    ///  (a, b, c, d): S[a:b] = T[c:d]
-    ///  O(|seq|)
+    //  # lcs(seq)
+    //  longest common substring.
+    //  追加済みの列Sとseqの、最長共通部分文字列(連続部分列)を1つ求める
+    //  (a, b, c, d): S[a:b] = seq[c:d]
+    //  O(|seq| log σ)
     template <std::ranges::random_access_range R>
     std::tuple<int, int, int, int> lcs(const R& seq) {
         std::array<int, 2> right{};
@@ -164,9 +175,9 @@ class SuffixAutomaton {
         return {right[0] - maxlen, right[0], right[1] - maxlen, right[1]};
     }
 
-    ///  # freq()
-    ///  各ノードが何回出現するか?
-    ///  O(|S|)
+    //  # freq()
+    //  result[u] は、ノードuに対応する部分文字列が、追加済みの列の中に現れる回数
+    //  O(|S|)
     std::vector<int> freq() {
         int n = nodes_.size();
         auto graph = suffix_link_tree();

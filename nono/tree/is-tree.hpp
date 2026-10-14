@@ -7,8 +7,10 @@
 
 namespace nono {
 
-///  # is tree(graph)
-///  O(n)
+//  # is_tree(graph)
+//  木(連結で閉路のない無向グラフ)か。有向グラフはfalseになる
+//  頂点数が0だと壊れる
+//  O(n)
 template <class T>
 bool is_tree(const Graph<T>& graph) {
     if (graph.is_directed()) return false;

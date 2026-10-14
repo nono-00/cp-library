@@ -11,20 +11,20 @@ namespace nono {
 
 namespace cycle_detection_internal {
 
-///  # グラフの各頂点の状態を表す列挙型.
-///
-///  `NOT_VISITED`: 未訪問.
-///  `VISITED`: 訪問済み, かつ探索中.
-///  `FINISHED`: 訪問済み, かつ探索済み.
+//  探索中の各頂点の状態
+//  NOT_VISITED : 未訪問
+//  VISITED     : 訪問済みで、探索中
+//  FINISHED    : 訪問済みで、探索も終わっている
 enum class State {
     NOT_VISITED,
     VISITED,
     FINISHED
 };
 
-///  # cycle-detection result
-///
-///  v[0] e[0] v[1] e[1] ... v[n - 1] e[n - 1] v[0] ...
+//  # CycleDetectionResult
+//  cycle_detectionの結果。見つけた閉路を1つ持つ
+//  v[0] e[0] v[1] e[1] ... v[k - 1] e[k - 1] v[0] の順に辿る閉路で、
+//  e[i] は v[i] から v[i + 1] へ向かう辺
 class CycleDetectionResult {
   public:
     CycleDetectionResult(std::vector<int> edge_id, std::vector<int> vertex_id)
@@ -33,21 +33,23 @@ class CycleDetectionResult {
         assert(edge_id_.size() == vertex_id_.size());
     }
 
-    ///  # has cycle()
-    ///  whether graph has cycle
+    //  # has_cycle()
+    //  閉路が見つかったか
     bool has_cycle() const {
         return !edge_id_.empty();
     }
 
-    ///  # edge id
-    ///  return cycle edge id seq
+    //  # edge_id()
+    //  閉路の辺の番号の列 e[0], ..., e[k - 1] を返す
+    //  閉路が無いと壊れる
     std::vector<int> edge_id() const {
         assert(has_cycle());
         return edge_id_;
     }
 
-    ///  # vertex id
-    ///  return cycle vertex id seq
+    //  # vertex_id()
+    //  閉路の頂点の列 v[0], ..., v[k - 1] を返す
+    //  閉路が無いと壊れる
     std::vector<int> vertex_id() const {
         assert(has_cycle());
         return vertex_id_;
@@ -60,9 +62,10 @@ class CycleDetectionResult {
 
 }  //  namespace cycle_detection_internal
 
-///  # cycle detection
-///  無向, 有向, 単純, 非単純問わない.
-///  O(n + m)
+//  # cycle_detection(graph)
+//  閉路を1つ見つける。無向グラフでも有向グラフでもよく、多重辺や自己ループがあってもよい
+//  無向グラフの多重辺は長さ2の閉路、自己ループは長さ1の閉路として見つかる
+//  O(n + m)
 template <class T>
 auto cycle_detection(const Graph<T>& graph) {
     using cycle_detection_internal::State;

@@ -6,8 +6,11 @@ namespace nono {
 
 namespace act_monoid {
 
-///  # RangeAddCountMax
-///  区間に含まれる最大値とその出現回数
+//  # RangeAddCountMax
+//  区間加算、区間に含まれる最大値とその出現回数
+//  op      : 最大値が大きいほうを残す。等しければ出現回数を足す
+//  mapping : 最大値にactを足す。出現回数は変わらない
+//  1要素は Value(val) で作る
 template <class T, class Count = unsigned>
 struct RangeAddCountMax {
     //  (max, count)

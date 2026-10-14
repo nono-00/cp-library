@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "../../../nono/ds/ordered-map.hpp"
+#include "nono/ds/ordered-map.hpp"
 
 namespace nono {
 

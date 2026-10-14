@@ -7,7 +7,10 @@ namespace nono {
 
 namespace monoid {
 
-///  # MinMax
+//  # MinMax
+//  最小値と最大値の組。op は、minどうしの小さいほうとmaxどうしの大きいほうを取る
+//  1要素は Value(val) で作る
+//  Tが浮動小数点数だと壊れる(numeric_limits<T>::min() が正の最小値になるため)
 template <class T>
 struct MinMax {
     struct Value {

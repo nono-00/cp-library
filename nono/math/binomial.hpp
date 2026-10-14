@@ -1,14 +1,16 @@
 #pragma once
 
-#include "./modint.hpp"
-
 #include <cassert>
 #include <vector>
 
+#include "./modint.hpp"
+
 namespace nono {
 
-/// THRESHOLD: 10^7
-/// if THRESHOLD <= n, calculated by naive
+//  # Binomial<m, THRESHOLD>
+//  mod m での二項係数。階乗とその逆元の表を、必要なぶんだけ伸ばしながら持つ
+//  n >= THRESHOLD (既定は10^7) のときは表を使わず、その場で計算する
+//  mが素数でないと壊れる
 template <int m, int THRESHOLD = 10000000>
 class Binomial {
     using Mint = StaticModint<m>;
@@ -16,8 +18,10 @@ class Binomial {
   public:
     Binomial(): size_(0), fact_(1, 1), fact_inv_(1, 1) {}
 
-    ///  # binom(n, k)
-    ///  nCk
+    //  # binom(n, k)
+    //  nCk
+    //  0 <= k <= n でないと壊れる
+    //  表が足りていれば O(1)。n >= THRESHOLD のときは O(min(k, n - k) log m)
     Mint binom(int n, int k) {
         assert(0 <= k);
         assert(k <= n);
@@ -27,8 +31,9 @@ class Binomial {
         return fact_[n] * fact_inv_[n - k] * fact_inv_[k];
     }
 
-    ///  # fact(n)
-    ///  n!
+    //  # fact(n)
+    //  n!
+    //  0 <= n でないと壊れる
     Mint fact(int n) {
         assert(0 <= n);
         if (m <= n) return 0;
@@ -36,8 +41,9 @@ class Binomial {
         return fact_[n];
     }
 
-    ///  # fact_inv(n)
-    ///  inv(n!)
+    //  # fact_inv(n)
+    //  inv(n!)
+    //  0 <= n < m でないと壊れる
     Mint fact_inv(int n) {
         assert(0 <= n);
         assert(n < m);
@@ -45,8 +51,10 @@ class Binomial {
         return fact_inv_[n];
     }
 
-    ///  # perm(n, k)
-    ///  nPk
+    //  # perm(n, k)
+    //  nPk
+    //  0 <= k <= n でないと壊れる。n - k < m でないと壊れる
+    //  表が足りていれば O(1)。n >= THRESHOLD のときは O(k)
     Mint perm(int n, int k) {
         assert(0 <= k);
         assert(k <= n);

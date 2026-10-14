@@ -7,9 +7,9 @@
 
 namespace nono {
 
-///  # UndoUnionFind
-///  Undo
-///  辺追加クエリをstackで管理するような感じ
+//  # UndoUnionFind
+//  直前のmergeを取り消せるUnionFind。辺追加クエリをstackで管理するような感じ
+//  頂点が [0, size()) でないと壊れる
 class UndoUnionFind {
     struct History {
         int lhs;
@@ -20,10 +20,13 @@ class UndoUnionFind {
   public:
     UndoUnionFind() = default;
 
+    //  # UndoUnionFind(size)
+    //  頂点数がsizeで、全ての頂点が別々のグループにある状態を作る
     UndoUnionFind(int size): size_(size), data_(size, -1) {}
 
-    ///  # leader(x)
-    ///  O(log N)
+    //  # leader(x)
+    //  xが属するグループの代表元を返す
+    //  O(log n)
     int leader(int x) {
         assert(0 <= x && x < size_);
         if (data_[x] < 0) {
@@ -33,9 +36,10 @@ class UndoUnionFind {
         }
     }
 
-    ///  # merge(lhs, rhs)
-    ///  edges <- edges + [(lhs, rhs)]
-    ///  O(log n)
+    //  # merge(lhs, rhs)
+    //  lhsのグループとrhsのグループを併合する。edges <- edges + [(lhs, rhs)]
+    //  もともと同じグループならfalse、併合したらtrueを返す。どちらの場合もundo()の対象になる
+    //  O(log n)
     bool merge(int lhs, int rhs) {
         assert(0 <= lhs && lhs < size_);
         assert(0 <= rhs && rhs < size_);
@@ -51,9 +55,10 @@ class UndoUnionFind {
         return true;
     }
 
-    ///  # undo()
-    ///  edges <- edges[:-1]
-    ///  O(1)
+    //  # undo()
+    //  直前のmerge()を取り消す。edges <- edges[:-1]
+    //  merge()を呼んだ回数より多く呼ぶと壊れる
+    //  O(1)
     void undo() {
         assert(!historys_.empty());
         auto [lhs, rhs, data] = historys_.back();
@@ -64,32 +69,34 @@ class UndoUnionFind {
         }
     }
 
-    ///  # same(lhs, rhs)
-    ///  whether lhs and rhs are in same group
-    ///  O(log n)
+    //  # same(lhs, rhs)
+    //  lhsとrhsが同じグループか
+    //  O(log n)
     bool same(int lhs, int rhs) {
         assert(0 <= lhs && lhs < size_);
         assert(0 <= rhs && rhs < size_);
         return (leader(lhs) == leader(rhs));
     }
 
-    ///  # size(x)
-    ///  return |group x|
-    ///  O(log n)
+    //  # size(x)
+    //  xが属するグループの大きさ
+    //  O(log n)
     int size(int x) {
         assert(0 <= x && x < size_);
         return -data_[leader(x)];
     }
 
-    ///  # size()
-    ///  num of vertex
-    ///  O(1)
+    //  # size()
+    //  頂点数
+    //  O(1)
     int size() const {
         return size_;
     }
 
-    ///  # groups()
-    ///  https://atcoder.github.io/ac-library/document_ja/dsu.html
+    //  # groups()
+    //  グループごとの頂点の列を返す。グループの順序と、グループ内の頂点の順序は未定義
+    //  https://atcoder.github.io/ac-library/document_ja/dsu.html
+    //  O(n log n)
     std::vector<std::vector<int>> groups() {
         std::vector<int> leader_buf(size_), group_size(size_);
         for (int i = 0; i < size_; i++) {

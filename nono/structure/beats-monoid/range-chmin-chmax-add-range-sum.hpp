@@ -9,7 +9,10 @@ namespace nono {
 
 namespace beats_monoid {
 
-///  # RangeChminChmaxAddRangeSum
+//  # RangeChminChmaxAddRangeSum
+//  区間chmin・chmax・加算、区間和
+//  作用は Act::chmin(val), Act::chmax(val), Act::add(val) で作る。1要素は Value(val) で作る
+//  mappingは、区間の集約値だけでは作用後の和を決められないとき nullopt を返す(子に降りて計算し直す)
 template <class T, class Count = unsigned>
 struct RangeChminChmaxAddRangeSum {
   private:
@@ -43,17 +46,17 @@ struct RangeChminChmaxAddRangeSum {
               num_min(num),
               num(num),
               sum(val) {}
-        //  a[0]: maximum value, v[1]: second maximum value
+        //  [0]: 最大値, [1]: 2番目に大きい値
         std::array<T, 2> max_top2;
-        //  b[0]: minimum value, v[1]: second minimum value
+        //  [0]: 最小値, [1]: 2番目に小さい値
         std::array<T, 2> min_top2;
-        //  n: num of maximum value
+        //  最大値の個数
         int num_max;
-        //  m: num of minimum value
+        //  最小値の個数
         int num_min;
-        //  l: num of value
+        //  区間の長さ
         int num;
-        //  s: sum of segment
+        //  区間の和
         T sum;
     };
     static Value op(Value lhs, Value rhs) {

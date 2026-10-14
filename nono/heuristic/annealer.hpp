@@ -14,32 +14,34 @@
 #include <type_traits>
 #include <utility>
 
-#include "nono/utility/is-debug.hpp"
+#include "../utility/is-debug.hpp"
 
 namespace nono {
 
-///  # ベスト解の保持方針
-///  CopyBest    : ベスト更新のたびにStateをコピーする(既定)
-///  NoBestState : ベストスコアのみ追跡し、状態は保持しない
-///                Stateのコピーが重い場合に、move-log.hppのMoveLogと組み合わせて使う
+//  # CopyBest
+//  ベスト解の保持方針。ベスト更新のたびにStateをコピーする(既定)
 struct CopyBest {};
+
+//  # NoBestState
+//  ベスト解の保持方針。ベストスコアのみ追跡し、状態は保持しない
+//  Stateのコピーが重い場合に、move-log.hppのMoveLogと組み合わせて使う
 struct NoBestState {};
 
 namespace annealer_internal {
 
-///  受理判定 exp(delta / T) > u を delta * (1 / T) > log(u) に変形して使う。
-///  log(u)を引くためのテーブル。log_table[i] = log((i + 0.5) / LOG_TABLE_SIZE) (負値)
-///
-///  サイズは意図的に小さくしている。大きくするとランダムアクセスでL1dを汚す一方、
-///  得られるのは「exp(delta / T)が極端に小さい遷移も稀に受理する」という
-///  焼きなましの挙動にほぼ影響しない精度でしかない。
-///  1 << 10 なら u >= 5e-4 相当、すなわち delta / T < -7.6 の遷移が
-///  「確率5e-4で受理」から「受理しない」に変わるだけ。
+//  受理判定 exp(delta / T) > u を delta * (1 / T) > log(u) に変形して使う。
+//  log(u)を引くためのテーブル。log_table[i] = log((i + 0.5) / LOG_TABLE_SIZE) (負値)
+//
+//  サイズは意図的に小さくしている。大きくするとランダムアクセスでL1dを汚す一方、
+//  得られるのは「exp(delta / T)が極端に小さい遷移も稀に受理する」という
+//  焼きなましの挙動にほぼ影響しない精度でしかない。
+//  1 << 10 なら u >= 5e-4 相当、すなわち delta / T < -7.6 の遷移が
+//  「確率5e-4で受理」から「受理しない」に変わるだけ。
 constexpr int LOG_TABLE_BITS = 10;
 constexpr int LOG_TABLE_SIZE = 1 << LOG_TABLE_BITS;
 constexpr int LOG_TABLE_MASK = LOG_TABLE_SIZE - 1;
 
-///  近傍種別の上限。統計を固定長配列で持つために必要
+//  近傍種別の上限。統計を固定長配列で持つために必要
 constexpr int MAX_KIND = 8;
 
 inline const float* log_table() {
@@ -58,7 +60,7 @@ inline double now_ms() {
     return duration<double, std::milli>(steady_clock::now().time_since_epoch()).count();
 }
 
-///  Rngが返す値の有効ビット幅
+//  Rngが返す値の有効ビット幅
 template <class Rng>
 constexpr int rng_bits() {
     auto range = Rng::max() - Rng::min();
@@ -79,7 +81,7 @@ struct Stat {
     double max_delta = std::numeric_limits<double>::lowest();
 };
 
-///  Logging = falseのときにメモリも命令も消す
+//  Logging = falseのときにメモリも命令も消す
 template <bool Logging>
 struct LogStorage {
     std::array<Stat, MAX_KIND> stats{};
@@ -92,7 +94,7 @@ struct LogStorage {
 template <>
 struct LogStorage<false> {};
 
-///  ベスト解の保持。方針ごとに特殊化する
+//  ベスト解の保持。方針ごとに特殊化する
 template <class State, class Policy>
 struct BestStorage;
 
@@ -113,42 +115,44 @@ struct BestStorage<State, NoBestState> {
 
 }  //  namespace annealer_internal
 
+//  # AnnealerConfig
+//  Annealerに渡す設定
 struct AnnealerConfig {
-    ///  ミリ秒。1秒なら1000
+    //  ミリ秒。1秒なら1000
     double time_limit;
-    ///  開始温度。「序盤に許容したい悪化幅」と同じ単位で考えるとよい
+    //  開始温度。「序盤に許容したい悪化幅」と同じ単位で考えるとよい
     double start_temp;
-    ///  終了温度。0より大きい必要がある
+    //  終了温度。0より大きい必要がある
     double end_temp;
 };
 
-///  # Annealer
-///  焼きなましのループ駆動部分だけを担う。近傍の型には一切関与しない。
-///  提供するのは「時間・温度・受理判定・スコア追跡・ベスト解保持・統計」のみで、
-///  状態表現・近傍・差分評価は利用者が素のコードとして書く。
-///
-///  ## 使い方
-///  ```
-///  nono::Annealer sa(state, eval(state), {.time_limit = 1900, .start_temp = 100, .end_temp = 0.5}, rng);
-///  while (sa.running()) {
-///      auto move = generate(state, rng);
-///      double delta = evaluate_delta(state, move);
-///      if (sa.accept(delta)) {
-///          apply(state, move);
-///          sa.commit(delta);
-///      }
-///  }
-///  state = sa.release_best();
-///  ```
-///  apply -> commitの順序が必要なので、accept/commitは分かれている。
-///  順序を間違えたくない場合はtry_move(delta, apply)を使う。
-///
-///  ## 最大化
-///  スコアは最大化として扱う。最小化したい場合は符号を反転して渡す。
-///
-///  ## 注意
-///  提案分布の対称性(詳細釣り合い)は保証しない。非対称な近傍を混ぜた場合の
-///  挙動は利用者の責任。
+//  # Annealer
+//  焼きなましのループ駆動部分だけを担う。近傍の型には一切関与しない。
+//  提供するのは「時間・温度・受理判定・スコア追跡・ベスト解保持・統計」のみで、
+//  状態表現・近傍・差分評価は利用者が素のコードとして書く。
+//
+//  ## 使い方
+//  ```
+//  nono::Annealer sa(state, eval(state), {.time_limit = 1900, .start_temp = 100, .end_temp = 0.5}, rng);
+//  while (sa.running()) {
+//      auto move = generate(state, rng);
+//      double delta = evaluate_delta(state, move);
+//      if (sa.accept(delta)) {
+//          apply(state, move);
+//          sa.commit(delta);
+//      }
+//  }
+//  state = sa.release_best();
+//  ```
+//  apply -> commitの順序が必要なので、accept/commitは分かれている。
+//  順序を間違えたくない場合はtry_move(delta, apply)を使う。
+//
+//  ## 最大化
+//  スコアは最大化として扱う。最小化したい場合は符号を反転して渡す。
+//
+//  ## 注意
+//  提案分布の対称性(詳細釣り合い)は保証しない。非対称な近傍を混ぜた場合の
+//  挙動は利用者の責任。
 template <class State, std::uniform_random_bit_generator Rng, class BestPolicy = CopyBest,
           bool Logging = nono::is_debug()>
 class Annealer {
@@ -158,7 +162,10 @@ class Annealer {
     static constexpr int RNG_SHIFT = RNG_BITS - annealer_internal::LOG_TABLE_BITS;
 
   public:
-    ///  stateとrngは参照として保持する。Annealerより長生きしなければならない
+    //  # Annealer(state, score, config, rng)
+    //  scoreにはstateの現在のスコアを渡す。構築した時点から時間を計り始める
+    //  stateとrngは参照として保持する。Annealerより長生きしないと壊れる
+    //  config.time_limit, config.start_temp, config.end_temp が全て正でないと壊れる
     Annealer(State& state, double score, const AnnealerConfig& config, Rng& rng)
         : state_(std::addressof(state)),
           rng_(std::addressof(rng)),
@@ -177,8 +184,8 @@ class Annealer {
         assert(config.time_limit > 0);
     }
 
-    ///  # running()
-    ///  ループ条件。時間取得は間引かれるので毎回呼んでよい
+    //  # running()
+    //  ループ条件。制限時間を過ぎたらfalseを返す。時間取得は間引かれるので毎回呼んでよい
     bool running() {
         iteration_++;
         if (--countdown_ > 0) [[likely]]
@@ -186,16 +193,16 @@ class Annealer {
         return refresh_();
     }
 
-    ///  # accept(delta)
-    ///  受理判定のみを行う。状態もスコアも変更しない
+    //  # accept(delta)
+    //  受理判定のみを行う。状態もスコアも変更しない
     bool accept(double delta) {
         if (delta >= 0) return true;
         auto value = static_cast<unsigned long long>((*rng_)() - Rng::min());
         return delta * inv_temp_ > log_table_[(value >> RNG_SHIFT) & annealer_internal::LOG_TABLE_MASK];
     }
 
-    ///  # commit(delta)
-    ///  状態を変更した後に呼ぶ。スコアを更新し、必要ならベスト解を保存する
+    //  # commit(delta)
+    //  状態を変更した後に呼ぶ。スコアを更新し、必要ならベスト解を保存する
     void commit(double delta) {
         score_ += delta;
         improved_ = score_ > best_score_;
@@ -215,8 +222,9 @@ class Annealer {
         }
     }
 
-    ///  # try_move(delta, apply, kind)
-    ///  accept -> apply -> commitを融合したもの。applyは引数なしの呼び出し可能物
+    //  # try_move(delta, apply, kind)
+    //  accept -> apply -> commitを融合したもの。applyは引数なしの呼び出し可能物
+    //  kindは統計を分けるための近傍種別。Loggingが有効なとき、0 <= kind < MAX_KIND(8) でないと壊れる
     template <class F>
     bool try_move(double delta, F&& apply, int kind = 0) {
         if constexpr (Logging) record_call_(delta, kind);
@@ -227,8 +235,9 @@ class Annealer {
         return true;
     }
 
-    ///  # record(delta, kind)
-    ///  accept/commitを直接使う場合に、統計だけを別途記録したいとき用
+    //  # record(delta, accepted, kind)
+    //  accept/commitを直接使う場合に、統計だけを別途記録したいとき用
+    //  Loggingが有効なとき、0 <= kind < MAX_KIND(8) でないと壊れる
     void record(double delta, bool accepted, int kind) {
         if constexpr (Logging) {
             record_call_(delta, kind);
@@ -236,53 +245,76 @@ class Annealer {
         }
     }
 
-    ///  # improved()
-    ///  直前のcommit()でベストが更新されたか。MoveLogと組み合わせるときに使う
+    //  # improved()
+    //  直前のcommit()でベストが更新されたか。MoveLogと組み合わせるときに使う
     bool improved() const {
         return improved_;
     }
 
+    //  # score()
+    //  現在のスコア
     double score() const {
         return score_;
     }
+
+    //  # best_score()
+    //  これまでの最良スコア
     double best_score() const {
         return best_score_;
     }
+
+    //  # temperature()
+    //  現在の温度
     double temperature() const {
         return 1.0 / inv_temp_;
     }
-    ///  直近の時間計測時点での進捗。ブロック内では更新されない
+
+    //  # progress()
+    //  経過時間 / time_limit。時間を取得したときにだけ更新されるので、実際より少し遅れる
     double progress() const {
         return progress_;
     }
+
+    //  # iteration()
+    //  running()を呼んだ回数
     long long iteration() const {
         return iteration_;
     }
+
+    //  # rng()
+    //  コンストラクタに渡したrng
     Rng& rng() {
         return *rng_;
     }
 
+    //  # best()
+    //  ベスト解。BestPolicyがCopyBestのときだけ使える
     const State& best() const
         requires std::is_same_v<BestPolicy, CopyBest>
     {
         return best_.value;
     }
+
+    //  # release_best()
+    //  ベスト解をムーブして返す。BestPolicyがCopyBestのときだけ使える
     State release_best()
         requires std::is_same_v<BestPolicy, CopyBest>
     {
         return std::move(best_.value);
     }
 
-    ///  # audit(recomputed)
-    ///  差分評価で積み上げたスコアと、全計算し直したスコアの一致を確認する。
-    ///  deltaの加算を繰り返すと浮動小数点誤差が蓄積するため、
-    ///  手元では定期的に呼んでおくとよい
+    //  # audit(recomputed)
+    //  差分評価で積み上げたスコアと、全計算し直したスコアの一致を確認する。
+    //  deltaの加算を繰り返すと浮動小数点誤差が蓄積するため、
+    //  手元では定期的に呼んでおくとよい
+    //  DEBUGが有効なときだけ検査し、差が 1e-6 * max(1, |recomputed|) を超えていると壊れる
     void audit(double recomputed) const {
         DEBUG_ASSERT(std::abs(recomputed - score_) <= 1e-6 * std::max(1.0, std::abs(recomputed)));
     }
 
-    ///  # name(kind, name)
-    ///  ログ出力用に近傍種別へ名前を付ける
+    //  # name(kind, name)
+    //  ログ出力用に近傍種別へ名前を付ける
+    //  Loggingが有効なとき、0 <= kind < MAX_KIND(8) でないと壊れる
     void name(int kind, std::string_view name) {
         if constexpr (Logging) {
             assert(0 <= kind && kind < annealer_internal::MAX_KIND);
@@ -290,6 +322,8 @@ class Annealer {
         }
     }
 
+    //  # dump(os)
+    //  スコアの推移、イテレーション数、経過時間を出力する。Loggingが有効なら近傍種別ごとの統計も出力する
     void dump(std::ostream& os = std::cerr) const {
         double elapsed = annealer_internal::now_ms() - start_ms_;
         os << "# Annealer\n";

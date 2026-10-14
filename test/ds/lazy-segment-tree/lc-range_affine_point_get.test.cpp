@@ -3,9 +3,9 @@
 #include <iostream>
 #include <vector>
 
-#include "../../../nono/ds/lazy-segment-tree.hpp"
-#include "../../../nono/math/modint.hpp"
-#include "../../../nono/structure/act-monoid/range-affine-range-sum.hpp"
+#include "nono/ds/lazy-segment-tree.hpp"
+#include "nono/math/modint.hpp"
+#include "nono/structure/act-monoid/range-affine-range-sum.hpp"
 
 namespace nono {
 

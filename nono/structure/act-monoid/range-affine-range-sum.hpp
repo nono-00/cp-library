@@ -4,9 +4,11 @@ namespace nono {
 
 namespace act_monoid {
 
-///  # RangeAffineRangeSum
-///  op a b := a + b
-///  mapping (a, b) x := x <- ax + b
+//  # RangeAffineRangeSum
+//  区間アフィン変換、区間和
+//  op a b := a + b
+//  mapping (a, b) x := x <- ax + b
+//  1要素は Value(x) で作る。作用は Act(a, b)
 template <class T, class Count = unsigned>
 struct RangeAffineRangeSum {
     struct Value {

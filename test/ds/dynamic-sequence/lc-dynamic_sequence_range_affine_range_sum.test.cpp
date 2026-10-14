@@ -1,9 +1,9 @@
 // competitive-verifier: PROBLEM https://judge.yosupo.jp/problem/dynamic_sequence_range_affine_range_sum
 #include <iostream>
 
-#include "../../../nono/ds/dynamic-sequence.hpp"
-#include "../../../nono/math/modint.hpp"
-#include "../../../nono/structure/act-monoid/range-affine-range-sum.hpp"
+#include "nono/ds/dynamic-sequence.hpp"
+#include "nono/math/modint.hpp"
+#include "nono/structure/act-monoid/range-affine-range-sum.hpp"
 
 namespace nono {
 

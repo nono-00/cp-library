@@ -13,18 +13,19 @@ namespace nono {
 
 namespace tree_compressor_internal {
 
-///  # TreeCompressResult
-///  graph := compressed graph
-///  mapping[i] := vertex i (compressed graph) -> vertex mapping[i] (original graph)
+//  # TreeCompressResult
+//  compress()の結果
+//  graph      : 圧縮後の木(無向グラフ)。頂点0が根
+//  mapping[i] : 圧縮後の頂点iに対応する、元の木の頂点
 template <class T>
 struct TreeCompressResult {
     Graph<T> graph;
     std::vector<int> mapping;
 };
 
-///  # DepthIndexMin
-///  Euler tourの(depth, vertex index)組に対するminモノイド
-///  sparse tableによるLCA計算に使う
+//  # DepthIndexMin
+//  Euler tourの(depth, vertex index)組に対するminモノイド
+//  sparse tableによるLCA計算に使う
 struct DepthIndexMin {
     using Value = std::pair<int, int>;
     static Value op(Value lhs, Value rhs) {
@@ -37,16 +38,19 @@ struct DepthIndexMin {
 
 }  //  namespace tree_compressor_internal
 
-///  # Tree Compressor
-///  "指定された頂点たちの最小共通祖先関係を保って木を圧縮してできる補助的な木" を作るやつ
-///  Weighted版もある
+//  # TreeCompressor
+//  指定した頂点たちの最小共通祖先関係を保って木を圧縮した、補助的な木(auxiliary tree)を作る
+//  元の木は頂点0を根として扱う。辺の重みは見ず、圧縮後の辺の重みはすべて1になる
+//  Weighted版もある
+//  compress()は、Tがint以外だとコンパイルできない
 template <class T>
 class TreeCompressor {
     using Result = tree_compressor_internal::TreeCompressResult<T>;
 
   public:
-    ///  # TreeCompressor(graph)
-    ///  O(n log n)
+    //  # TreeCompressor(graph)
+    //  graphが木でないと壊れる
+    //  O(n log n)
     TreeCompressor(const Graph<T>& graph): in_(graph.size()), out_(graph.size()) {
         assert(is_tree(graph));
         int n = graph.size();
@@ -68,9 +72,11 @@ class TreeCompressor {
         table_ = SparseTable<tree_compressor_internal::DepthIndexMin>(depth_index_pairs);
     }
 
-    ///  # compress(vertices)
-    ///  verticesに含まれる頂点の祖先関係を保ったtreeを作る
-    ///  O(|v| log |v|)
+    //  # compress(vertices)
+    //  verticesの頂点と、それらの最小共通祖先だけを残した木を作る
+    //  圧縮後の頂点には、元の木の行きがけ順に番号が付く。verticesに同じ頂点が複数あってもよい
+    //  verticesが空だと壊れる
+    //  O(|vertices| log |vertices|)
     Result compress(std::vector<int> vertices) const {
         std::ranges::sort(vertices, [&](int lhs, int rhs) { return in_[lhs] < in_[rhs]; });
         for (int i = 0, n = vertices.size(); i + 1 < n; i++) vertices.push_back(lca(vertices[i], vertices[i + 1]));
@@ -109,16 +115,17 @@ class TreeCompressor {
     SparseTable<tree_compressor_internal::DepthIndexMin> table_;
 };
 
-///  # Tree Compressor
-///  "指定された頂点たちの最小共通祖先関係を保って木を圧縮してできる補助的な木" を作るやつ
-///  辺重みが縮約された辺重みの総和
+//  # WeightedTreeCompressor
+//  TreeCompressorの辺重みつき版。圧縮後の辺の重みは、まとめた辺の重みの総和になる
+//  辺重みTにoperator+とoperator-を要求する
 template <class T>
 class WeightedTreeCompressor {
     using Result = tree_compressor_internal::TreeCompressResult<T>;
 
   public:
-    ///  # TreeCompressor(graph)
-    ///  O(n log n)
+    //  # WeightedTreeCompressor(graph)
+    //  graphが木でないと壊れる
+    //  O(n log n)
     WeightedTreeCompressor(const Graph<T>& graph)
         : in_(graph.size()),
           out_(graph.size()),
@@ -144,9 +151,11 @@ class WeightedTreeCompressor {
         table_ = SparseTable<tree_compressor_internal::DepthIndexMin>(depth_index_pairs);
     }
 
-    ///  # compress(vertices)
-    ///  verticesに含まれる頂点の祖先関係を保ったtreeを作る
-    ///  O(|v| log |v|)
+    //  # compress(vertices)
+    //  verticesの頂点と、それらの最小共通祖先だけを残した木を作る
+    //  圧縮後の頂点には、元の木の行きがけ順に番号が付く。verticesに同じ頂点が複数あってもよい
+    //  verticesが空だと壊れる
+    //  O(|vertices| log |vertices|)
     Result compress(std::vector<int> vertices) const {
         std::ranges::sort(vertices, [&](int lhs, int rhs) { return in_[lhs] < in_[rhs]; });
         for (int i = 0, n = vertices.size(); i + 1 < n; i++) vertices.push_back(lca(vertices[i], vertices[i + 1]));

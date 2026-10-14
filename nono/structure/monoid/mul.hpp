@@ -4,7 +4,8 @@ namespace nono {
 
 namespace monoid {
 
-///  # Mul
+//  # Mul
+//  積。op(a, b) = a * b, e() = 1
 template <class T>
 struct Mul {
     using Value = T;

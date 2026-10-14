@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-#include "../../../nono/ds/segment-tree.hpp"
-#include "../../../nono/structure/monoid/min.hpp"
+#include "nono/ds/segment-tree.hpp"
+#include "nono/structure/monoid/min.hpp"
 
 namespace nono {
 

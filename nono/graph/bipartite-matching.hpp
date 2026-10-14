@@ -13,13 +13,13 @@
 
 namespace nono {
 
-///  # bipatite matching(left, right, edges)
-///  L := left vertex (0 <= v < left)
-///  R := right vertex (0 <= v < right)
-///  E := (u, v) in (L, R) (= edges)
-///  return matching (L, R, E)
-///  辺番号列を返す
-///  多重辺あっても大丈夫なはず
+//  # bipartite_matching(left, right, edges)
+//  二部グラフの最大マッチング。使う辺の番号(edgesでの添字)の列を返す
+//  左側の頂点は [0, left)、右側の頂点は [0, right) で、edgesは (左側の頂点, 右側の頂点) の組
+//  多重辺があってもよい
+//  edgesの端点が上の範囲に入っていないと壊れる
+//  BFSで層を作り、層に沿ったDFSで増加路をまとめて取ることを繰り返す
+//  O(min(left, right) * (left + right + m))
 std::vector<int> bipartite_matching(int left, int right, std::vector<std::pair<int, int>> edges) {
     int m = edges.size();
     for (auto& [u, v]: edges) {
@@ -90,9 +90,11 @@ std::vector<int> bipartite_matching(int left, int right, std::vector<std::pair<i
     return result;
 }
 
-///  # bipatite matching(graph)
-///  辺番号列を返す
-///  多重辺あっても大丈夫なはず
+//  # bipartite_matching(graph)
+//  二部グラフの最大マッチング。使う辺の番号の列を返す
+//  多重辺があってもよい
+//  無向の二部グラフでないと壊れる
+//  O(min(left, right) * (n + m))  (left, right: 二部に分けたときの各側の頂点数)
 template <class T>
 std::vector<int> bipartite_matching(const Graph<T>& graph) {
     assert(is_bipartite(graph));

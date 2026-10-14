@@ -2,10 +2,10 @@
 #include <iostream>
 #include <vector>
 
-#include "../../../nono/math/modint.hpp"
-#include "../../../nono/structure/act-monoid/act-monoid.hpp"
-#include "../../../nono/structure/monoid/composite.hpp"
-#include "../../../nono/tree/productable-tree.hpp"
+#include "nono/math/modint.hpp"
+#include "nono/structure/act-monoid/act-monoid.hpp"
+#include "nono/structure/monoid/composite.hpp"
+#include "nono/tree/productable-tree.hpp"
 
 namespace nono {
 

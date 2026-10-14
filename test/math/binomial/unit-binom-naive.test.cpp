@@ -6,8 +6,8 @@
 
 namespace nono {
 
-///  THRESHOLD=1にすることで、小さいnでもbinom_naive経路を強制的に通す
-///  issue #20: binom_naiveのkをmin(n-k, k)にする最適化の回帰テスト
+//  THRESHOLD=1にすることで、小さいnでもbinom_naive経路を強制的に通す
+//  issue #20: binom_naiveのkをmin(n-k, k)にする最適化の回帰テスト
 void solve() {
     constexpr int MOD = 998244353;
     constexpr int LIM = 300;

@@ -65,9 +65,9 @@ void undo(State& state, const Move& move) {
 
 }  //  namespace bin
 
-///  Annealerを介さず固定回数で回すことで、完全に再現性のある比較を行う。
-///  「ベストをフルコピーで持った場合」と「MoveLogで持った場合」が
-///  厳密に同じ状態・同じスコアを返すことを確認する
+//  Annealerを介さず固定回数で回すことで、完全に再現性のある比較を行う。
+//  「ベストをフルコピーで持った場合」と「MoveLogで持った場合」が
+//  厳密に同じ状態・同じスコアを返すことを確認する
 void test_against_full_copy(std::size_t capacity, int iterations, unsigned seed) {
     std::mt19937 mt(seed);
     bin::State state = bin::initial();
@@ -106,8 +106,8 @@ void test_against_full_copy(std::size_t capacity, int iterations, unsigned seed)
     assert(again == naive_best);
 }
 
-///  Annealerと組み合わせた経路。MoveLog経由のベストが、
-///  Annealerが追跡しているベストスコアと一致すること
+//  Annealerと組み合わせた経路。MoveLog経由のベストが、
+//  Annealerが追跡しているベストスコアと一致すること
 void test_with_annealer(unsigned seed) {
     bin::State state = bin::initial();
     Xorshift<unsigned> rng(seed);
@@ -143,7 +143,7 @@ void test_with_annealer(unsigned seed) {
     assert(!oss.str().empty());
 }
 
-///  ベストが一度も更新されない場合、restore()は初期状態を返す
+//  ベストが一度も更新されない場合、restore()は初期状態を返す
 void test_never_improved() {
     bin::State state = bin::initial();
     auto log = make_move_log<bin::Move>(state, [](bin::State& s, const bin::Move& m) { bin::undo(s, m); }, 4);

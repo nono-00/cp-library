@@ -8,8 +8,8 @@
 
 namespace nono {
 
-///  OrderedMap::kth(k)がKey/Value両方を正しく返すことを確認する回帰テスト
-///  (kth()が誤ってKeyのみを返していたバグの修正)
+//  OrderedMap::kth(k)がKey/Value両方を正しく返すことを確認する回帰テスト
+//  (kth()が誤ってKeyのみを返していたバグの修正)
 void solve() {
     std::mt19937 rng(20260821);
     OrderedMap<int, int> map;

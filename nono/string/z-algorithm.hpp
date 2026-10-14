@@ -5,8 +5,10 @@
 
 namespace nono {
 
-///  # Z algorithm
-///  Z algo. result[i]: seqとseq[i:]のprefixがどれだけ一致しているか
+//  # z_algorithm(sequence)
+//  Z algorithm。result[i] は、sequence と sequence[i:] の最長共通接頭辞の長さ
+//  result[0] は |sequence| になる
+//  O(|sequence|)
 template <std::ranges::random_access_range R>
 std::vector<int> z_algorithm(const R& sequence) {
     int n = std::size(sequence);

@@ -6,14 +6,16 @@
 
 namespace nono {
 
-///  # lcp array
-///  based on <https://atcoder.github.io/ac-library/master/document_ja/string.html>
-///  O(|seq|)
-
+//  # lcp_array(s, sa)
+//  LCP配列。result[i] は、接尾辞 s[sa[i]:] と s[sa[i + 1]:] の最長共通接頭辞の長さ
+//  長さは |s| - 1
+//  based on <https://atcoder.github.io/ac-library/master/document_ja/string.html>
 //  Reference:
 //  T. Kasai, G. Lee, H. Arimura, S. Arikawa, and K. Park,
 //  Linear-Time Longest-Common-Prefix Computation in Suffix Arrays and Its
 //  Applications
+//  sが空だと壊れる。saがsの接尾辞配列でないと壊れる
+//  O(|s|)
 template <class T>
 std::vector<int> lcp_array(const std::vector<T>& s, const std::vector<int>& sa) {
     int n = int(s.size());
@@ -36,6 +38,8 @@ std::vector<int> lcp_array(const std::vector<T>& s, const std::vector<int>& sa) 
     return lcp;
 }
 
+//  # lcp_array(s, sa)
+//  std::string版。内容は同じ
 std::vector<int> lcp_array(const std::string& s, const std::vector<int>& sa) {
     int n = int(s.size());
     std::vector<int> s2(n);

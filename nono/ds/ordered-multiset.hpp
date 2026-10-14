@@ -8,7 +8,7 @@
 
 namespace nono {
 
-namespace ordered_multiset_node {
+namespace ordered_multiset_internal {
 
 template <class T>
 struct Node {
@@ -27,55 +27,55 @@ struct Node {
 template <class T>
 using NodePtr = Node<T>*;
 
-///  # empty()
-///  whether S is empty
-///  O(1)
+//  # empty(root)
+//  Sが空か
+//  O(1)
 template <class T>
 bool empty(NodePtr<T> root) {
     return !root;
 }
 
-///  # size()
-///  |S|
-///  O(1)
+//  # size(root)
+//  |S|
+//  O(1)
 template <class T>
 int size(NodePtr<T> root) {
     return root ? root->size : 0;
 }
 
-///  # update(root)
-///  update size of S
+//  # update(root)
+//  Sのsizeを更新する
 template <class T>
 void update(NodePtr<T> root) {
     root->size = 1 + size(root->left) + size(root->right);
 }
 
-///  # push(root)
-///  Key比較のみで完結するため伝播すべき遅延情報は無い（rbst::merge/split_by_sizeから
-///  ADLで呼ばれるためのno-op）
+//  # push(root)
+//  Key比較のみで完結するため伝播すべき遅延情報は無い（rbst_internal::merge/split_by_sizeから
+//  ADLで呼ばれるためのno-op）
 template <class T>
 void push(NodePtr<T>) {}
 
-///  # merge(lhs, rhs)
-///  return root of (lhs + rhs)
-///  O(log n)
+//  # merge(lhs, rhs)
+//  lhs + rhs の根を返す
+//  O(log n)
 template <class T>
 NodePtr<T> merge(NodePtr<T> lhs, NodePtr<T> rhs) {
-    return rbst::merge(lhs, rhs);
+    return rbst_internal::merge(lhs, rhs);
 }
 
-///  # split by size(root, k)
-///  return (root of S[:k], root of S[k:])
-///  if size(S) < k, return {S, empty set}
-///  O(log n)
+//  # split_by_size(root, k)
+//  (S[:k] の根, S[k:] の根) を返す
+//  size(S) < k なら (S, 空) を返す
+//  O(log n)
 template <class T>
 std::pair<NodePtr<T>, NodePtr<T>> split_by_size(NodePtr<T> root, int k) {
-    return rbst::split_by_size(root, k);
+    return rbst_internal::split_by_size(root, k);
 }
 
-///  # split by key(root, key)
-///  return ({ x | x < key }, { x | key <= x })
-///  O(log n)
+//  # split_by_key(root, key)
+//  return ({ x | x < key }, { x | key <= x })
+//  O(log n)
 template <class T>
 std::pair<NodePtr<T>, NodePtr<T>> split_by_key(NodePtr<T> root, T key) {
     if (!root) return {nullptr, nullptr};
@@ -92,19 +92,19 @@ std::pair<NodePtr<T>, NodePtr<T>> split_by_key(NodePtr<T> root, T key) {
     }
 }
 
-///  # insert(root, key)
-///  return root of (S or {key})
-///  O(log n)
+//  # insert(root, key)
+//  S or {key} の根を返す
+//  O(log n)
 template <class T>
 NodePtr<T> insert(NodePtr<T> root, T key) {
     auto [lhs, rhs] = split_by_key(root, key);
     return merge(lhs, merge(new Node<T>(key), rhs));
 }
 
-///  # erase(root, key)
-///  return root of (S - {key})
-///  erase only one element
-///  O(log n)
+//  # erase(root, key)
+//  S - {key} の根を返す
+//  1つだけ削除する
+//  O(log n)
 template <class T>
 NodePtr<T> erase(NodePtr<T> root, T key) {
     if (!contains(root, key)) return root;
@@ -114,19 +114,19 @@ NodePtr<T> erase(NodePtr<T> root, T key) {
     return merge(lhs, rhs);
 }
 
-///  # find by size(root, k)
-///  return S[k]
-///  if not exist, return nullptr
-///  O(log n)
+//  # find_by_size(root, k)
+//  return S[k]
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class T>
 NodePtr<T> find_by_size(NodePtr<T> root, int k) {
-    return rbst::find_by_size(root, k);
+    return rbst_internal::find_by_size(root, k);
 }
 
-///  # find by key(root, key)
-///  return key node
-///  if not exist, return nullptr
-///  O(log n)
+//  # find_by_key(root, key)
+//  keyを持つノードを返す
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class T>
 NodePtr<T> find_by_key(NodePtr<T> root, T key) {
     while (root) {
@@ -141,17 +141,17 @@ NodePtr<T> find_by_key(NodePtr<T> root, T key) {
     return nullptr;
 }
 
-///  # contains(root, key)
-///  return whether key in S
-///  O(log n)
+//  # contains(root, key)
+//  keyがSに含まれるか
+//  O(log n)
 template <class T>
 bool contains(NodePtr<T> root, T key) {
     return find_by_key(root, key);
 }
 
-///  # rank(root, key)
-///  return |{ x in S | x < key }|
-///  O(log n)
+//  # rank(root, key)
+//  return |{ x in S | x < key }|
+//  O(log n)
 template <class T>
 int rank(NodePtr<T> root, T key) {
     int result = 0;
@@ -166,39 +166,39 @@ int rank(NodePtr<T> root, T key) {
     return result;
 }
 
-///  # min(root)
-///  return min node
-///  if not exist, return nullptr
-///  O(log n)
+//  # min(root)
+//  最小の要素のノードを返す
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class T>
 NodePtr<T> min(NodePtr<T> root) {
     while (root->left) root = root->left;
     return root;
 }
 
-///  # max(root)
-///  return max node
-///  if not exist, return nullptr
-///  O(log n)
+//  # max(root)
+//  最大の要素のノードを返す
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class T>
 NodePtr<T> max(NodePtr<T> root) {
     while (root->right) root = root->right;
     return root;
 }
 
-///  # kth(root, k)
-///  return S[k]
-///  if not exist, return nullptr
-///  O(log n)
+//  # kth(root, k)
+//  return S[k]
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class T>
 NodePtr<T> kth(NodePtr<T> root, int k) {
     return find_by_size(root, k);
 }
 
-///  # successor(node)
-///  return next value
-///  if not exist, return nullptr
-///  O(log n)
+//  # successor(root, key)
+//  keyより大きい最小の要素を返す
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class T>
 NodePtr<T> successor(NodePtr<T> root, T key) {
     NodePtr<T> result = nullptr;
@@ -213,10 +213,10 @@ NodePtr<T> successor(NodePtr<T> root, T key) {
     return result;
 }
 
-///  # predecessor(node)
-///  return prev value
-///  if not exist, return nullptr
-///  O(log n)
+//  # predecessor(root, key)
+//  keyより小さい最大の要素を返す
+//  存在しなければnullptrを返す
+//  O(log n)
 template <class T>
 NodePtr<T> predecessor(NodePtr<T> root, T key) {
     NodePtr<T> result = nullptr;
@@ -231,19 +231,20 @@ NodePtr<T> predecessor(NodePtr<T> root, T key) {
     return result;
 }
 
-///  # count(root, key)
-///  return num of key in S
-///  O(log n)
+//  # count(root, key)
+//  Sに含まれるkeyの個数
+//  O(log n)
 template <class T>
 int count(NodePtr<T> root, T key) {
     auto node = successor(root, key);
     return (node ? rank(root, node->key) : size(root)) - rank(root, key);
 }
 
-}  //  namespace ordered_multiset_node
+}  //  namespace ordered_multiset_internal
 
-///  # OrderedMultiSet
-///  RBST
+//  # OrderedMultiSet
+//  順序付き多重集合。RBSTで実装している
+//  ordered_multiset_internalのラッパー
 template <class T>
 class OrderedMultiSet {
   public:
@@ -252,100 +253,103 @@ class OrderedMultiSet {
         delete root_;
     }
 
-    ///  # insert(key)
-    ///  S <- S or {key}
-    ///  O(log n)
+    //  # insert(key)
+    //  S <- S or {key}
+    //  O(log n)
     void insert(T key) {
-        root_ = ordered_multiset_node::insert(root_, key);
+        root_ = ordered_multiset_internal::insert(root_, key);
     }
 
-    ///  # erase(key)
-    ///  S <- S or {key}
-    ///  O(log n)
+    //  # erase(key)
+    //  S <- S - {key}
+    //  O(log n)
     void erase(T key) {
-        root_ = ordered_multiset_node::erase(root_, key);
+        root_ = ordered_multiset_internal::erase(root_, key);
     }
 
-    ///  # empty()
-    ///  whether S is empty
-    ///  O(1)
+    //  # empty()
+    //  Sが空か
+    //  O(1)
     bool empty() {
-        return ordered_multiset_node::empty(root_);
+        return ordered_multiset_internal::empty(root_);
     }
 
-    ///  # size()
-    ///  |S|
-    ///  O(1)
+    //  # size()
+    //  |S|
+    //  O(1)
     int size() {
-        return ordered_multiset_node::size(root_);
+        return ordered_multiset_internal::size(root_);
     }
 
-    ///  # min()
-    ///  min(S)
-    ///  O(log n)
+    //  # min()
+    //  min(S)
+    //  空だと壊れる
+    //  O(log n)
     T min() {
         assert(!empty());
-        return ordered_multiset_node::min(root_)->key;
+        return ordered_multiset_internal::min(root_)->key;
     }
 
-    ///  # max()
-    ///  max(S)
-    ///  O(log n)
+    //  # max()
+    //  max(S)
+    //  空だと壊れる
+    //  O(log n)
     T max() {
         assert(!empty());
-        return ordered_multiset_node::max(root_)->key;
+        return ordered_multiset_internal::max(root_)->key;
     }
 
-    ///  # kth(k)
-    ///  S[k]
-    ///  0-index
-    ///  O(log n)
+    //  # kth(k)
+    //  S[k]
+    //  0-index
+    //  0 <= k < size() でないと壊れる
+    //  O(log n)
     T kth(int k) {
         assert(0 <= k && k < size());
-        return ordered_multiset_node::kth(root_, k)->key;
+        return ordered_multiset_internal::kth(root_, k)->key;
     }
 
-    ///  # contains(key)
-    ///  whether key in S
-    ///  O(log n)
+    //  # contains(key)
+    //  keyがSに含まれるか
+    //  O(log n)
     bool contains(T key) {
-        return ordered_multiset_node::contains(root_, key);
+        return ordered_multiset_internal::contains(root_, key);
     }
 
-    ///  # rank(key)
-    ///  |{ x in S | x < key }|
-    ///  O(log n)
+    //  # rank(key)
+    //  |{ x in S | x < key }|
+    //  O(log n)
     int rank(T key) {
-        return ordered_multiset_node::rank(root_, key);
+        return ordered_multiset_internal::rank(root_, key);
     }
 
-    ///  # count(key)
-    ///  num of key in S
-    ///  O(log n)
+    //  # count(key)
+    //  Sに含まれるkeyの個数
+    //  O(log n)
     int count(T key) {
-        return ordered_multiset_node::count(root_, key);
+        return ordered_multiset_internal::count(root_, key);
     }
 
-    ///  # successor(key)
-    ///  return next value
-    ///  if not exist, return std::nullptr
-    ///  O(log n)
+    //  # successor(key)
+    //  keyより大きい最小の要素を返す
+    //  存在しなければnulloptを返す
+    //  O(log n)
     std::optional<T> successor(T key) {
-        auto node = ordered_multiset_node::successor(root_, key);
+        auto node = ordered_multiset_internal::successor(root_, key);
         return node ? std::optional<T>(node->key) : std::nullopt;
     }
 
-    ///  # predecessor(key)
-    ///  return next value
-    ///  if not exist, return std::nullptr
-    ///  O(log n)
+    //  # predecessor(key)
+    //  keyより小さい最大の要素を返す
+    //  存在しなければnulloptを返す
+    //  O(log n)
     std::optional<T> predecessor(T key) {
-        auto node = ordered_multiset_node::predecessor(root_, key);
+        auto node = ordered_multiset_internal::predecessor(root_, key);
         return node ? std::optional<T>(node->key) : std::nullopt;
     }
 
   private:
-    ordered_multiset_node::NodePtr<T> root_ = nullptr;
+    ordered_multiset_internal::NodePtr<T> root_ = nullptr;
 };
 
 }  //  namespace nono
