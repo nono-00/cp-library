@@ -112,6 +112,44 @@ void test_beam_selector_keeps_best() {
     assert(other.select(0).empty());
 }
 
+//  select_unorderedはselectと同じ候補を返すこと(順序は問わない)
+void test_select_unordered(unsigned seed, int candidates, int distinct_hashes, int width) {
+    std::mt19937 mt(seed);
+    std::uniform_int_distribution<int> hash(0, distinct_hashes - 1), score(0, 99);
+    BeamSelector<Hash> sorted, unordered;
+    for (int id = 0; id < candidates; id++) {
+        Hash h = hash(mt);
+        //  同点を多く含める。同点でも両者が同じ候補を選ぶこと
+        double s = score(mt);
+        sorted.push(id, h, s);
+        unordered.push(id, h, s);
+    }
+    auto ids = [](const std::vector<BeamSelector<Hash>::Entry>& entries) {
+        std::vector<int> result;
+        for (const auto& entry: entries) result.push_back(entry.id);
+        std::sort(result.begin(), result.end());
+        return result;
+    };
+    assert(ids(sorted.select(width)) == ids(unordered.select_unordered(width)));
+}
+
+//  下位ビットが揃ったhashや、上位ビットだけが違うhashでも、正しく重複排除できること。
+//  hashの下位ビットをそのまま添字にする実装では、これらが同じ位置に集まって探索が線形時間になり、
+//  この件数で数百倍遅くなる
+void test_skewed_hashes() {
+    const int COUNT = 1 << 17;
+    for (int shift: {10, 20, 32, 40}) {
+        BeamSelector<Hash> selector;
+        //  前半と後半で同じhashが1回ずつ来る。後半の方がスコアが高い
+        for (int i = 0; i < COUNT; i++) selector.push(i, static_cast<Hash>(i % (COUNT / 2)) << shift, i);
+        assert(selector.size() == COUNT / 2);
+        for (const auto& entry: selector.select(COUNT)) {
+            assert(entry.id >= COUNT / 2);
+            assert(entry.hash == static_cast<Hash>(entry.id - COUNT / 2) << shift);
+        }
+    }
+}
+
 //  ---------------- BestFirstQueue ----------------
 
 //  有効な要素(hashごとの最良と一致するもの)から最大スコアを線形に探す素朴な実装
@@ -223,6 +261,10 @@ void solve() {
     test_beam_selector(4, 200, 200, 500);
     test_beam_selector(5, 1, 1, 1);
     test_beam_selector_keeps_best();
+    test_select_unordered(1, 1000, 50, 10);
+    test_select_unordered(2, 1000, 1000, 100);
+    test_select_unordered(3, 300, 300, 500);
+    test_skewed_hashes();
 
     test_best_first_queue(1, 2000, 30);
     test_best_first_queue(2, 2000, 500);

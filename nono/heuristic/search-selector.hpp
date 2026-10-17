@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 #include <queue>
 #include <vector>
 
@@ -16,19 +17,22 @@ namespace search_selector_internal {
 //  ノードごとの確保・ポインタ追跡・素数剰余がいずれも効き、
 //  幅1000・分岐4の条件で開番地法の2〜3倍の時間がかかる。
 //
-//  容量は2冪でマスクを取る。clear()は世代カウンタを進めるだけのO(1)。
-//  hash値はZobrist等で既に十分ばらけている前提で、そのまま添字に使う
+//  容量は2冪。clear()は世代カウンタを進めるだけのO(1)。
+//  添字は、hashに定数を掛けた積の上位ビットにする(Fibonacci hashing)。
+//  hashの下位ビットをそのまま使うと、下位ビットが揃ったhash(1024の倍数や、
+//  上位32ビットだけが違う値など)が同じ位置に集まり、探索が線形時間になる。
+//  1つのスロットの世代・hash・値は隣り合わせに置き、probe1回で触るキャッシュラインを減らす
 template <class Hash, class Value>
 class HashTable {
   public:
-    HashTable(): slots_(INITIAL_SLOTS), keys_(INITIAL_SLOTS), values_(INITIAL_SLOTS), stamps_(INITIAL_SLOTS, 0) {}
+    HashTable(): table_(std::size_t{1} << INITIAL_BITS) {}
 
     //  # clear()
     //  O(1)。世代が一周したときだけO(容量)
     void clear() {
         size_ = 0;
         if (++generation_ == 0) {
-            std::fill(stamps_.begin(), stamps_.end(), 0);
+            for (auto& slot: table_) slot.stamp = 0;
             generation_ = 1;
         }
     }
@@ -40,15 +44,13 @@ class HashTable {
     int probe(Hash key, bool& inserted) {
         //  挿入で使用率が1/2を超えるなら先に拡張する。
         //  返すスロット番号を無効化しないよう、probeより前に行う
-        if ((size_ + 1) * 2 > slots_) grow_();
-        int index = static_cast<int>(key) & (slots_ - 1);
-        while (stamps_[index] == generation_ && keys_[index] != key) {
-            index = (index + 1) & (slots_ - 1);
-        }
-        inserted = stamps_[index] != generation_;
+        if ((size_ + 1) * 2 > static_cast<int>(table_.size())) grow_();
+        int index = home_(key);
+        while (table_[index].stamp == generation_ && table_[index].key != key) index = next_(index);
+        inserted = table_[index].stamp != generation_;
         if (inserted) {
-            stamps_[index] = generation_;
-            keys_[index] = key;
+            table_[index].stamp = generation_;
+            table_[index].key = key;
             size_++;
         }
         return index;
@@ -58,16 +60,16 @@ class HashTable {
     //  keyがあればスロット番号、無ければ-1。挿入も拡張もしない
     //  ならしO(1)
     int find(Hash key) const {
-        int index = static_cast<int>(key) & (slots_ - 1);
-        while (stamps_[index] == generation_) {
-            if (keys_[index] == key) return index;
-            index = (index + 1) & (slots_ - 1);
+        int index = home_(key);
+        while (table_[index].stamp == generation_) {
+            if (table_[index].key == key) return index;
+            index = next_(index);
         }
         return -1;
     }
 
     Value& value(int slot) {
-        return values_[slot];
+        return table_[slot].value;
     }
 
     int size() const {
@@ -75,36 +77,43 @@ class HashTable {
     }
 
   private:
-    static constexpr int INITIAL_SLOTS = 1 << 10;
+    static constexpr int INITIAL_BITS = 10;
+
+    struct Slot {
+        Hash key{};
+        unsigned stamp = 0;
+        Value value{};
+    };
+
+    int home_(Hash key) const {
+        return static_cast<int>((static_cast<std::uint64_t>(key) * 0x9E3779B97F4A7C15ull) >> (64 - bits_));
+    }
+
+    int next_(int index) const {
+        return (index + 1) & (static_cast<int>(table_.size()) - 1);
+    }
 
     void grow_() {
-        std::vector<std::pair<Hash, Value>> live;
-        live.reserve(size_);
-        for (int i = 0; i < slots_; i++) {
-            if (stamps_[i] == generation_) live.push_back({keys_[i], values_[i]});
-        }
-        slots_ *= 2;
-        keys_.assign(slots_, Hash{});
-        values_.assign(slots_, Value{});
-        stamps_.assign(slots_, 0);
+        std::vector<Slot> old;
+        old.swap(table_);
+        unsigned old_generation = generation_;
+        bits_++;
+        table_.assign(std::size_t{1} << bits_, Slot{});
         generation_ = 1;
         size_ = 0;
-        for (const auto& [key, value]: live) {
-            int index = static_cast<int>(key) & (slots_ - 1);
-            while (stamps_[index] == generation_) index = (index + 1) & (slots_ - 1);
-            stamps_[index] = generation_;
-            keys_[index] = key;
-            values_[index] = value;
+        for (const auto& slot: old) {
+            if (slot.stamp != old_generation) continue;
+            int index = home_(slot.key);
+            while (table_[index].stamp == generation_) index = next_(index);
+            table_[index] = Slot{slot.key, generation_, slot.value};
             size_++;
         }
     }
 
-    int slots_ = INITIAL_SLOTS;
+    int bits_ = INITIAL_BITS;
     int size_ = 0;
     unsigned generation_ = 1;
-    std::vector<Hash> keys_;
-    std::vector<Value> values_;
-    std::vector<unsigned> stamps_;
+    std::vector<Slot> table_;
 };
 
 }  //  namespace search_selector_internal
@@ -160,16 +169,25 @@ class BeamSelector {
     //  width >= 0 でないと壊れる
     //  O(n + width log width)  (n: 重複排除後の候補数)
     const std::vector<Entry>& select(int width) {
+        select_unordered(width);
+        std::sort(entries_.begin(), entries_.end(),
+                  [](const Entry& lhs, const Entry& rhs) { return lhs.score > rhs.score; });
+        return entries_;
+    }
+
+    //  # select_unordered(width)
+    //  select(width)と同じ候補を、並べ替えずに返す。順序は不定。
+    //  返した参照は次のclear()まで有効
+    //  width >= 0 でないと壊れる
+    //  O(n)  (n: 重複排除後の候補数)
+    const std::vector<Entry>& select_unordered(int width) {
         assert(width >= 0);
         selected_ = true;
-        auto greater = [](const Entry& lhs, const Entry& rhs) {
-            return lhs.score > rhs.score;
-        };
         if (width < static_cast<int>(entries_.size())) {
-            std::nth_element(entries_.begin(), entries_.begin() + width, entries_.end(), greater);
+            std::nth_element(entries_.begin(), entries_.begin() + width, entries_.end(),
+                             [](const Entry& lhs, const Entry& rhs) { return lhs.score > rhs.score; });
             entries_.resize(width);
         }
-        std::sort(entries_.begin(), entries_.end(), greater);
         return entries_;
     }
 
